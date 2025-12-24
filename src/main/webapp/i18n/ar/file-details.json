@@ -1,0 +1,76 @@
+{
+  "fileDetails": {
+    "breadcrumb": {
+      "addCompany": "اضافة شركة",
+      "dailyFollowUps": "المتابعات اليومية"
+    },
+    "tabs": {
+      "fileData": "بيانات الملف",
+      "caseData": "بيانات القضية",
+      "servicesMenu": "قائمة الخدمات"
+    },
+    "header": {
+      "progress": "التقدم",
+      "needsUpdate": "الملف الرئيسي بحاجه الى تحديث البيانات",
+      "serialNumber": "الرقم التسلسلي",
+      "subNumber": "الرقم الفرعي",
+      "fileManager": "اسم المسؤول عن الملف",
+      "registrationDate": "تاريخ تسجيل القضية"
+    },
+    "client": {
+      "name": "اسم الموكل",
+      "phone": "رقم هاتف الموكل"
+    },
+    "opponent": {
+      "name": "اسم الخصم",
+      "phone": "رقم هاتف الخصم"
+    },
+    "statistics": {
+      "amountToCollect": "المبلغ المراد تحصيله",
+      "totalCollected": "مجموع المبالغ المحصلة",
+      "lastFollowUpDate": "تاريخ اخر اضافة للمتابعة",
+      "nextFollowUpDate": "تاريخ المتابعه القادمة",
+      "currency": "دينار"
+    },
+    "followUp": {
+      "title": "تفاصيل المتابعة",
+      "qrCode": "بيانات الاتصال",
+      "contactPerson": "الشخص المعني",
+      "phone": "رقم الهاتف",
+      "status": {
+        "underFollowUp": "تحت المتابعة",
+        "completed": "مكتملة",
+        "pending": "قيد الانتظار"
+      },
+      "nextDate": "تاريخ المتابعه القادم",
+      "name": "اسم المتابعة",
+      "amount": "المبلغ المراد تحصيله",
+      "notes": "ملاحضات",
+      "financialAttachments": "المرفقات المالية",
+      "administrativeAttachments": "المرفقات الادارية",
+      "viewAttachments": "عرض المرفقات",
+      "shareButton": "شارك المتابعة مع شخص اخر",
+      "addResponseButton": "اضافة رد على المتابعة"
+    },
+    "previousFollowUps": {
+      "title": "المتابعات السابقة",
+      "filters": {
+        "chooseBy": "اختيار حسب:",
+        "concernedPerson": "الشخص المعني",
+        "followUpDate": "تاريخ المتابعه",
+        "addedBy": "اضافه المتابعه بواسطة",
+        "searchPlaceholder": "ادخل رقم الملف"
+      },
+      "table": {
+        "fileNumber": "رقم الملف",
+        "subFile": "الملف الفرعي",
+        "addDate": "تاريخ اضافة المتابعة",
+        "nextDate": "تاريخ المتابعه القادم",
+        "details": "تفاصيل اخر متابعه",
+        "notes": "ملاحضات",
+        "userName": "اسم المستخدم"
+      }
+    },
+    "casePlaceholder": "سيتم عرض بيانات القضية هنا"
+  }
+}

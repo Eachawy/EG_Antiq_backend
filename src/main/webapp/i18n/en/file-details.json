@@ -1,0 +1,76 @@
+{
+  "fileDetails": {
+    "breadcrumb": {
+      "addCompany": "Add Company",
+      "dailyFollowUps": "Daily Follow-ups"
+    },
+    "tabs": {
+      "fileData": "File Data",
+      "caseData": "Case Data",
+      "servicesMenu": "Services Menu"
+    },
+    "header": {
+      "progress": "Progress",
+      "needsUpdate": "The main file needs data update",
+      "serialNumber": "Serial Number",
+      "subNumber": "Sub Number",
+      "fileManager": "File Manager",
+      "registrationDate": "Registration Date"
+    },
+    "client": {
+      "name": "Client Name",
+      "phone": "Client Phone"
+    },
+    "opponent": {
+      "name": "Opponent Name",
+      "phone": "Opponent Phone"
+    },
+    "statistics": {
+      "amountToCollect": "Amount to Collect",
+      "totalCollected": "Total Collected",
+      "lastFollowUpDate": "Last Follow-up Date",
+      "nextFollowUpDate": "Next Follow-up Date",
+      "currency": "Dinar"
+    },
+    "followUp": {
+      "title": "Follow-up Details",
+      "qrCode": "Contact Information",
+      "contactPerson": "Contact Person",
+      "phone": "Phone Number",
+      "status": {
+        "underFollowUp": "Under Follow-up",
+        "completed": "Completed",
+        "pending": "Pending"
+      },
+      "nextDate": "Next Follow-up Date",
+      "name": "Follow-up Name",
+      "amount": "Amount to Collect",
+      "notes": "Notes",
+      "financialAttachments": "Financial Attachments",
+      "administrativeAttachments": "Administrative Attachments",
+      "viewAttachments": "View Attachments",
+      "shareButton": "Share Follow-up with Another Person",
+      "addResponseButton": "Add Response to Follow-up"
+    },
+    "previousFollowUps": {
+      "title": "Previous Follow-ups",
+      "filters": {
+        "chooseBy": "Choose by:",
+        "concernedPerson": "Concerned Person",
+        "followUpDate": "Follow-up Date",
+        "addedBy": "Added by",
+        "searchPlaceholder": "Enter file number"
+      },
+      "table": {
+        "fileNumber": "File Number",
+        "subFile": "Sub File",
+        "addDate": "Add Date",
+        "nextDate": "Next Date",
+        "details": "Details",
+        "notes": "Notes",
+        "userName": "User Name"
+      }
+    },
+    "casePlaceholder": "Case data will be displayed here"
+  }
+}
