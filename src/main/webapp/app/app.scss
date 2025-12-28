@@ -1,9 +1,13 @@
+
 @use "tailwindcss";
+@import '../content/css/fonts.css';
+@import '../content/css/design-system.css';
+@import '../content/css/theme.css';
+
+/* PrimeReact Styles */
 @import 'primereact/resources/themes/lara-light-blue/theme.css';
 @import 'primereact/resources/primereact.min.css';
 @import 'primeicons/primeicons.css';
 
-body {
-  background: #fafafa;
-  margin: 0;
-}
+/* KEMETRA Design System */
+@import '../content/kemetra.scss';

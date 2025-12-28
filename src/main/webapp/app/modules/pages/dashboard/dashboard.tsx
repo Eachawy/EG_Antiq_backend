@@ -1,4 +1,4 @@
-import "./home.scss";
+import "./dashboard.scss";
 
 import React from "react";
 import { Translate } from "react-jhipster";
@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 import { useAppSelector } from "app/config/store";
 
-export const Home = () => {
+export const Dashboard = () => {
   const account = useAppSelector((state) => state.authentication.account);
   const people = [
     {
@@ -45,4 +45,4 @@ export const Home = () => {
   );
 };
 
-export default Home;
+export default Dashboard;

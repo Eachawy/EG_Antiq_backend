@@ -4,10 +4,13 @@ import Loadable from "react-loadable";
 import { Route } from "react-router";
 
 import { AUTHORITIES } from "app/config/constants";
-import Home from "app/modules/home/home";
+import Dashboard from "app/modules/pages/dashboard/dashboard";
+import Login from "app/modules/account/login/login";
 import PrivateRoute from "app/shared/auth/private-route";
 import ErrorBoundaryRoutes from "app/shared/error/error-boundary-routes";
 import PageNotFound from "app/shared/error/page-not-found";
+import ErasManagement from "./modules/pages/eras/eras";
+import LayoutSystemTemplete from "./shared/layout/layout-container/layout-container";
 
 const loading = <div>loading ...</div>;
 
@@ -27,7 +30,11 @@ const AppRoutes = () => {
   return (
     <div className="view-routes">
       <ErrorBoundaryRoutes>
-        <Route index element={<Home />} />
+        <Route index element={<Login />} />
+        <Route path="" element={<LayoutSystemTemplete />}>
+          <Route path="dashnoard" element={<Dashboard />} />
+          <Route path="erasManagement" element={<ErasManagement />} />
+        </Route>
         {/* <Route path="account">
           <Route
             path="*"

@@ -60,21 +60,15 @@ export const App = () => {
 
   return (
     <BrowserRouter basename={baseHref}>
-      <div className="app-container">
-        <ToastContainer
-          position="top-left"
-          className="toastify-container"
-          toastClassName="toastify-toast"
-        />
+      <ToastContainer
+        position="top-left"
+        className="toastify-container"
+        toastClassName="toastify-toast"
+      />
+      <div id="app-view-container">
         <ErrorBoundary>
-          <Header currentLocale={currentLocale} />
+          <AppRoutes />
         </ErrorBoundary>
-        <div id="app-view-container">
-          <ErrorBoundary>
-            <AppRoutes />
-          </ErrorBoundary>
-          <Footer />
-        </div>
       </div>
     </BrowserRouter>
   );
