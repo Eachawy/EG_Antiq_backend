@@ -11,6 +11,18 @@ import ErrorBoundaryRoutes from "app/shared/error/error-boundary-routes";
 import PageNotFound from "app/shared/error/page-not-found";
 import ErasManagement from "./modules/pages/eras/eras";
 import LayoutSystemTemplete from "./shared/layout/layout-container/layout-container";
+import LoginPage from "./modules/pages/login/login";
+import DescriptionMonumentsPage from "./modules/pages/description-monuments/DescriptionMonuments";
+import DynastyPage from "./modules/pages/dynasty/Dynasty";
+import FavouritesPage from "./modules/pages/favourites/Favourites";
+import GalleryPage from "./modules/pages/gallery/Gallery";
+import MonumentsPage from "./modules/pages/monuments/Monuments";
+import MonumentsEraPage from "./modules/pages/monuments-era/MonumentsEra";
+import MonumentsTypePage from "./modules/pages/monuments-type/MonumentsType";
+import PortalUsersPage from "./modules/pages/portal-users/PortalUsers";
+import SavedSearchPage from "./modules/pages/saved-search/SavedSearch";
+import UserHistoryPage from "./modules/pages/user-history/UserHistory";
+import UsersPage from "./modules/pages/users/Users";
 
 const loading = <div>loading ...</div>;
 
@@ -30,10 +42,24 @@ const AppRoutes = () => {
   return (
     <div className="view-routes">
       <ErrorBoundaryRoutes>
-        <Route index element={<Login />} />
+        <Route index element={<LoginPage />} />
         <Route path="" element={<LayoutSystemTemplete />}>
-          <Route path="dashnoard" element={<Dashboard />} />
-          <Route path="erasManagement" element={<ErasManagement />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="eras" element={<ErasManagement />} />
+          <Route
+            path="descriptionMonuments"
+            element={<DescriptionMonumentsPage />}
+          />
+          <Route path="dynasty" element={<DynastyPage />} />
+          <Route path="favourites" element={<FavouritesPage />} />
+          <Route path="gallery" element={<GalleryPage />} />
+          <Route path="monuments" element={<MonumentsPage />} />
+          <Route path="monumentsEra" element={<MonumentsEraPage />} />
+          <Route path="monumentsType" element={<MonumentsTypePage />} />
+          <Route path="portalUsers" element={<PortalUsersPage />} />
+          <Route path="savedSearch" element={<SavedSearchPage />} />
+          <Route path="userHistory" element={<UserHistoryPage />} />
+          <Route path="users" element={<UsersPage />} />
         </Route>
         {/* <Route path="account">
           <Route

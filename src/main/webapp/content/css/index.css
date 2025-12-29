@@ -1,0 +1,11 @@
+@import './fonts.css';
+@import './design-system.css';
+@import './tailwind.css';
+@import './theme.css';
+@import './kemetra.css';
+@import './kemetra_ar.css';
+
+/* PrimeReact Styles */
+@import 'primereact/resources/themes/lara-light-blue/theme.css';
+@import 'primereact/resources/primereact.min.css';
+@import 'primeicons/primeicons.css';

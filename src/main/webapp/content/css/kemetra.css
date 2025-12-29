@@ -11,15 +11,15 @@
   --kemetra-gold-primary: #C9A24D;
   --kemetra-gold-secondary: #B8913D;
   --kemetra-gold-light: #FFD700;
-
+  
   /* Neutral Tones */
   --kemetra-brown-dark: #6B5744;
   --kemetra-brown-medium: #8B7355;
-
+  
   /* Status Colors */
   --kemetra-red-primary: #C92A2A;
   --kemetra-red-light: #FF6B6B;
-
+  
   /* Background Colors */
   --kemetra-bg-overlay: rgba(245, 230, 211, 0.85);
   --kemetra-surface-primary: rgba(255, 255, 255, 0.95);
@@ -901,7 +901,7 @@
 
 /* Password Input Wrapper */
 .p-password .p-inputwrapper,
-.p-password>.p-inputwrapper {
+.p-password > .p-inputwrapper {
   width: 100% !important;
   display: flex !important;
 }
@@ -909,7 +909,7 @@
 /* Password Input Field */
 .p-password .p-inputtext,
 .p-password-input,
-.p-password>.p-inputtext {
+.p-password > .p-inputtext {
   width: 100% !important;
   flex: 1 !important;
 }
@@ -925,7 +925,7 @@
   display: block !important;
 }
 
-.password-field-full-width>.p-inputwrapper {
+.password-field-full-width > .p-inputwrapper {
   width: 100% !important;
   display: flex !important;
 }
@@ -937,7 +937,7 @@
 
 /* Password Field in Form Groups */
 .p-field .p-password,
-.p-field>.p-password {
+.p-field > .p-password {
   width: 100% !important;
 }
 
@@ -950,7 +950,7 @@
   width: 100% !important;
 }
 
-.p-password .p-input-icon-right>.p-inputtext {
+.p-password .p-input-icon-right > .p-inputtext {
   width: 100% !important;
   padding-right: 2.5rem !important;
 }
@@ -962,7 +962,7 @@
   .kemetra-brand-title {
     font-size: 1.25rem;
   }
-
+  
   .kemetra-overlay-panel {
     width: 90%;
     max-width: 320px;
@@ -2054,12 +2054,14 @@
 /* Details Separator */
 .kemetra-details-separator {
   height: 1px;
-  background: linear-gradient(to right,
-      transparent,
-      rgba(201, 162, 77, 0.2) 15%,
-      rgba(201, 162, 77, 0.3) 50%,
-      rgba(201, 162, 77, 0.2) 85%,
-      transparent);
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(201, 162, 77, 0.2) 15%,
+    rgba(201, 162, 77, 0.3) 50%,
+    rgba(201, 162, 77, 0.2) 85%,
+    transparent
+  );
   margin: 1.25rem 0;
   position: relative;
 }
@@ -2408,5 +2410,3 @@
   color: #2563EB;
   background: rgba(59, 130, 246, 0.1);
 }
-
-@import './kemetra_ar.scss';

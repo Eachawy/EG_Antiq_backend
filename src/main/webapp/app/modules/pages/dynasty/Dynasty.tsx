@@ -1,100 +1,87 @@
-import "./eras.scss";
-
 import React, { useState } from "react";
-import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { DataTable } from "primereact/datatable";
-
-import { useAppSelector } from "app/config/store";
-import { PenLine, Trash2, Plus, AlertCircle, PackageOpen } from "lucide-react";
-import { Button } from "primereact/button";
 import { Column } from "primereact/column";
+import { Button } from "primereact/button";
+import { Toast } from "primereact/toast";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import PageHeader from "app/shared/components/page-header/page-header";
-import EraFormDialog from "./EraFormDialog";
+import { Trash2, Plus, AlertTriangle, Inbox, PenLine } from "lucide-react";
+import DynastyFormDialog from "./DynastyFormDialog";
 
-export const ErasManagement = () => {
-  const [eras, setEras] = useState([
+const DynastyPage = (props) => {
+  // Mock eras data
+  const mockEras = [
     {
       id: "1",
-      nameEn: "Pharaonic",
-      nameAr: "الفرعونية",
-      from: "5500 BC",
-      to: "332 BC",
-      Hijri_from: "-",
-      Hijri_to: "-",
+      nameEn: "Prehistoric Era",
+      nameAr: "عصر ما قبل التاريخ",
+      from: "10000 BC",
+      to: "3100 BC",
+      Hijri_from: "",
+      Hijri_to: "",
     },
     {
       id: "2",
-      nameEn: "Ptolemaic",
-      nameAr: "البطلمي",
-      from: "332 BC",
-      to: "30 BC",
-      Hijri_from: "-",
-      Hijri_to: "-",
+      nameEn: "Early Dynastic Period",
+      nameAr: "العصر العتيق",
+      from: "3100 BC",
+      to: "2686 BC",
+      Hijri_from: "",
+      Hijri_to: "",
     },
     {
       id: "3",
-      nameEn: "Roman",
-      nameAr: "الروماني",
-      from: "30 BC",
-      to: "395 AD",
-      Hijri_from: "-",
-      Hijri_to: "-",
+      nameEn: "Old Kingdom",
+      nameAr: "الدولة القديمة",
+      from: "2686 BC",
+      to: "2181 BC",
+      Hijri_from: "",
+      Hijri_to: "",
     },
-    {
-      id: "4",
-      nameEn: "Byzantine",
-      nameAr: "البيزنطي",
-      from: "395 AD",
-      to: "641 AD",
-      Hijri_from: "-",
-      Hijri_to: "-",
-    },
-    {
-      id: "5",
-      nameEn: "Islamic",
-      nameAr: "الإسلامي",
-      from: "640 AD",
-      to: "-",
-      Hijri_from: "19 H",
-      Hijri_to: "41 H",
-    },
-  ]);
+  ];
+  const [dynasties, setDynasties] = useState([]);
+  const [eras] = useState(mockEras);
   const [visible, setVisible] = useState(false);
-  const [selectedEra, setSelectedEra] = useState(null);
-  const [formData, setFormData]: any = useState({});
+  const [selectedDynasty, setSelectedDynasty] = useState(null);
+  const [formData, setFormData] = useState({});
 
   const openNew = () => {
     setFormData({});
-    setSelectedEra(null);
+    setSelectedDynasty(null);
     setVisible(true);
   };
 
-  const openEdit = (era) => {
-    setFormData(era);
-    setSelectedEra(era);
+  const openEdit = (dynasty) => {
+    setFormData(dynasty);
+    setSelectedDynasty(dynasty);
     setVisible(true);
   };
 
   const hideDialog = () => {
     setVisible(false);
     setFormData({});
-    setSelectedEra(null);
+    setSelectedDynasty(null);
   };
 
-  const saveEra = () => {
+  const saveDynasty = () => {
     hideDialog();
   };
 
-  const confirmDelete = (era) => {
+  const confirmDelete = (dynasty) => {
     confirmDialog({
-      message: `Are you sure you want to delete ${era.nameEn}?`,
+      message: `Are you sure you want to delete ${dynasty.nameEn}?`,
       header: "Confirm Deletion",
-      icon: <AlertCircle size={24} className="text-red-500" />,
+      icon: <AlertTriangle size={24} className="text-red-500" />,
       acceptClassName: "p-button-danger",
       // accept: () => {
-      //   setEras(eras.filter((e) => e.id !== era.id));
+      //   setDynasties(dynasties.filter((d) => d.id !== dynasty.id));
       // },
     });
+  };
+
+  const getEraName = (eraId: string) => {
+    const era = eras.find((e) => e.id === eraId);
+    return era ? era.nameEn : "-";
   };
 
   const actionBodyTemplate = (rowData) => {
@@ -125,28 +112,29 @@ export const ErasManagement = () => {
   return (
     <div>
       <ConfirmDialog />
+
       <PageHeader
-        title="Eras Management"
-        description="Manage historical eras and time periods"
-        actionLabel="Add Era"
+        title="Dynasty Management"
+        description="Manage historical dynasties and ruling families"
+        actionLabel="Add Dynasty"
         onAction={openNew}
       />
 
       <div className="kemetra-page-table-container">
         <DataTable
-          value={eras}
+          value={dynasties}
           paginator
           rows={10}
           dataKey="id"
           emptyMessage={
             <div className="kemetra-empty-state-container">
-              <PackageOpen size={48} className="kemetra-empty-state-icon" />
-              <p className="kemetra-empty-state-title">No eras found</p>
+              <Inbox size={48} className="kemetra-empty-state-icon" />
+              <p className="kemetra-empty-state-title">No dynasties found</p>
               <p className="kemetra-empty-state-desc">
-                Get started by adding your first era
+                Get started by adding your first dynasty
               </p>
               <Button
-                label="Add Era"
+                label="Add Dynasty"
                 icon={<Plus size={18} />}
                 onClick={openNew}
                 className="kemetra-empty-state-btn"
@@ -172,42 +160,39 @@ export const ErasManagement = () => {
         >
           <Column
             field="nameEn"
-            header="English Name"
+            header="Name (English)"
             sortable
             headerClassName="kemetra-table-column-header"
             bodyClassName="kemetra-table-cell-primary"
           />
           <Column
             field="nameAr"
-            header="Arabic Name"
+            header="Name (Arabic)"
             sortable
             headerClassName="kemetra-table-column-header"
-            bodyClassName="kemetra-table-cell-arabic"
+            bodyClassName="kemetra-table-cell-arabic-rtl"
+          />
+          <Column
+            field="eraId"
+            header="Era"
+            sortable
+            headerClassName="kemetra-table-column-header"
+            body={(rowData) => (
+              <span className="kemetra-table-cell-secondary">
+                {getEraName(rowData.eraId)}
+              </span>
+            )}
           />
           <Column
             field="from"
-            header="From (Birth Date)"
+            header="From"
             sortable
             headerClassName="kemetra-table-column-header"
             bodyClassName="kemetra-table-cell-secondary"
           />
           <Column
             field="to"
-            header="To (Birth Date)"
-            sortable
-            headerClassName="kemetra-table-column-header"
-            bodyClassName="kemetra-table-cell-secondary"
-          />
-          <Column
-            field="Hijri_from"
-            header="From (Hijri)"
-            sortable
-            headerClassName="kemetra-table-column-header"
-            bodyClassName="kemetra-table-cell-secondary"
-          />
-          <Column
-            field="Hijri_to"
-            header="To (Hijri)"
+            header="To"
             sortable
             headerClassName="kemetra-table-column-header"
             bodyClassName="kemetra-table-cell-secondary"
@@ -222,16 +207,17 @@ export const ErasManagement = () => {
         </DataTable>
       </div>
 
-      <EraFormDialog
+      <DynastyFormDialog
         visible={visible}
-        selectedEra={selectedEra}
+        selectedDynasty={selectedDynasty}
         formData={formData}
+        eras={eras}
         onHide={hideDialog}
-        onSave={saveEra}
+        onSave={saveDynasty}
         onFormDataChange={setFormData}
       />
     </div>
   );
 };
 
-export default ErasManagement;
+export default DynastyPage;

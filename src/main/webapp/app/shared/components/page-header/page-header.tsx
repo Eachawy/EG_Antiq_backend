@@ -2,37 +2,29 @@ import React from "react";
 import { Button } from "primereact/button";
 import { Plus } from "lucide-react";
 
-interface PageHeaderProps {
-  title: string;
-  description?: string;
-  actionLabel?: string;
-  actionIcon?: string;
-  onAction?: () => void;
-}
-
-export const PageHeader: React.FC<PageHeaderProps> = ({
-  title,
-  description,
-  actionLabel,
-  actionIcon = "pi-plus",
-  onAction,
-}) => {
+const PageHeader = (props) => {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 kemetra-page-header">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
       <div>
-        <h1 className="kemetra-page-title">{title}</h1>
-        {description && (
-          <p className="kemetra-page-description">{description}</p>
+        <h1 className="text-3xl font-bold mb-1 kemetra-text-primary">
+          {props.title}
+        </h1>
+        {props.description && (
+          <div className="text-sm kemetra-text-secondary">
+            {props.description}
+          </div>
         )}
       </div>
-      {actionLabel && onAction && (
+      {props.actionLabel && props.onAction && (
         <Button
-          label={actionLabel}
+          label={props.actionLabel}
           icon={<Plus size={18} />}
-          onClick={onAction}
-          className="p-button-rounded kemetra-primary-btn"
+          onClick={props.onAction}
+          className="kemetra-btn-primary"
         />
       )}
     </div>
   );
 };
+
+export default PageHeader;
