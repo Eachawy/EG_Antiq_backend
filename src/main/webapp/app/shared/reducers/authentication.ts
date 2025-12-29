@@ -7,6 +7,7 @@ import { AppThunk } from "app/config/store";
 import { setLocale } from "app/shared/reducers/locale";
 
 import { serializeAxiosError } from "./reducer.utils";
+import { AUTH_LOGIN } from "app/config/constants";
 
 const AUTH_TOKEN_KEY = "jhi-authenticationToken";
 
@@ -46,40 +47,29 @@ export const getAccount = createAsyncThunk(
 );
 
 interface IAuthParams {
-  username: string;
+  email: string;
   password: string;
-  rememberMe?: boolean;
 }
 
 export const authenticate = createAsyncThunk(
-  "authentication/login",
-  async (auth: IAuthParams) => axios.post<any>("api/authenticate", auth),
+  "AUTHENTICATION / GET_ACCOUNT",
+  async (auth: IAuthParams) => axios.post<any>(AUTH_LOGIN, auth),
   {
     serializeError: serializeAxiosError,
   },
 );
 
-export const login: (
-  username: string,
-  password: string,
-  rememberMe?: boolean,
-) => AppThunk =
-  (username, password, rememberMe = false) =>
-  async (dispatch) => {
-    const result = await dispatch(
-      authenticate({ username, password, rememberMe }),
-    );
+export const login: (username: string, password: string) => AppThunk =
+  (email, password) => async (dispatch) => {
+    const result = await dispatch(authenticate({ email, password }));
     const response = result.payload as AxiosResponse;
     const bearerToken = response?.headers?.authorization;
     if (bearerToken?.startsWith("Bearer ")) {
       const jwt = bearerToken.slice(7, bearerToken.length);
-      if (rememberMe) {
-        Storage.local.set(AUTH_TOKEN_KEY, jwt);
-      } else {
-        Storage.session.set(AUTH_TOKEN_KEY, jwt);
-      }
+      // eslint-disable-next-line no-console
+      console.log(jwt);
     }
-    dispatch(getSession());
+    // dispatch(getSession());
   };
 
 export const clearAuthToken = () => {

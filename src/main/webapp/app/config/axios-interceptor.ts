@@ -1,10 +1,11 @@
 import { Storage } from "react-jhipster";
 
 import axios, { type AxiosError } from "axios";
+import { GATEWAY_SERVER_API_URL } from "./constants";
 
 const TIMEOUT = 1 * 60 * 1000;
 axios.defaults.timeout = TIMEOUT;
-axios.defaults.baseURL = SERVER_API_URL;
+axios.defaults.baseURL = GATEWAY_SERVER_API_URL;
 
 const setupAxiosInterceptors = (onUnauthenticated) => {
   const onRequestSuccess = (config) => {

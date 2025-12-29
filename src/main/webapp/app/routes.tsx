@@ -5,7 +5,6 @@ import { Route } from "react-router";
 
 import { AUTHORITIES } from "app/config/constants";
 import Dashboard from "app/modules/pages/dashboard/dashboard";
-import Login from "app/modules/account/login/login";
 import PrivateRoute from "app/shared/auth/private-route";
 import ErrorBoundaryRoutes from "app/shared/error/error-boundary-routes";
 import PageNotFound from "app/shared/error/page-not-found";

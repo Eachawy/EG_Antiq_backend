@@ -2,48 +2,44 @@ import React, { useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
-import { Toast } from "primereact/toast";
 import { Mail, Lock, ArrowRight } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "app/config/store";
+import { useNavigate } from "react-router";
+import { Controller, useForm } from "react-hook-form";
+import { Translate, Storage } from "react-jhipster";
+import { login } from "app/shared/reducers/authentication";
+import { setLocale } from "app/shared/reducers/locale";
+import { setTextDirection } from "app/config/translation";
+const LoginPage = (pops) => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  });
+  const $isAuthenticated = useAppSelector(
+    (state) => state.authentication.isAuthenticated,
+  );
+  const loading = useAppSelector((state) => state.authentication.loading);
 
-const LoginPage = (props) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [emailError, setEmailError] = useState("");
+  // React.useEffect(() => {
+  //   Storage.session.set("locale", "ar");
+  //   dispatch(setLocale("ar"));
+  //   setTextDirection("ar");
+  // }, []);
 
-  const validateEmail = (emails: string) => {
-    if (!emails) {
-      setEmailError("");
-      return false;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(emails)) {
-      setEmailError("Please enter a valid email address");
-      return false;
-    }
-    setEmailError("");
-    return true;
-  };
+  if ($isAuthenticated) {
+    navigate("/dashoard");
+  }
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEmail(value);
-    if (value) {
-      validateEmail(value);
-    } else {
-      setEmailError("");
-    }
-  };
-
-  const handleEmailBlur = () => {
-    if (email) {
-      validateEmail(email);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const handleLogin = (values) => {
+    dispatch(login(values.username, values.password));
   };
 
   return (
@@ -100,51 +96,76 @@ const LoginPage = (props) => {
           </div>
 
           {/* Login Form */}
-          <form onSubmit={handleSubmit} className="kemetra-login-form">
+          <form
+            onSubmit={handleSubmit(handleLogin)}
+            className="kemetra-login-form"
+          >
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="kemetra-login-label">
-                Email Address
+              <label htmlFor="username" className="kemetra-login-label">
+                <Translate contentKey="global.form.username.label">
+                  Username
+                </Translate>
               </label>
-              <div className="kemetra-login-input-wrapper">
-                <Mail size={18} className="kemetra-login-input-icon" />
-                <InputText
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={handleEmailChange}
-                  onBlur={handleEmailBlur}
-                  placeholder="your.email@kemetra.com"
-                  className="kemetra-login-input"
-                />
-              </div>
-              {emailError && (
-                <p className="kemetra-login-error">{emailError}</p>
+              <Controller
+                name="username"
+                control={control}
+                rules={{ required: "Username is required" }}
+                render={({ field }) => (
+                  <div className="kemetra-login-input-wrapper">
+                    <Mail size={18} className="kemetra-login-input-icon" />
+                    <InputText
+                      {...field}
+                      id="email"
+                      autoComplete="username"
+                      placeholder="Username"
+                      className={`kemetra-login-input ${errors.username ? "p-invalid" : ""}`}
+                      data-cy="username"
+                    />
+                  </div>
+                )}
+              />
+              {errors.username && (
+                <small className="kemetra-login-error">
+                  {errors.username.message}
+                </small>
               )}
             </div>
-
             {/* Password Field */}
             <div>
               <label htmlFor="password" className="kemetra-login-label">
-                Password
+                <Translate contentKey="login.form.password">Password</Translate>
               </label>
-              <div className="kemetra-login-password-wrapper">
-                <Lock size={18} className="kemetra-login-input-icon" />
-                <Password
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  toggleMask
-                  feedback={false}
-                  className="password-field-full-width"
-                  inputClassName="w-full"
-                  pt={{
-                    root: { style: { width: "100%" } },
-                    input: { style: { width: "100%" } },
-                  }}
-                />
-              </div>
+              <Controller
+                name="password"
+                control={control}
+                rules={{ required: "Password is required" }}
+                render={({ field }) => (
+                  <div className="kemetra-login-password-wrapper">
+                    <Lock size={18} className="kemetra-login-input-icon" />
+                    <Password
+                      {...field}
+                      id="password"
+                      autoComplete="current-password"
+                      placeholder="Password"
+                      className={`password-field-full-width ${errors.password ? "p-invalid" : ""}`}
+                      inputClassName="w-full"
+                      toggleMask
+                      feedback={false}
+                      data-cy="password"
+                      pt={{
+                        root: { style: { width: "100%" } },
+                        input: { style: { width: "100%" } },
+                      }}
+                    />
+                  </div>
+                )}
+              />
+              {errors.password && (
+                <small className="mt-1 text-red-600">
+                  {errors.password.message}
+                </small>
+              )}
             </div>
 
             {/* Submit Button */}
