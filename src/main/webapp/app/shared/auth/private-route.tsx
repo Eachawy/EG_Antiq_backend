@@ -22,7 +22,7 @@ export const PrivateRoute = ({
     (state) => state.authentication.sessionHasBeenFetched,
   );
   const account = useAppSelector((state) => state.authentication.account);
-  const isAuthorized = hasAnyAuthority(account.authorities, hasAnyAuthorities);
+  const isAuthorized = hasAnyAuthority(account.roles, hasAnyAuthorities);
   const pageLocation = useLocation();
 
   if (!children) {

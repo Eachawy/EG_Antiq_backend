@@ -21,7 +21,7 @@ import { useNavigate } from "react-router";
 
 const Menu = (props) => {
   const navigate = useNavigate();
-  const [adminExpanded, setAdminExpanded] = useState(true);
+  const [adminExpanded, setAdminExpanded] = useState(false);
   const [currentPage, setCurrentPage] = useState("dashboard");
 
   const navItems: any = [

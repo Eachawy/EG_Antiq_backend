@@ -52,52 +52,68 @@ const AppRoutes = () => {
             element={<DescriptionMonumentsPage />}
           />
           <Route path="dynasty" element={<DynastyPage />} />
-          <Route path="favourites" element={<FavouritesPage />} />
           <Route path="gallery" element={<GalleryPage />} />
           <Route path="monuments" element={<MonumentsPage />} />
           <Route path="monumentsEra" element={<MonumentsEraPage />} />
           <Route path="monumentsType" element={<MonumentsTypePage />} />
-          <Route path="portalUsers" element={<PortalUsersPage />} />
-          <Route path="savedSearch" element={<SavedSearchPage />} />
-          <Route path="userHistory" element={<UserHistoryPage />} />
-          <Route path="users" element={<UsersPage />} />
-          <Route path="roles" element={<RolesPage />} />
-          <Route path="userRoles" element={<UserRolesPage />} />
-        </Route>
-        {/* <Route path="account">
+
           <Route
-            path="*"
+            path="users"
             element={
-              <PrivateRoute
-                hasAnyAuthorities={[AUTHORITIES.ADMIN, AUTHORITIES.USER]}
-              >
-                <Account />
+              <PrivateRoute hasAnyAuthorities={[AUTHORITIES.PORTAL_ADMIN]}>
+                <UsersPage />
               </PrivateRoute>
             }
           />
-          <Route path="register" element={<Register />} />
-          <Route path="activate" element={<Activate />} />
-          <Route path="reset">
-            <Route path="request" element={<PasswordResetInit />} />
-            <Route path="finish" element={<PasswordResetFinish />} />
-          </Route>
-        </Route> */}
-        {/* <Route
-          path="admin/*"
-          element={
-            <PrivateRoute hasAnyAuthorities={[AUTHORITIES.ADMIN]}>
-              <Admin />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="*"
-          element={
-            <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
-              <EntitiesRoutes />
-            </PrivateRoute>
-          }
-        /> */}
+          <Route
+            path="portalUsers"
+            element={
+              <PrivateRoute hasAnyAuthorities={[AUTHORITIES.PORTAL_ADMIN]}>
+                <PortalUsersPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="roles"
+            element={
+              <PrivateRoute hasAnyAuthorities={[AUTHORITIES.PORTAL_ADMIN]}>
+                <RolesPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="userRoles"
+            element={
+              <PrivateRoute hasAnyAuthorities={[AUTHORITIES.PORTAL_ADMIN]}>
+                <UserRolesPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="favourites"
+            element={
+              <PrivateRoute hasAnyAuthorities={[AUTHORITIES.PORTAL_ADMIN]}>
+                <FavouritesPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="savedSearch"
+            element={
+              <PrivateRoute hasAnyAuthorities={[AUTHORITIES.PORTAL_ADMIN]}>
+                <SavedSearchPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="userHistory"
+            element={
+              <PrivateRoute hasAnyAuthorities={[AUTHORITIES.PORTAL_ADMIN]}>
+                <UserHistoryPage />
+              </PrivateRoute>
+            }
+          />
+        </Route>
         <Route path="*" element={<PageNotFound />} />
       </ErrorBoundaryRoutes>
     </div>
