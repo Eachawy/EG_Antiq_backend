@@ -22,7 +22,7 @@ const PortalUsersPage = () => {
   const [users, setUsers] = useState([]);
   const [visible, setVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState<any>({});
 
   const $PortalUsersList = useAppSelector(
     (state) => state.PortalUsers.portalUsersList,
@@ -48,13 +48,23 @@ const PortalUsersPage = () => {
   };
 
   const openNew = () => {
-    setFormData({ status: "Active", emailVerified: false });
+    setFormData({ status: "ACTIVE" });
     setSelectedUser(null);
     setVisible(true);
   };
 
   const openEdit = (user) => {
-    setFormData(user);
+    // Only copy editable fields to formData
+    setFormData({
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phone: user.phone || "",
+      location: user.location || "",
+      bio: user.bio || "",
+      avatar: user.avatar || "",
+      status: user.status,
+    });
     setSelectedUser(user);
     setVisible(true);
   };
@@ -68,14 +78,37 @@ const PortalUsersPage = () => {
   const save = async () => {
     try {
       if (selectedUser) {
-        // Update existing portal user
+        // Update existing portal user - only send fields that have values
+        const updateData: any = {};
+
+        if (formData.email) updateData.email = formData.email;
+        if (formData.firstName) updateData.firstName = formData.firstName;
+        if (formData.lastName) updateData.lastName = formData.lastName;
+        if (formData.phone !== undefined) updateData.phone = formData.phone;
+        if (formData.location !== undefined)
+          updateData.location = formData.location;
+        if (formData.bio !== undefined) updateData.bio = formData.bio;
+        if (formData.avatar !== undefined) updateData.avatar = formData.avatar;
+        if (formData.status) updateData.status = formData.status;
+
         await dispatch(
-          updatePortalUser({ id: selectedUser.id, data: formData }),
+          updatePortalUser({ id: selectedUser.id, data: updateData }),
         ).unwrap();
         toast.success("Portal user updated successfully!");
       } else {
         // Create new portal user
-        await dispatch(createPortalUser(formData)).unwrap();
+        const createData = {
+          email: formData.email,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone || null,
+          location: formData.location || null,
+          bio: formData.bio || null,
+          avatar: formData.avatar || null,
+          status: formData.status || "ACTIVE",
+        };
+
+        await dispatch(createPortalUser(createData)).unwrap();
         toast.success("Portal user created successfully!");
       }
       hideDialog();
@@ -134,7 +167,7 @@ const PortalUsersPage = () => {
     <div>
       <ConfirmDialog />
       <PageHeader
-        title={"Portal Users Managemen"}
+        title={"Portal Users Management"}
         description={"Manage portal users and access"}
         actionLabel={"Add Portal User"}
         onAction={openNew}

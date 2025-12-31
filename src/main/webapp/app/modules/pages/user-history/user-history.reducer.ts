@@ -1,4 +1,7 @@
-import { getVerifiedRequest } from "app/config/network-server-reducer";
+import {
+  getVerifiedRequest,
+  deleteVerifiedRequest,
+} from "app/config/network-server-reducer";
 import {
   createAsyncThunk,
   createSlice,
@@ -6,12 +9,16 @@ import {
   isRejected,
 } from "@reduxjs/toolkit";
 import { serializeAxiosError } from "app/shared/reducers/reducer.utils";
-import { GET_UserHistory_API } from "app/config/constants";
+import {
+  GET_BrowsingHistory_API,
+  DELETE_BrowsingHistory_API,
+} from "app/config/constants";
 
 const initialState: any = {
   errorMessage: null,
   loading: false,
   userHistoryList: null,
+  deleteSuccess: false,
 };
 
 export type IUserHistoryListState = Readonly<typeof initialState>;
@@ -19,7 +26,16 @@ export type IUserHistoryListState = Readonly<typeof initialState>;
 // Actions
 export const getUserHistoryListData = createAsyncThunk(
   "UserHistory/GET_USER_HISTORY_List",
-  async () => getVerifiedRequest(GET_UserHistory_API),
+  async () => getVerifiedRequest(GET_BrowsingHistory_API),
+  {
+    serializeError: serializeAxiosError,
+  },
+);
+
+export const deleteUserHistoryData = createAsyncThunk(
+  "UserHistory/DELETE_USER_HISTORY",
+  async (id: string) =>
+    deleteVerifiedRequest(`${DELETE_BrowsingHistory_API}/${id}`, {}),
   {
     serializeError: serializeAxiosError,
   },
@@ -40,16 +56,29 @@ export const UserHistoryState = createSlice({
         state.loading = false;
         state.userHistoryList = action.payload.data;
       })
-      // Pending states
-      .addMatcher(isPending(getUserHistoryListData), (state) => {
-        state.loading = true;
-        state.errorMessage = null;
-      })
-      // Rejected states
-      .addMatcher(isRejected(getUserHistoryListData), (state, action) => {
+      // Delete UserHistory
+      .addCase(deleteUserHistoryData.fulfilled, (state) => {
         state.loading = false;
-        state.errorMessage = action.error.message;
-      });
+        state.deleteSuccess = true;
+      })
+      // Pending states
+      .addMatcher(
+        isPending(getUserHistoryListData, deleteUserHistoryData),
+        (state) => {
+          state.loading = true;
+          state.errorMessage = null;
+          state.deleteSuccess = false;
+        },
+      )
+      // Rejected states
+      .addMatcher(
+        isRejected(getUserHistoryListData, deleteUserHistoryData),
+        (state, action) => {
+          state.loading = false;
+          state.errorMessage = action.error.message;
+          state.deleteSuccess = false;
+        },
+      );
   },
 });
 

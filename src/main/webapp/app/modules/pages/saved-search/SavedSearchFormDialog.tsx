@@ -42,15 +42,29 @@ const SavedSearchFormDialog = (props) => {
           </label>
           <Dropdown
             value={props.formData.portalUserId}
-            options={props.portalUsers}
+            options={props.portalUsers.map((user) => ({
+              label: `${user.firstName} ${user.lastName} (${user.email})`,
+              value: user.id,
+            }))}
             onChange={(e) =>
               props.setFormData({ ...props.formData, portalUserId: e.value })
             }
-            optionLabel={"firstName"}
-            optionValue="id"
             placeholder="Select a portal user"
             filter
             className="kemetra-dropdown"
+          />
+        </div>
+        <div className="kemetra-form-field">
+          <label className="kemetra-form-label">
+            Search Name <span className="kemetra-form-required">*</span>
+          </label>
+          <InputText
+            value={props.formData.name || ""}
+            onChange={(e) =>
+              props.setFormData({ ...props.formData, name: e.target.value })
+            }
+            placeholder="Enter search name"
+            className="kemetra-input"
           />
         </div>
         <div className="kemetra-form-field">
@@ -67,22 +81,24 @@ const SavedSearchFormDialog = (props) => {
         <div className="kemetra-form-field">
           <label className="kemetra-form-label">Era</label>
           <Dropdown
-            value={props.formData?.eraId}
-            options={props.eras}
+            value={props.formData?.eraIds?.[0]}
+            options={props.eras.map((era) => ({
+              label: `${era.nameEn} - ${era.nameAr}`,
+              value: era.id,
+            }))}
             onChange={(e) =>
-              props.setFormData({ ...props.formData, eraId: e.value })
+              props.setFormData({
+                ...props.formData,
+                eraIds: e.value ? [e.value] : [],
+              })
             }
-            optionLabel={`nameEn`}
-            optionValue="id"
             placeholder="Select an era"
             filter
             className="kemetra-dropdown"
           />
         </div>
         <div className="kemetra-form-field">
-          <label className="kemetra-form-label">
-            Result Count <span className="kemetra-form-required">*</span>
-          </label>
+          <label className="kemetra-form-label">Result Count</label>
           <InputNumber
             value={props.formData.resultCount || 0}
             onValueChange={(e) =>

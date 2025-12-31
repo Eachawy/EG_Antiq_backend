@@ -7,14 +7,9 @@ import { User as UserIcon, X, Check } from "lucide-react";
 
 const PortalUserFormDialog = (props) => {
   const statusOptions = [
-    { label: "Active", value: "Active" },
-    { label: "Inactive", value: "Inactive" },
-    { label: "Suspended", value: "Suspended" },
-  ];
-
-  const verificationOptions = [
-    { label: "Verified", value: true },
-    { label: "Unverified", value: false },
+    { label: "Active", value: "ACTIVE" },
+    { label: "Suspended", value: "SUSPENDED" },
+    { label: "Deactivated", value: "DEACTIVATED" },
   ];
 
   return (
@@ -110,31 +105,44 @@ const PortalUserFormDialog = (props) => {
             />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="kemetra-field-label">
-              {"Email Verification"}
-            </label>
-            <Dropdown
-              value={props.formData.emailVerified}
-              options={verificationOptions}
-              onChange={(e) =>
-                props.setFormData({ ...props.formData, emailVerified: e.value })
-              }
-              className="kemetra-field-input"
-            />
-          </div>
-          <div>
-            <label className="kemetra-field-label">{"Status"}</label>
-            <Dropdown
-              value={props.formData.status}
-              options={statusOptions}
-              onChange={(e) =>
-                props.setFormData({ ...props.formData, status: e.value })
-              }
-              className="kemetra-field-input"
-            />
-          </div>
+        <div>
+          <label className="kemetra-field-label">{"Bio"}</label>
+          <InputText
+            value={props.formData.bio || ""}
+            onChange={(e) =>
+              props.setFormData({
+                ...props.formData,
+                bio: e.target.value,
+              })
+            }
+            placeholder={"User bio"}
+            className="kemetra-field-input"
+          />
+        </div>
+        <div>
+          <label className="kemetra-field-label">{"Avatar URL"}</label>
+          <InputText
+            value={props.formData.avatar || ""}
+            onChange={(e) =>
+              props.setFormData({
+                ...props.formData,
+                avatar: e.target.value,
+              })
+            }
+            placeholder={"https://example.com/avatar.jpg"}
+            className="kemetra-field-input"
+          />
+        </div>
+        <div>
+          <label className="kemetra-field-label">{"Status"}</label>
+          <Dropdown
+            value={props.formData.status}
+            options={statusOptions}
+            onChange={(e) =>
+              props.setFormData({ ...props.formData, status: e.value })
+            }
+            className="kemetra-field-input"
+          />
         </div>
       </div>
       <div className="kemetra-dialog-footer">

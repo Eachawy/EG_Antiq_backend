@@ -163,8 +163,12 @@ const FavouritesPage = (props) => {
       return <span className="kemetra-text-secondary">Unknown Monument</span>;
     return (
       <div className="kemetra-monument-cell">
-        <div className="kemetra-monument-cell-name-en">{monument.nameEn}</div>
-        <div className="kemetra-monument-cell-name-ar">{monument.nameAr}</div>
+        <div className="kemetra-monument-cell-name-en">
+          {monument.monumentNameEn}
+        </div>
+        <div className="kemetra-monument-cell-name-ar">
+          {monument.monumentNameAr}
+        </div>
       </div>
     );
   };

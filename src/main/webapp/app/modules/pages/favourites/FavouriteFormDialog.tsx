@@ -41,12 +41,13 @@ const FavouriteFormDialog = (props) => {
           </label>
           <Dropdown
             value={props.formData.portalUserId}
-            options={props.portalUsers}
+            options={props.portalUsers.map((user) => ({
+              label: `${user.firstName} ${user.lastName} (${user.email})`,
+              value: user.id,
+            }))}
             onChange={(e) =>
               props.setFormData({ ...props.formData, portalUserId: e.value })
             }
-            optionLabel={"firstName"}
-            optionValue="id"
             placeholder="Select a portal user"
             filter
             className="kemetra-dropdown"
@@ -58,25 +59,26 @@ const FavouriteFormDialog = (props) => {
           </label>
           <Dropdown
             value={props.formData.monumentId}
-            options={props.monuments}
+            options={props.monuments.map((monument) => ({
+              label: `${monument.monumentNameEn} - ${monument.monumentNameAr}`,
+              value: monument.id,
+            }))}
             onChange={(e) =>
               props.setFormData({ ...props.formData, monumentId: e.value })
             }
-            optionLabel={"nameEn"}
-            optionValue="id"
             placeholder="Select a monument"
             filter
             className="kemetra-dropdown"
           />
         </div>
         <div className="kemetra-form-field">
-          <label className="kemetra-form-label">Note</label>
+          <label className="kemetra-form-label">Notes</label>
           <InputTextarea
-            value={props.formData.note || ""}
+            value={props.formData.notes || ""}
             onChange={(e) =>
-              props.setFormData({ ...props.formData, note: e.target.value })
+              props.setFormData({ ...props.formData, notes: e.target.value })
             }
-            placeholder="Add a note about this favourite..."
+            placeholder="Add notes about this favourite..."
             rows={4}
             className="kemetra-textarea"
           />

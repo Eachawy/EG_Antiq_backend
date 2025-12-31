@@ -1,25 +1,14 @@
 import React from "react";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
-import { Tag } from "primereact/tag";
 import { History, X } from "lucide-react";
 
 const UserHistoryDetailDialog = (props) => {
-  const getActionTypeSeverity = (type: string) => {
-    switch (type) {
-      case "Create":
-        return "success";
-      case "Update":
-        return "info";
-      case "Delete":
-        return "danger";
-      case "Login":
-        return "success";
-      case "Logout":
-        return "warning";
-      default:
-        return "secondary";
-    }
+  const formatDuration = (seconds: number | null) => {
+    if (!seconds) return "-";
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes > 0 ? `${minutes}m ` : ""}${secs}s`;
   };
 
   return (
@@ -33,10 +22,10 @@ const UserHistoryDetailDialog = (props) => {
           </div>
           <div>
             <h3 className="text-xl font-semibold kemetra-dialog-title-text">
-              Activity Details
+              Visit Details
             </h3>
             <p className="kemetra-dialog-subtitle-text">
-              View detailed information about this user activity
+              View detailed information about this monument visit
             </p>
           </div>
         </div>
@@ -47,94 +36,55 @@ const UserHistoryDetailDialog = (props) => {
     >
       {props.selectedHistory && (
         <div className="space-y-4 pt-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="kemetra-field-label">User Name</label>
-              <p className="kemetra-field-value">
-                {props.selectedHistory.userName}
-              </p>
-            </div>
-            <div>
-              <label className="kemetra-field-label">User Email</label>
-              <p className="kemetra-field-value">
-                {props.selectedHistory.userEmail}
-              </p>
-            </div>
+          <div>
+            <label className="kemetra-field-label">Portal User</label>
+            <p className="kemetra-field-value">
+              {props.selectedHistory.portalUser?.firstName}{" "}
+              {props.selectedHistory.portalUser?.lastName}
+            </p>
+            <p className="text-sm text-gray-500">
+              {props.selectedHistory.portalUser?.email}
+            </p>
           </div>
 
           <div>
-            <label className="kemetra-field-label">Action</label>
+            <label className="kemetra-field-label">Monument Visited</label>
             <p className="kemetra-field-value">
-              {props.selectedHistory.action}
+              {props.selectedHistory.monument?.monumentNameEn}
+            </p>
+            <p className="text-sm text-gray-500">
+              {props.selectedHistory.monument?.monumentNameAr}
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="kemetra-field-label">Action Type</label>
-              <div className="mt-2">
-                <Tag
-                  value={props.selectedHistory.actionType}
-                  severity={
-                    getActionTypeSeverity(
-                      props.selectedHistory.actionType,
-                    ) as any
-                  }
-                />
-              </div>
+              <label className="kemetra-field-label">Visit Date</label>
+              <p className="kemetra-field-value">
+                {new Date(props.selectedHistory.visitedAt).toLocaleDateString()}
+              </p>
             </div>
             <div>
-              <label className="kemetra-field-label">Timestamp</label>
+              <label className="kemetra-field-label">Visit Time</label>
               <p className="kemetra-field-value">
-                {new Date(props.selectedHistory.timestamp).toLocaleString()}
+                {new Date(props.selectedHistory.visitedAt).toLocaleTimeString()}
               </p>
             </div>
           </div>
 
-          {props.selectedHistory.targetEntity && (
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="kemetra-field-label">Target Entity</label>
-                <p className="kemetra-field-value">
-                  {props.selectedHistory.targetEntity}
-                </p>
-              </div>
-              <div>
-                <label className="kemetra-field-label">Target ID</label>
-                <p className="kemetra-field-value">
-                  {props.selectedHistory.targetId || "-"}
-                </p>
-              </div>
-            </div>
-          )}
+          <div>
+            <label className="kemetra-field-label">Duration</label>
+            <p className="kemetra-field-value">
+              {formatDuration(props.selectedHistory.durationSeconds)}
+            </p>
+          </div>
 
-          {props.selectedHistory.ipAddress && (
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="kemetra-field-label">IP Address</label>
-                <p className="kemetra-field-value">
-                  {props.selectedHistory.ipAddress}
-                </p>
-              </div>
-              {props.selectedHistory.userAgent && (
-                <div>
-                  <label className="kemetra-field-label">User Agent</label>
-                  <p className="kemetra-field-value text-sm truncate">
-                    {props.selectedHistory.userAgent}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {props.selectedHistory.details && (
-            <div>
-              <label className="kemetra-field-label">Additional Details</label>
-              <div className="kemetra-field-value-box">
-                <p className="text-sm">{props.selectedHistory.details}</p>
-              </div>
-            </div>
-          )}
+          <div>
+            <label className="kemetra-field-label">Visit ID</label>
+            <p className="kemetra-field-value text-sm font-mono text-gray-500">
+              {props.selectedHistory.id}
+            </p>
+          </div>
         </div>
       )}
 
