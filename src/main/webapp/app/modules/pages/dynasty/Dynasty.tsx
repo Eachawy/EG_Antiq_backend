@@ -81,14 +81,14 @@ const DynastyPage = () => {
   const saveDynasty = async () => {
     try {
       if (selectedDynasty) {
-        // Update existing dynasty
+        // Update existing dynasty - map to correct backend field names
         const dynastyData = {
           nameAr: formData.nameAr,
           nameEn: formData.nameEn,
-          from: formData.from,
-          to: formData.to,
-          Hijri_from: formData.Hijri_from,
-          Hijri_to: formData.Hijri_to,
+          dateFrom: formData.dateFrom,
+          dateTo: formData.dateTo,
+          hijriFrom: formData.hijriFrom,
+          hijriTo: formData.hijriTo,
           eraId: formData.eraId,
         };
         await dispatch(
@@ -96,8 +96,17 @@ const DynastyPage = () => {
         ).unwrap();
         toast.success("Dynasty updated successfully!");
       } else {
-        // Create new dynasty
-        await dispatch(createDynasty(formData)).unwrap();
+        // Create new dynasty - map to correct backend field names
+        const dynastyData = {
+          nameAr: formData.nameAr,
+          nameEn: formData.nameEn,
+          dateFrom: formData.dateFrom,
+          dateTo: formData.dateTo,
+          hijriFrom: formData.hijriFrom,
+          hijriTo: formData.hijriTo,
+          eraId: formData.eraId,
+        };
+        await dispatch(createDynasty(dynastyData)).unwrap();
         toast.success("Dynasty created successfully!");
       }
       hideDialog();
@@ -237,14 +246,14 @@ const DynastyPage = () => {
             )}
           />
           <Column
-            field="from"
+            field="dateFrom"
             header="From"
             sortable
             headerClassName="kemetra-table-column-header"
             bodyClassName="kemetra-table-cell-secondary"
           />
           <Column
-            field="to"
+            field="dateTo"
             header="To"
             sortable
             headerClassName="kemetra-table-column-header"

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -6,70 +6,110 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import PageHeader from "app/shared/components/page-header/page-header";
 import { Trash2, Plus, AlertTriangle, Inbox, PenLine } from "lucide-react";
 import DescriptionMonumentFormDialog from "./DescriptionMonumentFormDialog";
+import { useAppDispatch, useAppSelector } from "app/config/store";
+import {
+  getDescriptionMonumentsListData,
+  createDescriptionMonument,
+  updateDescriptionMonument,
+  deleteDescriptionMonument,
+} from "./description-monuments.reducer";
+import { getMonumentsListData } from "app/modules/pages/monuments/monuments.reducer";
+import { getErasListData } from "app/modules/pages/eras/eras.reducer";
+import { getDynastiesListData } from "app/modules/pages/dynasty/dynasty.reducer";
+import { getMonumentsTypeListData } from "app/modules/pages/monuments-type/monuments-type.reducer";
+import { toast } from "react-toastify";
 
 const DescriptionMonumentsPage = (props) => {
-  // Mock monuments data
-  const mockMonuments = [
-    {
-      id: "1",
-      nameEn: "Great Pyramid of Giza",
-      nameAr: "الهرم الأكبر",
-      biographyEn: "The oldest and largest of the three pyramids",
-      biographyAr: "أقدم وأكبر الأهرامات الثلاثة",
-      latitude: "29.9792",
-      longitude: "31.1342",
-      zoom: "15",
-      center: "29.9792, 31.1342",
-      monumentImage: "",
-      monumentDate: "2560 BC",
-      typeId: "4",
-      eraId: "3",
-      dynastyId: "2",
-      descriptionEn: "",
-      descriptionAr: "",
-    },
-    {
-      id: "2",
-      nameEn: "Karnak Temple",
-      nameAr: "معبد الكرنك",
-      biographyEn: "Largest ancient religious site",
-      biographyAr: "أكبر موقع ديني قديم",
-      latitude: "25.7188",
-      longitude: "32.6573",
-      zoom: "15",
-      center: "25.7188, 32.6573",
-      monumentImage: "",
-      monumentDate: "2055 BC",
-      typeId: "1",
-      eraId: "3",
-      dynastyId: "2",
-      descriptionEn: "",
-      descriptionAr: "",
-    },
-    {
-      id: "3",
-      nameEn: "Abu Simbel",
-      nameAr: "أبو سمبل",
-      biographyEn: "Rock temple complex",
-      biographyAr: "مجمع معبد صخري",
-      latitude: "22.3372",
-      longitude: "31.6258",
-      zoom: "15",
-      center: "22.3372, 31.6258",
-      monumentImage: "",
-      monumentDate: "1264 BC",
-      typeId: "1",
-      eraId: "3",
-      dynastyId: "2",
-      descriptionEn: "",
-      descriptionAr: "",
-    },
-  ];
+  const dispatch = useAppDispatch();
+
   const [descriptions, setDescriptions] = useState([]);
-  const [monuments] = useState(mockMonuments);
+  const [monuments, setMonuments] = useState([]);
+  const [eras, setEras] = useState([]);
+  const [dynasties, setDynasties] = useState([]);
+  const [monumentTypes, setMonumentTypes] = useState([]);
   const [visible, setVisible] = useState(false);
   const [selectedDesc, setSelectedDesc] = useState(null);
   const [formData, setFormData] = useState({});
+
+  const $DescriptionMonumentsList = useAppSelector(
+    (state) => state.DescriptionMonuments.descriptionMonumentsList,
+  );
+  const loading = useAppSelector((state) => state.DescriptionMonuments.loading);
+  const $MonumentsList = useAppSelector(
+    (state) => state.Monuments.monumentsList,
+  );
+  const $ErasList = useAppSelector((state) => state.Eras.earsList);
+  const $DynastiesList = useAppSelector(
+    (state) => state.Dynasties.dynastiesList,
+  );
+  const $MonumentTypesList = useAppSelector(
+    (state) => state.MonumentsType.monumentsTypeList,
+  );
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if ($DescriptionMonumentsList) {
+      if (
+        $DescriptionMonumentsList.data &&
+        Array.isArray($DescriptionMonumentsList.data)
+      ) {
+        setDescriptions($DescriptionMonumentsList.data);
+      } else if (Array.isArray($DescriptionMonumentsList)) {
+        setDescriptions($DescriptionMonumentsList);
+      }
+    }
+  }, [$DescriptionMonumentsList]);
+
+  useEffect(() => {
+    if ($MonumentsList) {
+      if ($MonumentsList.data && Array.isArray($MonumentsList.data)) {
+        setMonuments($MonumentsList.data);
+      } else if (Array.isArray($MonumentsList)) {
+        setMonuments($MonumentsList);
+      }
+    }
+  }, [$MonumentsList]);
+
+  useEffect(() => {
+    if ($ErasList) {
+      if ($ErasList.data && Array.isArray($ErasList.data)) {
+        setEras($ErasList.data);
+      } else if (Array.isArray($ErasList)) {
+        setEras($ErasList);
+      }
+    }
+  }, [$ErasList]);
+
+  useEffect(() => {
+    if ($DynastiesList) {
+      if ($DynastiesList.data && Array.isArray($DynastiesList.data)) {
+        setDynasties($DynastiesList.data);
+      } else if (Array.isArray($DynastiesList)) {
+        setDynasties($DynastiesList);
+      }
+    }
+  }, [$DynastiesList]);
+
+  useEffect(() => {
+    if ($MonumentTypesList) {
+      if ($MonumentTypesList.data && Array.isArray($MonumentTypesList.data)) {
+        setMonumentTypes($MonumentTypesList.data);
+      } else if (Array.isArray($MonumentTypesList)) {
+        setMonumentTypes($MonumentTypesList);
+      }
+    }
+  }, [$MonumentTypesList]);
+
+  const fetchData = async () => {
+    await dispatch(getDescriptionMonumentsListData());
+    await dispatch(getMonumentsListData());
+    await dispatch(getErasListData());
+    await dispatch(getDynastiesListData());
+    await dispatch(getMonumentsTypeListData());
+  };
 
   const openNew = () => {
     setFormData({});
@@ -89,8 +129,48 @@ const DescriptionMonumentsPage = (props) => {
     setSelectedDesc(null);
   };
 
-  const save = () => {
-    hideDialog();
+  const save = async () => {
+    try {
+      // Build description data with only allowed fields
+      const descriptionData = {
+        descriptionEn: formData["descriptionEn"] || "",
+        descriptionAr: formData["descriptionAr"] || "",
+        eraId: formData["eraId"],
+        monumentsTypeId: formData["monumentsTypeId"],
+        dynastyId: formData["dynastyId"],
+      };
+
+      if (selectedDesc) {
+        // Update existing description
+        await dispatch(
+          updateDescriptionMonument({
+            id: selectedDesc.id,
+            data: descriptionData,
+          }),
+        ).unwrap();
+        toast.success("Description updated successfully!");
+      } else {
+        // Create new description
+        await dispatch(createDescriptionMonument(descriptionData)).unwrap();
+        toast.success("Description created successfully!");
+      }
+      hideDialog();
+      await dispatch(getDescriptionMonumentsListData());
+    } catch (error) {
+      toast.error("An error occurred while saving the description.");
+      console.error("Save error:", error);
+    }
+  };
+
+  const handleDelete = async (id: string | number) => {
+    try {
+      await dispatch(deleteDescriptionMonument(id)).unwrap();
+      toast.success("Description deleted successfully!");
+      await dispatch(getDescriptionMonumentsListData());
+    } catch (error) {
+      toast.error("An error occurred while deleting the description.");
+      console.error("Delete error:", error);
+    }
   };
 
   const confirmDelete = (desc) => {
@@ -99,15 +179,16 @@ const DescriptionMonumentsPage = (props) => {
       header: "Confirm Deletion",
       icon: <AlertTriangle size={24} className="text-red-500" />,
       acceptClassName: "p-button-danger",
-      // accept: () => {
-      //   setDescriptions(descriptions.filter((d) => d.id !== desc.id));
-      // },
+      accept: () => handleDelete(desc.id),
     });
   };
 
-  const getMonumentName = (monumentId: string) => {
-    const monument = monuments.find((m) => m.id === monumentId);
-    return monument ? monument.nameEn : "-";
+  const getMonumentName = (monumentId: number) => {
+    if (!monumentId) return "N/A";
+    const monument = monuments?.find((m) => m.id === monumentId);
+    return monument
+      ? monument?.monumentNameEn || monument?.nameEn || monument?.name_en
+      : "-";
   };
 
   const actionBodyTemplate = (rowData) => {
@@ -122,7 +203,7 @@ const DescriptionMonumentsPage = (props) => {
           onClick={() => openEdit(rowData)}
           className="kemetra-action-btn-edit"
         />
-        <Button
+        {/* <Button
           icon={<Trash2 size={16} />}
           rounded
           text
@@ -130,7 +211,7 @@ const DescriptionMonumentsPage = (props) => {
           tooltipOptions={{ position: "top" }}
           onClick={() => confirmDelete(rowData)}
           className="kemetra-action-btn-delete"
-        />
+        /> */}
       </div>
     );
   };
@@ -153,6 +234,7 @@ const DescriptionMonumentsPage = (props) => {
       <div className="kemetra-page-table-container">
         <DataTable
           value={descriptions}
+          loading={loading}
           paginator
           rows={10}
           dataKey="id"
@@ -230,6 +312,9 @@ const DescriptionMonumentsPage = (props) => {
         selectedDesc={selectedDesc}
         formData={formData}
         monuments={monuments}
+        eras={eras}
+        dynasties={dynasties}
+        monumentTypes={monumentTypes}
         setFormData={setFormData}
         onHide={hideDialog}
         onSave={save}

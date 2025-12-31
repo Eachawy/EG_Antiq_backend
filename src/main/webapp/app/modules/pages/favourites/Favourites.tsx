@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -14,25 +14,77 @@ import {
   User as UserIcon,
 } from "lucide-react";
 import FavouriteFormDialog from "./FavouriteFormDialog";
+import { useAppDispatch, useAppSelector } from "app/config/store";
+import {
+  getFavouritesListData,
+  createFavourite,
+  deleteFavourite,
+} from "./favourites.reducer";
+import { getPortalUsersListData } from "../portal-users/portal-users.reducer";
+import { getMonumentsListData } from "../monuments/monuments.reducer";
+import { toast } from "react-toastify";
 
 const FavouritesPage = (props) => {
-  const mockPortalUsers = [
-    {
-      id: "1",
-      firstName: "Nour",
-      lastName: "El-Sayed",
-      email: "nour.elsayed@example.com",
-      avatar: "https://i.pravatar.cc/150?img=12",
-    },
-  ];
+  const dispatch = useAppDispatch();
 
-  const mockMonuments = [
-    { id: "1", nameEn: "Great Pyramid of Giza", nameAr: "الهرم الأكبر" },
-    { id: "2", nameEn: "Karnak Temple", nameAr: "معبد الكرنك" },
-  ];
   const [favourites, setFavourites] = useState([]);
   const [visible, setVisible] = useState(false);
   const [formData, setFormData] = useState({});
+
+  const $FavouritesList = useAppSelector(
+    (state) => state.Favourites.favouritesList,
+  );
+  const loading = useAppSelector((state) => state.Favourites.loading);
+
+  const $PortalUsersList = useAppSelector(
+    (state) => state.PortalUsers.portalUsersList,
+  );
+  const $MonumentsList = useAppSelector(
+    (state) => state.Monuments.monumentsList,
+  );
+
+  const [portalUsers, setPortalUsers] = useState([]);
+  const [monuments, setMonuments] = useState([]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if ($FavouritesList) {
+      if ($FavouritesList.data && Array.isArray($FavouritesList.data)) {
+        setFavourites($FavouritesList.data);
+      } else if (Array.isArray($FavouritesList)) {
+        setFavourites($FavouritesList);
+      }
+    }
+  }, [$FavouritesList]);
+
+  useEffect(() => {
+    if ($PortalUsersList) {
+      if ($PortalUsersList.data && Array.isArray($PortalUsersList.data)) {
+        setPortalUsers($PortalUsersList.data);
+      } else if (Array.isArray($PortalUsersList)) {
+        setPortalUsers($PortalUsersList);
+      }
+    }
+  }, [$PortalUsersList]);
+
+  useEffect(() => {
+    if ($MonumentsList) {
+      if ($MonumentsList.data && Array.isArray($MonumentsList.data)) {
+        setMonuments($MonumentsList.data);
+      } else if (Array.isArray($MonumentsList)) {
+        setMonuments($MonumentsList);
+      }
+    }
+  }, [$MonumentsList]);
+
+  const fetchData = async () => {
+    await dispatch(getFavouritesListData());
+    await dispatch(getPortalUsersListData());
+    await dispatch(getMonumentsListData());
+  };
 
   const openNew = () => {
     setFormData({});
@@ -43,8 +95,27 @@ const FavouritesPage = (props) => {
     setVisible(false);
   };
 
-  const saveFavourite = () => {
-    hideDialog();
+  const saveFavourite = async () => {
+    try {
+      await dispatch(createFavourite(formData)).unwrap();
+      toast.success("Favourite added successfully!");
+      hideDialog();
+      await dispatch(getFavouritesListData());
+    } catch (error) {
+      toast.error("An error occurred while adding the favourite.");
+      console.error("Save error:", error);
+    }
+  };
+
+  const handleDelete = async (id: string | number) => {
+    try {
+      await dispatch(deleteFavourite(id)).unwrap();
+      toast.success("Favourite removed successfully!");
+      await dispatch(getFavouritesListData());
+    } catch (error) {
+      toast.error("An error occurred while removing the favourite.");
+      console.error("Delete error:", error);
+    }
   };
 
   const confirmDelete = (favourite) => {
@@ -53,9 +124,7 @@ const FavouritesPage = (props) => {
       header: "Delete Confirmation",
       icon: <AlertTriangle className="kemetra-confirm-icon" />,
       acceptClassName: "kemetra-btn-danger",
-      // accept: () => {
-      //   setFavourites(favourites.filter((f) => f.id !== favourite.id));
-      // },
+      accept: () => handleDelete(favourite.id),
     });
   };
 
@@ -128,6 +197,7 @@ const FavouritesPage = (props) => {
       <div className="kemetra-table-container">
         <DataTable
           value={favourites}
+          loading={loading}
           paginator
           rows={10}
           dataKey="id"
@@ -173,8 +243,8 @@ const FavouritesPage = (props) => {
       <FavouriteFormDialog
         visible={visible}
         formData={formData}
-        portalUsers={mockPortalUsers}
-        monuments={mockMonuments}
+        portalUsers={portalUsers}
+        monuments={monuments}
         setFormData={setFormData}
         onHide={hideDialog}
         onSave={saveFavourite}

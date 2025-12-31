@@ -17,6 +17,7 @@ import {
 import { getErasListData } from "app/modules/pages/eras/eras.reducer";
 import { getDynastiesListData } from "app/modules/pages/dynasty/dynasty.reducer";
 import { getMonumentsTypeListData } from "app/modules/pages/monuments-type/monuments-type.reducer";
+import { getDescriptionMonumentsListData } from "app/modules/pages/description-monuments/description-monuments.reducer";
 import { toast } from "react-toastify";
 
 const MonumentsPage = () => {
@@ -100,7 +101,14 @@ const MonumentsPage = () => {
   };
 
   const openEdit = (monument) => {
-    setFormData(monument);
+    // Extract description from monumentDescriptions array to populate form fields
+    const firstDescription = monument.monumentDescriptions?.[0];
+    const formDataWithDescription = {
+      ...monument,
+      descriptionEn: firstDescription?.descriptionEn || "",
+      descriptionAr: firstDescription?.descriptionAr || "",
+    };
+    setFormData(formDataWithDescription);
     setSelectedMonument(monument);
     setVisible(true);
   };
@@ -113,19 +121,52 @@ const MonumentsPage = () => {
 
   const saveMonument = async () => {
     try {
+      // Filter out read-only fields that API doesn't accept
+      const {
+        id,
+        createdAt,
+        monumentType,
+        era,
+        dynasty,
+        descriptionEn,
+        descriptionAr,
+        ...allowedData
+      } = formData;
+
+      // Transform flat description fields into descriptions array format
+      const monumentData = {
+        ...allowedData,
+        // Only add descriptions array if both fields have values
+        ...(descriptionEn || descriptionAr
+          ? {
+              descriptions: [
+                {
+                  descriptionEn: descriptionEn || "",
+                  descriptionAr: descriptionAr || "",
+                  eraId: allowedData.eraId,
+                  monumentsTypeId: allowedData.monumentsTypeId,
+                  dynastyId: allowedData.dynastyId,
+                },
+              ],
+            }
+          : {}),
+      };
+
       if (selectedMonument) {
         // Update existing monument
         await dispatch(
-          updateMonument({ id: selectedMonument.id, data: formData }),
+          updateMonument({ id: selectedMonument.id, data: monumentData }),
         ).unwrap();
         toast.success("Monument updated successfully!");
       } else {
         // Create new monument
-        await dispatch(createMonument(formData)).unwrap();
+        await dispatch(createMonument(monumentData)).unwrap();
         toast.success("Monument created successfully!");
       }
       hideDialog();
+      // Refresh both monuments and descriptions
       await dispatch(getMonumentsListData());
+      await dispatch(getDescriptionMonumentsListData());
     } catch (error) {
       toast.error("An error occurred while saving the monument.");
       console.error("Save error:", error);
@@ -136,7 +177,9 @@ const MonumentsPage = () => {
     try {
       await dispatch(deleteMonument(id)).unwrap();
       toast.success("Monument deleted successfully!");
+      // Refresh both monuments and descriptions
       await dispatch(getMonumentsListData());
+      await dispatch(getDescriptionMonumentsListData());
     } catch (error) {
       toast.error("An error occurred while deleting the monument.");
       console.error("Delete error:", error);
@@ -145,7 +188,7 @@ const MonumentsPage = () => {
 
   const confirmDelete = (monument: any) => {
     confirmDialog({
-      message: `Are you sure you want to delete ${monument.nameEn || monument.name_en}?`,
+      message: `Are you sure you want to delete ${monument.monumentNameEn || monument.nameEn || monument.name_en}?`,
       header: "Confirm Deletion",
       icon: <AlertCircle size={24} className="text-red-500" />,
       acceptClassName: "p-button-danger",
@@ -156,6 +199,16 @@ const MonumentsPage = () => {
   const getTypeName = (typeId: string) => {
     const type = monumentTypes.find((t) => t.id === typeId);
     return type ? type.nameEn || type.name_en : "-";
+  };
+
+  const getEraName = (eraId: number) => {
+    const era = eras.find((e) => e.id === eraId);
+    return era ? era.nameEn || era.name_en : "-";
+  };
+
+  const getDynastyName = (dynastyId: number) => {
+    const dynasty = dynasties.find((d) => d.id === dynastyId);
+    return dynasty ? dynasty.nameEn || dynasty.name_en : "-";
   };
 
   const actionBodyTemplate = (rowData) => {
@@ -184,15 +237,28 @@ const MonumentsPage = () => {
   };
 
   const typeBodyTemplate = (rowData) => {
+    const typeName =
+      rowData.monumentType?.nameEn || getTypeName(rowData.monumentsTypeId);
     return (
       <Chip
-        label={getTypeName(rowData.typeId)}
+        label={typeName}
         style={{
           backgroundColor: "var(--primary-50)",
           color: "var(--primary-600)",
         }}
       />
     );
+  };
+
+  const eraBodyTemplate = (rowData) => {
+    const eraName = rowData.era?.nameEn || getEraName(rowData.eraId);
+    return eraName;
+  };
+
+  const dynastyBodyTemplate = (rowData) => {
+    const dynastyName =
+      rowData.dynasty?.nameEn || getDynastyName(rowData.dynastyId);
+    return dynastyName;
   };
 
   return (
@@ -246,16 +312,20 @@ const MonumentsPage = () => {
           }}
         >
           <Column
-            field="nameEn"
-            body={(rowData) => rowData.nameEn || rowData.name_en || "-"}
+            field="monumentNameEn"
+            body={(rowData) =>
+              rowData.monumentNameEn || rowData.nameEn || rowData.name_en || "-"
+            }
             header="Name (English)"
             sortable
             headerClassName="kemetra-table-column-header"
             bodyClassName="kemetra-table-cell-primary"
           />
           <Column
-            field="nameAr"
-            body={(rowData) => rowData.nameAr || rowData.name_ar || "-"}
+            field="monumentNameAr"
+            body={(rowData) =>
+              rowData.monumentNameAr || rowData.nameAr || rowData.name_ar || "-"
+            }
             header="Name (Arabic)"
             sortable
             headerClassName="kemetra-table-column-header"
@@ -268,7 +338,20 @@ const MonumentsPage = () => {
             bodyClassName="kemetra-table-cell"
           />
           <Column
-            field="monumentDate"
+            body={eraBodyTemplate}
+            header="Era"
+            headerClassName="kemetra-table-column-header"
+            bodyClassName="kemetra-table-cell"
+          />
+          <Column
+            body={dynastyBodyTemplate}
+            header="Dynasty"
+            headerClassName="kemetra-table-column-header"
+            bodyClassName="kemetra-table-cell"
+          />
+          <Column
+            field="mDate"
+            body={(rowData) => rowData.mDate || rowData.monumentDate || "-"}
             header="Date"
             sortable
             headerClassName="kemetra-table-column-header"

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -15,6 +15,15 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Image } from "primereact/image";
 import { Tag } from "primereact/tag";
 import PageHeader from "app/shared/components/page-header/page-header";
+import { useAppDispatch, useAppSelector } from "app/config/store";
+import {
+  getGalleryListData,
+  createGallery,
+  updateGallery,
+  deleteGallery,
+} from "./gallery.reducer";
+import { getMonumentsListData } from "app/modules/pages/monuments/monuments.reducer";
+import { toast } from "react-toastify";
 
 import {
   Trash2,
@@ -29,88 +38,61 @@ import {
 import { PenLine } from "lucide-react";
 
 const GalleryPage = (props) => {
-  // Mock monuments data
-  const mockMonuments = [
-    {
-      id: "1",
-      nameEn: "Great Pyramid of Giza",
-      nameAr: "الهرم الأكبر",
-      biographyEn: "The oldest and largest of the three pyramids",
-      biographyAr: "أقدم وأكبر الأهرامات الثلاثة",
-      latitude: "29.9792",
-      longitude: "31.1342",
-      zoom: "15",
-      center: "29.9792, 31.1342",
-      monumentImage: "",
-      monumentDate: "2560 BC",
-      typeId: "4",
-      eraId: "3",
-      dynastyId: "2",
-      descriptionEn: "",
-      descriptionAr: "",
-    },
-    {
-      id: "2",
-      nameEn: "Karnak Temple",
-      nameAr: "معبد الكرنك",
-      biographyEn: "Largest ancient religious site",
-      biographyAr: "أكبر موقع ديني قديم",
-      latitude: "25.7188",
-      longitude: "32.6573",
-      zoom: "15",
-      center: "25.7188, 32.6573",
-      monumentImage: "",
-      monumentDate: "2055 BC",
-      typeId: "1",
-      eraId: "3",
-      dynastyId: "2",
-      descriptionEn: "",
-      descriptionAr: "",
-    },
-    {
-      id: "3",
-      nameEn: "Abu Simbel",
-      nameAr: "أبو سمبل",
-      biographyEn: "Rock temple complex",
-      biographyAr: "مجمع معبد صخري",
-      latitude: "22.3372",
-      longitude: "31.6258",
-      zoom: "15",
-      center: "22.3372, 31.6258",
-      monumentImage: "",
-      monumentDate: "1264 BC",
-      typeId: "1",
-      eraId: "3",
-      dynastyId: "2",
-      descriptionEn: "",
-      descriptionAr: "",
-    },
-  ];
+  const dispatch = useAppDispatch();
+
   const [galleryItems, setGalleryItems] = useState([]);
-  const [monuments] = useState(mockMonuments);
+  const [monuments, setMonuments] = useState([]);
   const [visible, setVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [formData, setFormData]: any = useState({ images: [] });
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const fileUploadRef = React.useRef<FileUpload>(null);
 
+  const $GalleryList = useAppSelector((state) => state.Gallery.galleryList);
+  const loading = useAppSelector((state) => state.Gallery.loading);
+  const $MonumentsList = useAppSelector(
+    (state) => state.Monuments.monumentsList,
+  );
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if ($GalleryList) {
+      if ($GalleryList.data && Array.isArray($GalleryList.data)) {
+        setGalleryItems($GalleryList.data);
+      } else if (Array.isArray($GalleryList)) {
+        setGalleryItems($GalleryList);
+      }
+    }
+  }, [$GalleryList]);
+
+  useEffect(() => {
+    if ($MonumentsList) {
+      if ($MonumentsList.data && Array.isArray($MonumentsList.data)) {
+        setMonuments($MonumentsList.data);
+      } else if (Array.isArray($MonumentsList)) {
+        setMonuments($MonumentsList);
+      }
+    }
+  }, [$MonumentsList]);
+
+  const fetchData = async () => {
+    await dispatch(getGalleryListData());
+    await dispatch(getMonumentsListData());
+  };
+
   const openNew = () => {
-    setFormData({ images: [] });
+    setFormData({ monumentId: null, images: [] });
     setUploadedFiles([]);
     setSelectedItem(null);
     setVisible(true);
   };
 
-  const openEdit = (item) => {
-    setFormData(item);
-    setUploadedFiles([]);
-    setSelectedItem(item);
-    setVisible(true);
-  };
-
   const hideDialog = () => {
     setVisible(false);
-    setFormData({ images: [] });
+    setFormData({ monumentId: null, images: [] });
     setUploadedFiles([]);
     setSelectedItem(null);
     if (fileUploadRef.current) {
@@ -118,19 +100,67 @@ const GalleryPage = (props) => {
     }
   };
 
-  const save = () => {
-    hideDialog();
+  const save = async () => {
+    try {
+      // Get the selected monument to extract related IDs
+      const selectedMonument = monuments.find(
+        (m) => m.id === formData.monumentId,
+      );
+
+      if (!selectedMonument) {
+        toast.error("Please select a monument");
+        return;
+      }
+
+      if (!uploadedFiles || uploadedFiles.length === 0) {
+        toast.error("Please upload at least one image");
+        return;
+      }
+
+      // For each uploaded file, create a gallery record
+      // Note: In production, you would upload files to a server first
+      // and get back the file paths. For now, using object URLs as placeholder
+      for (const file of uploadedFiles) {
+        const galleryData = {
+          galleryPath: URL.createObjectURL(file), // TODO: Replace with actual upload endpoint
+          monumentsId: formData.monumentId,
+          dynastyId: selectedMonument.dynastyId,
+          eraId: selectedMonument.eraId,
+          monumentsTypeId: selectedMonument.monumentsTypeId,
+        };
+
+        await dispatch(createGallery(galleryData)).unwrap();
+      }
+
+      toast.success(
+        `${uploadedFiles.length} gallery image${uploadedFiles.length > 1 ? "s" : ""} created successfully!`,
+      );
+      hideDialog();
+      await dispatch(getGalleryListData());
+    } catch (error) {
+      toast.error("An error occurred while saving the gallery.");
+      console.error("Save error:", error);
+    }
+  };
+
+  const handleDelete = async (id: string | number) => {
+    try {
+      await dispatch(deleteGallery(id)).unwrap();
+      toast.success("Gallery image deleted successfully!");
+      await dispatch(getGalleryListData());
+    } catch (error) {
+      toast.error("An error occurred while deleting the gallery image.");
+      console.error("Delete error:", error);
+    }
   };
 
   const confirmDelete = (item) => {
     confirmDialog({
-      message: "Are you sure you want to delete this gallery?",
+      message: "Are you sure you want to delete this gallery image?",
       header: "Confirm Deletion",
       icon: <AlertTriangle size={24} className="text-red-500" />,
       acceptClassName: "p-button-danger",
-      // accept: () => {
-      //   setGalleryItems(galleryItems.filter((g) => g.id !== item.id));
-      // },
+      accept: () => handleDelete(item.id),
     });
   };
 
@@ -160,23 +190,27 @@ const GalleryPage = (props) => {
     setFormData({ ...formData, images: updatedImages });
   };
 
-  const getMonumentName = (monumentId: string) => {
-    const monument = monuments.find((m) => m.id === monumentId);
-    return monument ? monument.nameEn : "-";
+  const getMonumentName = (monumentsId: number) => {
+    const monument = monuments.find((m) => m.id === monumentsId);
+    return monument
+      ? monument.monumentNameEn || monument.nameEn || monument.name_en
+      : "-";
+  };
+
+  const monumentItemTemplate = (option: any) => {
+    return (
+      <span>
+        {option?.monumentNameEn ||
+          option?.nameEn ||
+          option?.name_en ||
+          "Unknown Type"}
+      </span>
+    );
   };
 
   const actionBodyTemplate = (rowData: any) => {
     return (
       <div className="flex gap-2">
-        <Button
-          icon={<PenLine size={16} />}
-          rounded
-          text
-          tooltip="Edit"
-          tooltipOptions={{ position: "top" }}
-          onClick={() => openEdit(rowData)}
-          className="kemetra-action-btn-edit"
-        />
         <Button
           icon={<Trash2 size={16} />}
           rounded
@@ -191,35 +225,18 @@ const GalleryPage = (props) => {
   };
 
   const monumentBodyTemplate = (rowData: any) => {
-    return getMonumentName(rowData.monumentId);
+    return getMonumentName(rowData.monumentsId);
   };
 
-  const imagesBodyTemplate = (rowData: any) => {
+  const imageBodyTemplate = (rowData: any) => {
     return (
-      <div className="flex gap-2 items-center">
-        {rowData.images.slice(0, 3).map((img, index) => (
-          <Image
-            key={index}
-            src={img || "https://via.placeholder.com/60"}
-            alt={`Gallery ${index + 1}`}
-            width="60"
-            height="60"
-            preview
-            className="rounded object-cover border kemetra-gallery-image-preview"
-          />
-        ))}
-        {rowData.images.length > 3 && (
-          <Tag value={`+${rowData.images.length - 3}`} severity="info" />
-        )}
-      </div>
-    );
-  };
-
-  const countBodyTemplate = (rowData) => {
-    return (
-      <Tag
-        value={`${rowData.images.length} image${rowData.images.length !== 1 ? "s" : ""}`}
-        className="kemetra-gallery-count-tag"
+      <Image
+        src={rowData.galleryPath || "https://via.placeholder.com/80"}
+        alt="Gallery Image"
+        width="80"
+        height="80"
+        preview
+        className="rounded object-cover border kemetra-gallery-image-preview"
       />
     );
   };
@@ -302,13 +319,14 @@ const GalleryPage = (props) => {
       <PageHeader
         title="Gallery Management"
         description="Manage monument gallery images"
-        actionLabel="Add Gallery"
+        actionLabel="Add Gallery Images"
         onAction={openNew}
       />
 
       <div className="kemetra-table-container">
         <DataTable
           value={galleryItems}
+          loading={loading}
           paginator
           rows={10}
           dataKey="id"
@@ -316,13 +334,13 @@ const GalleryPage = (props) => {
             <div className="kemetra-empty-state-container">
               <Inbox size={48} className="kemetra-empty-state-icon" />
               <p className="text-lg font-medium mb-2 kemetra-empty-state-title">
-                No gallery items found
+                No gallery images found
               </p>
               <p className="text-sm mb-4 kemetra-empty-state-description">
-                Get started by adding your first gallery
+                Get started by adding your first gallery images
               </p>
               <Button
-                label="Add Gallery"
+                label="Add Gallery Images"
                 icon={<Plus size={18} />}
                 onClick={openNew}
                 className="kemetra-empty-state-button"
@@ -354,17 +372,22 @@ const GalleryPage = (props) => {
             bodyClassName="kemetra-table-cell-monument"
           />
           <Column
-            body={imagesBodyTemplate}
-            header="Preview"
+            body={imageBodyTemplate}
+            header="Image"
             headerClassName="kemetra-table-column-header"
             bodyClassName="kemetra-table-cell-padding"
           />
           <Column
-            body={countBodyTemplate}
-            header="Images Count"
+            field="galleryPath"
+            header="Image Path"
             sortable
             headerClassName="kemetra-table-column-header"
-            bodyClassName="kemetra-table-cell-padding"
+            bodyClassName="kemetra-table-cell-secondary"
+            body={(rowData) => (
+              <div className="max-w-md truncate" title={rowData.galleryPath}>
+                {rowData.galleryPath || "-"}
+              </div>
+            )}
           />
           <Column
             body={actionBodyTemplate}
@@ -389,12 +412,10 @@ const GalleryPage = (props) => {
             </div>
             <div>
               <h3 className="text-xl font-semibold kemetra-gallery-dialog-title">
-                {selectedItem ? "Edit Gallery" : "Add New Gallery"}
+                Add Gallery Images
               </h3>
               <p className="text-sm kemetra-gallery-dialog-subtitle">
-                {selectedItem
-                  ? "Update gallery images"
-                  : "Upload multiple images to the gallery"}
+                Upload multiple images to the gallery
               </p>
             </div>
           </div>
@@ -415,7 +436,8 @@ const GalleryPage = (props) => {
               id="monumentId"
               value={formData.monumentId}
               options={monuments}
-              optionLabel="nameEn"
+              itemTemplate={monumentItemTemplate}
+              valueTemplate={monumentItemTemplate}
               optionValue="id"
               onChange={(e) =>
                 setFormData({ ...formData, monumentId: e.value })

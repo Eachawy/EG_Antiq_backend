@@ -6,9 +6,10 @@ import { Dropdown } from "primereact/dropdown";
 import { User as UserIcon, X, Check } from "lucide-react";
 
 const statusOptions = [
-  { label: "Active", value: "Active" },
-  { label: "Inactive", value: "Inactive" },
-  { label: "Suspended", value: "Suspended" },
+  { label: "Active", value: "ACTIVE" },
+  { label: "Suspended", value: "SUSPENDED" },
+  { label: "Pending Verification", value: "PENDING_VERIFICATION" },
+  { label: "Deactivated", value: "DEACTIVATED" },
 ];
 const UserFormDialog = (props) => {
   return (
@@ -91,6 +92,37 @@ const UserFormDialog = (props) => {
               className="kemetra-field-input"
             />
           </div>
+        </div>
+
+        <div>
+          <label htmlFor="password" className="kemetra-field-label">
+            Password{" "}
+            {!props.selectedUser && (
+              <span className="kemetra-field-required">*</span>
+            )}
+            {props.selectedUser && (
+              <span className="text-xs text-gray-500 ml-2">
+                (leave blank to keep current)
+              </span>
+            )}
+          </label>
+          <InputText
+            id="password"
+            type="password"
+            value={props.formData.password || ""}
+            onChange={(e) =>
+              props.onFormDataChange({
+                ...props.formData,
+                password: e.target.value,
+              })
+            }
+            placeholder={
+              props.selectedUser
+                ? "Enter new password to change"
+                : "Minimum 8 characters"
+            }
+            className="kemetra-field-input"
+          />
         </div>
 
         <div>

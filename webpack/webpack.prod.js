@@ -1,7 +1,7 @@
 const webpack = require("webpack");
 const webpackMerge = require("webpack-merge").merge;
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const WorkboxPlugin = require("workbox-webpack-plugin");
+// const WorkboxPlugin = require("workbox-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const sass = require("sass");

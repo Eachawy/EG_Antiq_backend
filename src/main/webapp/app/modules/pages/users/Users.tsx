@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -8,65 +8,70 @@ import { Tag } from "primereact/tag";
 import PageHeader from "app/shared/components/page-header/page-header";
 import UserFormDialog from "./UserFormDialog";
 import { Plus, Inbox, PenLine, Trash2, AlertTriangle } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "app/config/store";
+import {
+  getUsersListData,
+  createUser,
+  updateUser,
+  deleteUser,
+} from "./users.reducer";
+import { toast } from "react-toastify";
 
 const UsersPage = () => {
+  const dispatch = useAppDispatch();
+
   const statusOptions = [
-    { label: "Active", value: "Active" },
-    { label: "Inactive", value: "Inactive" },
-    { label: "Suspended", value: "Suspended" },
+    { label: "Active", value: "ACTIVE" },
+    { label: "Suspended", value: "SUSPENDED" },
+    { label: "Pending Verification", value: "PENDING_VERIFICATION" },
+    { label: "Deactivated", value: "DEACTIVATED" },
   ];
 
-  // Mock initial data
-  const initialUsers = [
-    {
-      id: "1",
-      email: "ahmed.hassan@kemetra.eg",
-      firstName: "Ahmed",
-      lastName: "Hassan",
-      status: "Active",
-    },
-    {
-      id: "2",
-      email: "fatima.mohamed@kemetra.eg",
-      firstName: "Fatima",
-      lastName: "Mohamed",
-      status: "Active",
-    },
-    {
-      id: "3",
-      email: "omar.ali@kemetra.eg",
-      firstName: "Omar",
-      lastName: "Ali",
-      status: "Inactive",
-    },
-    {
-      id: "4",
-      email: "sarah.ibrahim@kemetra.eg",
-      firstName: "Sarah",
-      lastName: "Ibrahim",
-      status: "Active",
-    },
-    {
-      id: "5",
-      email: "youssef.kamal@kemetra.eg",
-      firstName: "Youssef",
-      lastName: "Kamal",
-      status: "Suspended",
-    },
-  ];
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState([]);
   const [visible, setVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState<any>({});
+
+  const $UsersList = useAppSelector((state) => state.Users.usersList);
+  const loading = useAppSelector((state) => state.Users.loading);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if ($UsersList) {
+      if ($UsersList.data && Array.isArray($UsersList.data)) {
+        setUsers($UsersList.data);
+      } else if (Array.isArray($UsersList)) {
+        setUsers($UsersList);
+      }
+    }
+  }, [$UsersList]);
+
+  const fetchData = async () => {
+    try {
+      await dispatch(getUsersListData());
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
 
   const openNew = () => {
-    setFormData({ status: "Active" });
+    setFormData({ status: "ACTIVE" });
     setSelectedUser(null);
     setVisible(true);
   };
 
   const openEdit = (user) => {
-    setFormData(user);
+    // Only copy editable fields to formData
+    setFormData({
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      status: user.status,
+      password: "", // Always start with empty password
+    });
     setSelectedUser(user);
     setVisible(true);
   };
@@ -82,9 +87,63 @@ const UsersPage = () => {
     return re.test(email);
   };
 
-  const save = () => {
-    // Validation
-    hideDialog();
+  const save = async () => {
+    try {
+      if (selectedUser) {
+        // Update existing user - only send fields that have values
+        const updateData: any = {};
+
+        if (formData.email) {
+          updateData.email = formData.email;
+        }
+        if (formData.firstName) {
+          updateData.firstName = formData.firstName;
+        }
+        if (formData.lastName) {
+          updateData.lastName = formData.lastName;
+        }
+        if (formData.status) {
+          updateData.status = formData.status;
+        }
+        // Only include password if it's provided and not empty
+        if (formData.password && formData.password.trim() !== "") {
+          updateData.password = formData.password;
+        }
+
+        await dispatch(
+          updateUser({ id: selectedUser.id, data: updateData }),
+        ).unwrap();
+        toast.success("User updated successfully!");
+      } else {
+        // Create new user - only send required fields
+        const createData = {
+          email: formData.email,
+          password: formData.password,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          status: formData.status || "ACTIVE",
+        };
+
+        await dispatch(createUser(createData)).unwrap();
+        toast.success("User created successfully!");
+      }
+      hideDialog();
+      await dispatch(getUsersListData());
+    } catch (error) {
+      toast.error("An error occurred while saving the user.");
+      console.error("Save error:", error);
+    }
+  };
+
+  const handleDelete = async (id: string | number) => {
+    try {
+      await dispatch(deleteUser(id)).unwrap();
+      toast.success("User deleted successfully!");
+      await dispatch(getUsersListData());
+    } catch (error) {
+      toast.error("An error occurred while deleting the user.");
+      console.error("Delete error:", error);
+    }
   };
 
   const confirmDelete = (user) => {
@@ -93,9 +152,7 @@ const UsersPage = () => {
       header: "Confirm Deletion",
       icon: <AlertTriangle size={24} className="text-red-500" />,
       acceptClassName: "p-button-danger",
-      // accept: () => {
-      //   setUsers(users.filter((u) => u.id !== user.id));
-      // },
+      accept: () => handleDelete(user.id),
     });
   };
 
@@ -173,6 +230,7 @@ const UsersPage = () => {
       <div className="kemetra-table-container">
         <DataTable
           value={users}
+          loading={loading}
           paginator
           rows={10}
           dataKey="id"

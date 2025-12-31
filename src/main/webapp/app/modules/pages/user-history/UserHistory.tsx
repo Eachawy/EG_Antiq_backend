@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -9,49 +9,38 @@ import { Avatar } from "primereact/avatar";
 import PageHeader from "app/shared/components/page-header/page-header";
 import { Inbox, Eye, Download, User as UserIcon } from "lucide-react";
 import UserHistoryDetailDialog from "./UserHistoryDetailDialog";
+import { useAppDispatch, useAppSelector } from "app/config/store";
+import { getUserHistoryListData } from "./user-history.reducer";
 
 const UserHistoryPage = () => {
-  const initialHistory = [
-    {
-      id: "1",
-      userName: "Ahmed Hassan",
-      userEmail: "ahmed.hassan@kemetra.com",
-      action: "Created new monument",
-      actionType: "Create",
-      targetEntity: "Monument",
-      targetId: "MON-001",
-      timestamp: new Date().toISOString(),
-      ipAddress: "192.168.1.100",
-      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-      details: "Created Great Pyramid of Giza monument entry",
-    },
-    {
-      id: "2",
-      userName: "Fatima El-Sayed",
-      userEmail: "fatima.elsayed@kemetra.com",
-      action: "Updated dynasty information",
-      actionType: "Update",
-      targetEntity: "Dynasty",
-      targetId: "DYN-005",
-      timestamp: new Date(Date.now() - 3600000).toISOString(),
-      ipAddress: "192.168.1.105",
-      userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X)",
-      details: "Updated 18th Dynasty details and date range",
-    },
-    {
-      id: "3",
-      userName: "Mohamed Ibrahim",
-      userEmail: "mohamed.ibrahim@kemetra.com",
-      action: "User login",
-      actionType: "Login",
-      timestamp: new Date(Date.now() - 7200000).toISOString(),
-      ipAddress: "192.168.1.102",
-      userAgent: "Mozilla/5.0 (X11; Linux x86_64)",
-    },
-  ];
-  const [history, setHistory] = useState(initialHistory);
+  const dispatch = useAppDispatch();
+
+  const [history, setHistory] = useState([]);
   const [detailVisible, setDetailVisible] = useState(false);
   const [selectedHistory, setSelectedHistory] = useState(null);
+
+  const $UserHistoryList = useAppSelector(
+    (state) => state.UserHistory.userHistoryList,
+  );
+  const loading = useAppSelector((state) => state.UserHistory.loading);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if ($UserHistoryList) {
+      if ($UserHistoryList.data && Array.isArray($UserHistoryList.data)) {
+        setHistory($UserHistoryList.data);
+      } else if (Array.isArray($UserHistoryList)) {
+        setHistory($UserHistoryList);
+      }
+    }
+  }, [$UserHistoryList]);
+
+  const fetchData = async () => {
+    await dispatch(getUserHistoryListData());
+  };
 
   const viewDetails = (record) => {
     setSelectedHistory(record);
@@ -160,6 +149,7 @@ const UserHistoryPage = () => {
       <div className="kemetra-table-container">
         <DataTable
           value={history}
+          loading={loading}
           paginator
           rows={10}
           dataKey="id"

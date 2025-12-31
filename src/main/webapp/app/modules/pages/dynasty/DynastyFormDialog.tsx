@@ -92,16 +92,16 @@ const DynastyFormDialog = (props) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="from" className="kemetra-field-label">
+            <label htmlFor="dateFrom" className="kemetra-field-label">
               From <span className="kemetra-field-required">*</span>
             </label>
             <InputText
-              id="from"
-              value={props.formData.from || ""}
+              id="dateFrom"
+              value={props.formData.dateFrom || ""}
               onChange={(e) =>
                 props.onFormDataChange({
                   ...props.formData,
-                  from: e.target.value,
+                  dateFrom: e.target.value,
                 })
               }
               placeholder="e.g., 3100 BC"
@@ -110,16 +110,16 @@ const DynastyFormDialog = (props) => {
           </div>
 
           <div>
-            <label htmlFor="to" className="kemetra-field-label">
+            <label htmlFor="dateTo" className="kemetra-field-label">
               To <span className="kemetra-field-required">*</span>
             </label>
             <InputText
-              id="to"
-              value={props.formData.to || ""}
+              id="dateTo"
+              value={props.formData.dateTo || ""}
               onChange={(e) =>
                 props.onFormDataChange({
                   ...props.formData,
-                  to: e.target.value,
+                  dateTo: e.target.value,
                 })
               }
               placeholder="e.g., 2686 BC"
@@ -130,16 +130,16 @@ const DynastyFormDialog = (props) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="Hijri_from" className="kemetra-field-label">
+            <label htmlFor="hijriFrom" className="kemetra-field-label">
               Hijri Date From <span className="kemetra-field-required">*</span>
             </label>
             <InputText
-              id="Hijri_from"
-              value={props.formData.Hijri_from || ""}
+              id="hijriFrom"
+              value={props.formData.hijriFrom || ""}
               onChange={(e) =>
                 props.onFormDataChange({
                   ...props.formData,
-                  Hijri_from: e.target.value,
+                  hijriFrom: e.target.value,
                 })
               }
               placeholder="e.g., 1 AH"
@@ -148,16 +148,16 @@ const DynastyFormDialog = (props) => {
           </div>
 
           <div>
-            <label htmlFor="Hijri_to" className="kemetra-field-label">
+            <label htmlFor="hijriTo" className="kemetra-field-label">
               Hijri Date To <span className="kemetra-field-required">*</span>
             </label>
             <InputText
-              id="Hijri_to"
-              value={props.formData.Hijri_to || ""}
+              id="hijriTo"
+              value={props.formData.hijriTo || ""}
               onChange={(e) =>
                 props.onFormDataChange({
                   ...props.formData,
-                  Hijri_to: e.target.value,
+                  hijriTo: e.target.value,
                 })
               }
               placeholder="e.g., 40 AH"

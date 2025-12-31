@@ -49,11 +49,11 @@ const MonumentFormDialog = (props) => {
                   <span className="kemetra-field-required">*</span>
                 </label>
                 <InputText
-                  value={props.formData.nameEn || ""}
+                  value={props.formData.monumentNameEn || ""}
                   onChange={(e) =>
                     props.onFormDataChange({
                       ...props.formData,
-                      nameEn: e.target.value,
+                      monumentNameEn: e.target.value,
                     })
                   }
                   placeholder="Enter monument name in English"
@@ -66,11 +66,11 @@ const MonumentFormDialog = (props) => {
                   <span className="kemetra-field-required">*</span>
                 </label>
                 <InputText
-                  value={props.formData.nameAr || ""}
+                  value={props.formData.monumentNameAr || ""}
                   onChange={(e) =>
                     props.onFormDataChange({
                       ...props.formData,
-                      nameAr: e.target.value,
+                      monumentNameAr: e.target.value,
                     })
                   }
                   placeholder="أدخل اسم الأثر بالعربية"
@@ -85,11 +85,11 @@ const MonumentFormDialog = (props) => {
                   Monument Biography English
                 </label>
                 <InputTextarea
-                  value={props.formData.biographyEn || ""}
+                  value={props.formData.monumentBiographyEn || ""}
                   onChange={(e) =>
                     props.onFormDataChange({
                       ...props.formData,
-                      biographyEn: e.target.value,
+                      monumentBiographyEn: e.target.value,
                     })
                   }
                   rows={4}
@@ -102,11 +102,11 @@ const MonumentFormDialog = (props) => {
                   Monument Biography Arabic
                 </label>
                 <InputTextarea
-                  value={props.formData.biographyAr || ""}
+                  value={props.formData.monumentBiographyAr || ""}
                   onChange={(e) =>
                     props.onFormDataChange({
                       ...props.formData,
-                      biographyAr: e.target.value,
+                      monumentBiographyAr: e.target.value,
                     })
                   }
                   rows={4}
@@ -120,11 +120,11 @@ const MonumentFormDialog = (props) => {
               <div>
                 <label className="kemetra-field-label">Latitude</label>
                 <InputText
-                  value={props.formData.latitude || ""}
+                  value={props.formData.lat || ""}
                   onChange={(e) =>
                     props.onFormDataChange({
                       ...props.formData,
-                      latitude: e.target.value,
+                      lat: e.target.value,
                     })
                   }
                   placeholder="e.g., 29.9792"
@@ -134,11 +134,11 @@ const MonumentFormDialog = (props) => {
               <div>
                 <label className="kemetra-field-label">Longitude</label>
                 <InputText
-                  value={props.formData.longitude || ""}
+                  value={props.formData.lng || ""}
                   onChange={(e) =>
                     props.onFormDataChange({
                       ...props.formData,
-                      longitude: e.target.value,
+                      lng: e.target.value,
                     })
                   }
                   placeholder="e.g., 31.1342"
@@ -207,10 +207,10 @@ const MonumentFormDialog = (props) => {
                     className: "p-button-outlined kemetra-gallery-choose-btn",
                   }}
                 />
-                {props.formData.monumentImage && (
+                {props.formData.image && (
                   <div className="mt-3 p-3 rounded-lg kemetra-monument-current-file-bg">
                     <p className="text-sm kemetra-monument-current-file-text">
-                      Current: {props.formData.monumentImage}
+                      Current: {props.formData.image}
                     </p>
                   </div>
                 )}
@@ -220,11 +220,11 @@ const MonumentFormDialog = (props) => {
             <div>
               <label className="kemetra-field-label">Monument Date</label>
               <InputText
-                value={props.formData.monumentDate || ""}
+                value={props.formData.mDate || ""}
                 onChange={(e) =>
                   props.onFormDataChange({
                     ...props.formData,
-                    monumentDate: e.target.value,
+                    mDate: e.target.value,
                   })
                 }
                 placeholder="e.g., 2560 BC"
@@ -239,14 +239,14 @@ const MonumentFormDialog = (props) => {
                   <span className="kemetra-field-required">*</span>
                 </label>
                 <Dropdown
-                  value={props.formData.typeId}
+                  value={props.formData.monumentsTypeId}
                   options={props.monumentTypes}
                   optionLabel="nameEn"
                   optionValue="id"
                   onChange={(e) =>
                     props.onFormDataChange({
                       ...props.formData,
-                      typeId: e.value,
+                      monumentsTypeId: e.value,
                     })
                   }
                   placeholder="Select type"

@@ -44,16 +44,16 @@ export const UPDATE_MonumentsEra_API = "/v1/monuments-era"; // Will append /:id
 export const DELETE_MonumentsEra_API = "/v1/monuments-era"; // Will append /:id
 
 // Monuments Type APIs
-export const GET_MonumentsType_API = "/v1/monuments-type";
-export const CREATE_MonumentsType_API = "/v1/monuments-type";
-export const UPDATE_MonumentsType_API = "/v1/monuments-type"; // Will append /:id
-export const DELETE_MonumentsType_API = "/v1/monuments-type"; // Will append /:id
+export const GET_MonumentsType_API = "/v1/monument-types";
+export const CREATE_MonumentsType_API = "/v1/monument-types";
+export const UPDATE_MonumentsType_API = "/v1/monument-types"; // Will append /:id
+export const DELETE_MonumentsType_API = "/v1/monument-types"; // Will append /:id
 
 // Gallery APIs
-export const GET_Gallery_API = "/v1/galleries";
-export const CREATE_Gallery_API = "/v1/galleries";
-export const UPDATE_Gallery_API = "/v1/galleries"; // Will append /:id
-export const DELETE_Gallery_API = "/v1/galleries"; // Will append /:id
+export const GET_Gallery_API = "/v1/gallery";
+export const CREATE_Gallery_API = "/v1/gallery";
+export const UPDATE_Gallery_API = "/v1/gallery"; // Will append /:id
+export const DELETE_Gallery_API = "/v1/gallery"; // Will append /:id
 
 // Description Monuments APIs
 export const GET_DescriptionMonuments_API = "/v1/description-monuments";
@@ -61,27 +61,29 @@ export const CREATE_DescriptionMonument_API = "/v1/description-monuments";
 export const UPDATE_DescriptionMonument_API = "/v1/description-monuments"; // Will append /:id
 export const DELETE_DescriptionMonument_API = "/v1/description-monuments"; // Will append /:id
 
-// Users APIs
+// Organization Users APIs
+// TODO: Backend endpoints for organization/admin users management not yet implemented
+// These would manage User model (not PortalUser)
 export const GET_Users_API = "/v1/users";
 export const CREATE_User_API = "/v1/users";
 export const UPDATE_User_API = "/v1/users"; // Will append /:id
 export const DELETE_User_API = "/v1/users"; // Will append /:id
 
-// Portal Users APIs
-export const GET_PortalUsers_API = "/v1/portal-users";
-export const CREATE_PortalUser_API = "/v1/portal-users";
-export const UPDATE_PortalUser_API = "/v1/portal-users"; // Will append /:id
-export const DELETE_PortalUser_API = "/v1/portal-users"; // Will append /:id
+// Portal Users APIs (Admin management)
+export const GET_PortalUsers_API = "/v1/admin/portal-users";
+export const CREATE_PortalUser_API = "/v1/admin/portal-users";
+export const UPDATE_PortalUser_API = "/v1/admin/portal-users"; // Will append /:id
+export const DELETE_PortalUser_API = "/v1/admin/portal-users"; // Will append /:id
 
-// Favourites APIs
-export const GET_Favourites_API = "/v1/favourites";
-export const CREATE_Favourite_API = "/v1/favourites";
-export const DELETE_Favourite_API = "/v1/favourites"; // Will append /:id
+// Favorites APIs (Portal)
+export const GET_Favourites_API = "/v1/portal/favorites";
+export const CREATE_Favourite_API = "/v1/portal/favorites";
+export const DELETE_Favourite_API = "/v1/portal/favorites"; // Will append /:id
 
-// Saved Search APIs
-export const GET_SavedSearches_API = "/v1/saved-searches";
-export const CREATE_SavedSearch_API = "/v1/saved-searches";
-export const DELETE_SavedSearch_API = "/v1/saved-searches"; // Will append /:id
+// Saved Search APIs (Portal)
+export const GET_SavedSearches_API = "/v1/portal/saved-searches";
+export const CREATE_SavedSearch_API = "/v1/portal/saved-searches";
+export const DELETE_SavedSearch_API = "/v1/portal/saved-searches"; // Will append /:id
 
-// User History APIs
-export const GET_UserHistory_API = "/v1/user-history";
+// Browsing History APIs (Portal)
+export const GET_UserHistory_API = "/v1/portal/history";
