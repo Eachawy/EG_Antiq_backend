@@ -10,19 +10,24 @@ import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import PageHeader from "app/shared/components/page-header/page-header";
 import EraFormDialog from "./EraFormDialog";
-import { useNavigate } from "react-router";
-import { getErasListData } from "./eras.reducer";
+import {
+  getErasListData,
+  createEra,
+  updateEra,
+  deleteEra,
+} from "./eras.reducer";
+import { toast } from "react-toastify";
 
 export const ErasManagement = () => {
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const [eras, setEras] = useState();
+  const [eras, setEras] = useState([]);
   const [visible, setVisible] = useState(false);
   const [selectedEra, setSelectedEra] = useState(null);
   const [formData, setFormData]: any = useState({});
 
   const $ErasList = useAppSelector((state) => state.Eras.earsList);
+  const loading = useAppSelector((state) => state.Eras.loading);
 
   useEffect(() => {
     getCompletedChartsDataFN();
@@ -31,9 +36,25 @@ export const ErasManagement = () => {
   useEffect(() => {
     if ($ErasList) {
       // eslint-disable-next-line no-console
-      console.log($ErasList.data);
+      console.log("Full $ErasList:", $ErasList);
+
+      // Check if data is nested in $ErasList.data or directly in $ErasList
+      if ($ErasList.data && Array.isArray($ErasList.data)) {
+        // eslint-disable-next-line no-console
+        console.log("Eras data (nested):", $ErasList.data);
+        // eslint-disable-next-line no-console
+        console.log("First era sample:", $ErasList.data[0]);
+        setEras($ErasList.data);
+      } else if (Array.isArray($ErasList)) {
+        // eslint-disable-next-line no-console
+        console.log("Eras data (direct array):", $ErasList);
+        // eslint-disable-next-line no-console
+        console.log("First era sample:", $ErasList[0]);
+        setEras($ErasList);
+      }
     }
   }, [$ErasList]);
+
   const getCompletedChartsDataFN = async () => {
     await dispatch(getErasListData());
   };
@@ -44,7 +65,7 @@ export const ErasManagement = () => {
     setVisible(true);
   };
 
-  const openEdit = (era) => {
+  const openEdit = (era: any) => {
     setFormData(era);
     setSelectedEra(era);
     setVisible(true);
@@ -56,23 +77,59 @@ export const ErasManagement = () => {
     setSelectedEra(null);
   };
 
-  const saveEra = () => {
-    hideDialog();
+  const saveEra = async () => {
+    try {
+      if (selectedEra) {
+        // Update existing era - send only the required fields
+        const earData = {
+          nameAr: formData.nameAr,
+          nameEn: formData.nameEn,
+          dateFrom: formData.dateFrom,
+          dateTo: formData.dateTo,
+          hijriFrom: formData.hijriFrom,
+          hijriTo: formData.hijriTo,
+        };
+        await dispatch(
+          updateEra({ id: selectedEra.id, data: earData }),
+        ).unwrap();
+        toast.success("Era updated successfully!");
+      } else {
+        // Create new era
+        await dispatch(createEra(formData)).unwrap();
+        toast.success("Era created successfully!");
+      }
+      hideDialog();
+      // Refresh the list
+      await dispatch(getErasListData());
+    } catch (error) {
+      toast.error("An error occurred while saving the era.");
+      console.error("Save error:", error);
+    }
   };
 
-  const confirmDelete = (era) => {
+  const handleDelete = async (id: string | number) => {
+    try {
+      await dispatch(deleteEra(id)).unwrap();
+      toast.success("Era deleted successfully!");
+      // Refresh the list
+      await dispatch(getErasListData());
+    } catch (error) {
+      toast.error("An error occurred while deleting the era.");
+      console.error("Delete error:", error);
+    }
+  };
+
+  const confirmDelete = (era: any) => {
     confirmDialog({
-      message: `Are you sure you want to delete ${era.nameEn}?`,
+      message: `Are you sure you want to delete ${era.nameEn || era.name_en}?`,
       header: "Confirm Deletion",
       icon: <AlertCircle size={24} className="text-red-500" />,
       acceptClassName: "p-button-danger",
-      // accept: () => {
-      //   setEras(eras.filter((e) => e.id !== era.id));
-      // },
+      accept: () => handleDelete(era.id),
     });
   };
 
-  const actionBodyTemplate = (rowData) => {
+  const actionBodyTemplate = (rowData: any) => {
     return (
       <div className="flex gap-2">
         <Button
@@ -110,6 +167,7 @@ export const ErasManagement = () => {
       <div className="kemetra-page-table-container">
         <DataTable
           value={eras}
+          loading={loading}
           paginator
           rows={10}
           dataKey="id"
@@ -147,6 +205,7 @@ export const ErasManagement = () => {
         >
           <Column
             field="nameEn"
+            body={(rowData) => rowData.nameEn || rowData.name_en || "-"}
             header="English Name"
             sortable
             headerClassName="kemetra-table-column-header"
@@ -154,6 +213,7 @@ export const ErasManagement = () => {
           />
           <Column
             field="nameAr"
+            body={(rowData) => rowData.nameAr || rowData.name_ar || "-"}
             header="Arabic Name"
             sortable
             headerClassName="kemetra-table-column-header"
@@ -161,6 +221,7 @@ export const ErasManagement = () => {
           />
           <Column
             field="from"
+            body={(rowData) => rowData.dateFrom || "-"}
             header="From (Birth Date)"
             sortable
             headerClassName="kemetra-table-column-header"
@@ -168,20 +229,23 @@ export const ErasManagement = () => {
           />
           <Column
             field="to"
+            body={(rowData) => rowData.dateTo || "-"}
             header="To (Birth Date)"
             sortable
             headerClassName="kemetra-table-column-header"
             bodyClassName="kemetra-table-cell-secondary"
           />
           <Column
-            field="Hijri_from"
+            field="hijriFrom"
+            body={(rowData) => rowData.hijriFrom || "-"}
             header="From (Hijri)"
             sortable
             headerClassName="kemetra-table-column-header"
             bodyClassName="kemetra-table-cell-secondary"
           />
           <Column
-            field="Hijri_to"
+            field="hijriTo"
+            body={(rowData) => rowData.hijriTo || "-"}
             header="To (Hijri)"
             sortable
             headerClassName="kemetra-table-column-header"

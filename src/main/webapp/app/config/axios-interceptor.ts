@@ -1,7 +1,7 @@
 import { Storage } from "react-jhipster";
 
 import axios, { type AxiosError } from "axios";
-import { GATEWAY_SERVER_API_URL } from "./constants";
+import { AUTH_TOKEN_KEY, GATEWAY_SERVER_API_URL } from "./constants";
 
 const TIMEOUT = 1 * 60 * 1000;
 axios.defaults.timeout = TIMEOUT;
@@ -10,8 +10,7 @@ axios.defaults.baseURL = GATEWAY_SERVER_API_URL;
 const setupAxiosInterceptors = (onUnauthenticated) => {
   const onRequestSuccess = (config) => {
     const token =
-      Storage.local.get("jhi-authenticationToken") ||
-      Storage.session.get("jhi-authenticationToken");
+      Storage.local.get(AUTH_TOKEN_KEY) || Storage.session.get(AUTH_TOKEN_KEY);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

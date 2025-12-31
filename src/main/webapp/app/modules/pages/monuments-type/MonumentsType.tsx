@@ -1,18 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
-import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import PageHeader from "app/shared/components/page-header/page-header";
-import { Trash2, Plus, AlertTriangle, Inbox, PenLine } from "lucide-react";
+import { Trash2, Plus, AlertCircle, PackageOpen, PenLine } from "lucide-react";
 import MonumentsTypeFormDialog from "./MonumentsTypeFormDialog";
+import { useAppDispatch, useAppSelector } from "app/config/store";
+import {
+  getMonumentsTypeListData,
+  createMonumentsType,
+  updateMonumentsType,
+  deleteMonumentsType,
+} from "./monuments-type.reducer";
+import { toast } from "react-toastify";
 
 const MonumentsTypePage = () => {
+  const dispatch = useAppDispatch();
+
   const [types, setTypes] = useState([]);
   const [visible, setVisible] = useState(false);
   const [selectedType, setSelectedType] = useState(null);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData]: any = useState({});
+
+  const $MonumentsTypeList = useAppSelector(
+    (state) => state.MonumentsType.monumentsTypeList,
+  );
+  const loading = useAppSelector((state) => state.MonumentsType.loading);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if ($MonumentsTypeList) {
+      if ($MonumentsTypeList.data && Array.isArray($MonumentsTypeList.data)) {
+        setTypes($MonumentsTypeList.data);
+      } else if (Array.isArray($MonumentsTypeList)) {
+        setTypes($MonumentsTypeList);
+      }
+    }
+  }, [$MonumentsTypeList]);
+
+  const fetchData = async () => {
+    await dispatch(getMonumentsTypeListData());
+  };
 
   const openNew = () => {
     setFormData({});
@@ -32,19 +64,49 @@ const MonumentsTypePage = () => {
     setSelectedType(null);
   };
 
-  const saveType = () => {
-    hideDialog();
+  const saveType = async () => {
+    try {
+      if (selectedType) {
+        // Update existing type
+        const typeData = {
+          nameAr: formData.nameAr,
+          nameEn: formData.nameEn,
+        };
+        await dispatch(
+          updateMonumentsType({ id: selectedType.id, data: typeData }),
+        ).unwrap();
+        toast.success("Monument type updated successfully!");
+      } else {
+        // Create new type
+        await dispatch(createMonumentsType(formData)).unwrap();
+        toast.success("Monument type created successfully!");
+      }
+      hideDialog();
+      await dispatch(getMonumentsTypeListData());
+    } catch (error) {
+      toast.error("An error occurred while saving the monument type.");
+      console.error("Save error:", error);
+    }
   };
 
-  const confirmDelete = (type) => {
+  const handleDelete = async (id: string | number) => {
+    try {
+      await dispatch(deleteMonumentsType(id)).unwrap();
+      toast.success("Monument type deleted successfully!");
+      await dispatch(getMonumentsTypeListData());
+    } catch (error) {
+      toast.error("An error occurred while deleting the monument type.");
+      console.error("Delete error:", error);
+    }
+  };
+
+  const confirmDelete = (type: any) => {
     confirmDialog({
-      message: `Are you sure you want to delete ${type.nameEn}?`,
+      message: `Are you sure you want to delete ${type.nameEn || type.name_en}?`,
       header: "Confirm Deletion",
-      icon: <AlertTriangle size={24} className="text-red-500" />,
+      icon: <AlertCircle size={24} className="text-red-500" />,
       acceptClassName: "p-button-danger",
-      // accept: () => {
-      //   setTypes(types.filter((t) => t.id !== type.id));
-      // },
+      accept: () => handleDelete(type.id),
     });
   };
 
@@ -87,12 +149,13 @@ const MonumentsTypePage = () => {
       <div className="kemetra-page-table-container">
         <DataTable
           value={types}
+          loading={loading}
           paginator
           rows={10}
           dataKey="id"
           emptyMessage={
             <div className="kemetra-empty-state-container">
-              <Inbox size={48} className="kemetra-empty-state-icon" />
+              <PackageOpen size={48} className="kemetra-empty-state-icon" />
               <p className="kemetra-empty-state-title">
                 No monument types found
               </p>
@@ -126,6 +189,7 @@ const MonumentsTypePage = () => {
         >
           <Column
             field="nameEn"
+            body={(rowData) => rowData.nameEn || rowData.name_en || "-"}
             header="Name (English)"
             sortable
             headerClassName="kemetra-table-column-header"
@@ -133,10 +197,11 @@ const MonumentsTypePage = () => {
           />
           <Column
             field="nameAr"
+            body={(rowData) => rowData.nameAr || rowData.name_ar || "-"}
             header="Name (Arabic)"
             sortable
             headerClassName="kemetra-table-column-header"
-            bodyClassName="kemetra-table-cell-arabic-rtl"
+            bodyClassName="kemetra-table-cell-arabic"
           />
           <Column
             body={actionBodyTemplate}

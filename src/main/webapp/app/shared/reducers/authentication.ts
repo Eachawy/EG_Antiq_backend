@@ -7,9 +7,7 @@ import { AppThunk } from "app/config/store";
 import { setLocale } from "app/shared/reducers/locale";
 
 import { serializeAxiosError } from "./reducer.utils";
-import { AUTH_LOGIN } from "app/config/constants";
-
-const AUTH_TOKEN_KEY = "token";
+import { AUTH_LOGIN, AUTH_TOKEN_KEY } from "app/config/constants";
 
 export const initialState = {
   loading: false,
@@ -32,8 +30,6 @@ export const getSession =
   (response): AppThunk =>
   async (dispatch, getState) => {
     await dispatch(getAccount(response));
-
-    const { account } = getState().authentication;
   };
 
 export const getAccount = createAsyncThunk(

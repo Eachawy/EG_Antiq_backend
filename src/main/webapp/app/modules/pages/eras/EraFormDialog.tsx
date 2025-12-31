@@ -71,17 +71,17 @@ const EraFormDialog = (props) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="from" className="kemetra-field-label">
+            <label htmlFor="dateFrom" className="kemetra-field-label">
               From (Birth Date){" "}
               <span className="kemetra-field-required">*</span>
             </label>
             <InputText
-              id="from"
-              value={props.formData.from || ""}
+              id="dateFrom"
+              value={props.formData.dateFrom || ""}
               onChange={(e) =>
                 props.onFormDataChange({
                   ...props.formData,
-                  from: e.target.value,
+                  dateFrom: e.target.value,
                 })
               }
               placeholder="e.g., 5500 BC"
@@ -90,16 +90,16 @@ const EraFormDialog = (props) => {
           </div>
 
           <div>
-            <label htmlFor="to" className="kemetra-field-label">
+            <label htmlFor="dateTo" className="kemetra-field-label">
               To (Birth Date) <span className="kemetra-field-required">*</span>
             </label>
             <InputText
-              id="to"
-              value={props.formData.to || ""}
+              id="dateTo"
+              value={props.formData.dateTo || ""}
               onChange={(e) =>
                 props.onFormDataChange({
                   ...props.formData,
-                  to: e.target.value,
+                  dateTo: e.target.value,
                 })
               }
               placeholder="e.g., 332 BC"
@@ -110,16 +110,16 @@ const EraFormDialog = (props) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="Hijri_from" className="kemetra-field-label">
+            <label htmlFor="hijriFrom" className="kemetra-field-label">
               From (Hijri Date)
             </label>
             <InputText
-              id="Hijri_from"
-              value={props.formData.Hijri_from || ""}
+              id="hijriFrom"
+              value={props.formData.hijriFrom || ""}
               onChange={(e) =>
                 props.onFormDataChange({
                   ...props.formData,
-                  Hijri_from: e.target.value,
+                  hijriFrom: e.target.value,
                 })
               }
               placeholder="e.g., 19 H or -"
@@ -128,16 +128,16 @@ const EraFormDialog = (props) => {
           </div>
 
           <div>
-            <label htmlFor="Hijri_to" className="kemetra-field-label">
+            <label htmlFor="hijriTo" className="kemetra-field-label">
               To (Hijri Date)
             </label>
             <InputText
-              id="Hijri_to"
-              value={props.formData.Hijri_to || ""}
+              id="hijriTo"
+              value={props.formData.hijriTo || ""}
               onChange={(e) =>
                 props.onFormDataChange({
                   ...props.formData,
-                  Hijri_to: e.target.value,
+                  hijriTo: e.target.value,
                 })
               }
               placeholder="e.g., 41 H or -"

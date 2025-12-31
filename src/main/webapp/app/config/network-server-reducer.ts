@@ -10,6 +10,11 @@ export const postVerifiedRequest = async (url, data) => {
   return response;
 };
 
+export const putVerifiedRequest = async (url, data) => {
+  const response = await axios.patch(url, data);
+  return response;
+};
+
 export const deleteVerifiedRequest = async (url, data) => {
   const response = await axios.delete(url, { data });
   return response;

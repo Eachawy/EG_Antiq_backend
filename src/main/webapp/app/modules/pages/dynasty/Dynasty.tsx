@@ -1,49 +1,64 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
-import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import PageHeader from "app/shared/components/page-header/page-header";
-import { Trash2, Plus, AlertTriangle, Inbox, PenLine } from "lucide-react";
+import { Trash2, Plus, AlertCircle, PackageOpen, PenLine } from "lucide-react";
 import DynastyFormDialog from "./DynastyFormDialog";
+import { useAppDispatch, useAppSelector } from "app/config/store";
+import {
+  getDynastiesListData,
+  createDynasty,
+  updateDynasty,
+  deleteDynasty,
+} from "./dynasty.reducer";
+import { getErasListData } from "app/modules/pages/eras/eras.reducer";
+import { toast } from "react-toastify";
 
-const DynastyPage = (props) => {
-  // Mock eras data
-  const mockEras = [
-    {
-      id: "1",
-      nameEn: "Prehistoric Era",
-      nameAr: "عصر ما قبل التاريخ",
-      from: "10000 BC",
-      to: "3100 BC",
-      Hijri_from: "",
-      Hijri_to: "",
-    },
-    {
-      id: "2",
-      nameEn: "Early Dynastic Period",
-      nameAr: "العصر العتيق",
-      from: "3100 BC",
-      to: "2686 BC",
-      Hijri_from: "",
-      Hijri_to: "",
-    },
-    {
-      id: "3",
-      nameEn: "Old Kingdom",
-      nameAr: "الدولة القديمة",
-      from: "2686 BC",
-      to: "2181 BC",
-      Hijri_from: "",
-      Hijri_to: "",
-    },
-  ];
+const DynastyPage = () => {
+  const dispatch = useAppDispatch();
+
   const [dynasties, setDynasties] = useState([]);
-  const [eras] = useState(mockEras);
+  const [eras, setEras] = useState([]);
   const [visible, setVisible] = useState(false);
   const [selectedDynasty, setSelectedDynasty] = useState(null);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData]: any = useState({});
+
+  const $DynastiesList = useAppSelector(
+    (state) => state.Dynasties.dynastiesList,
+  );
+  const loading = useAppSelector((state) => state.Dynasties.loading);
+  const $ErasList = useAppSelector((state) => state.Eras.earsList);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if ($DynastiesList) {
+      if ($DynastiesList.data && Array.isArray($DynastiesList.data)) {
+        setDynasties($DynastiesList.data);
+      } else if (Array.isArray($DynastiesList)) {
+        setDynasties($DynastiesList);
+      }
+    }
+  }, [$DynastiesList]);
+
+  useEffect(() => {
+    if ($ErasList) {
+      if ($ErasList.data && Array.isArray($ErasList.data)) {
+        setEras($ErasList.data);
+      } else if (Array.isArray($ErasList)) {
+        setEras($ErasList);
+      }
+    }
+  }, [$ErasList]);
+
+  const fetchData = async () => {
+    await dispatch(getDynastiesListData());
+    await dispatch(getErasListData());
+  };
 
   const openNew = () => {
     setFormData({});
@@ -63,19 +78,54 @@ const DynastyPage = (props) => {
     setSelectedDynasty(null);
   };
 
-  const saveDynasty = () => {
-    hideDialog();
+  const saveDynasty = async () => {
+    try {
+      if (selectedDynasty) {
+        // Update existing dynasty
+        const dynastyData = {
+          nameAr: formData.nameAr,
+          nameEn: formData.nameEn,
+          from: formData.from,
+          to: formData.to,
+          Hijri_from: formData.Hijri_from,
+          Hijri_to: formData.Hijri_to,
+          eraId: formData.eraId,
+        };
+        await dispatch(
+          updateDynasty({ id: selectedDynasty.id, data: dynastyData }),
+        ).unwrap();
+        toast.success("Dynasty updated successfully!");
+      } else {
+        // Create new dynasty
+        await dispatch(createDynasty(formData)).unwrap();
+        toast.success("Dynasty created successfully!");
+      }
+      hideDialog();
+      await dispatch(getDynastiesListData());
+    } catch (error) {
+      toast.error("An error occurred while saving the dynasty.");
+      console.error("Save error:", error);
+    }
   };
 
-  const confirmDelete = (dynasty) => {
+  const handleDelete = async (id: string | number) => {
+    try {
+      await dispatch(deleteDynasty(id)).unwrap();
+      toast.success("Dynasty deleted successfully!");
+      await dispatch(getDynastiesListData());
+    } catch (error) {
+      toast.error("An error occurred while deleting the dynasty.");
+      console.error("Delete error:", error);
+    }
+  };
+
+  const confirmDelete = (dynasty: any) => {
     confirmDialog({
-      message: `Are you sure you want to delete ${dynasty.nameEn}?`,
+      message: `Are you sure you want to delete ${dynasty.nameEn || dynasty.name_en}?`,
       header: "Confirm Deletion",
-      icon: <AlertTriangle size={24} className="text-red-500" />,
+      icon: <AlertCircle size={24} className="text-red-500" />,
       acceptClassName: "p-button-danger",
-      // accept: () => {
-      //   setDynasties(dynasties.filter((d) => d.id !== dynasty.id));
-      // },
+      accept: () => handleDelete(dynasty.id),
     });
   };
 
@@ -123,12 +173,13 @@ const DynastyPage = (props) => {
       <div className="kemetra-page-table-container">
         <DataTable
           value={dynasties}
+          loading={loading}
           paginator
           rows={10}
           dataKey="id"
           emptyMessage={
             <div className="kemetra-empty-state-container">
-              <Inbox size={48} className="kemetra-empty-state-icon" />
+              <PackageOpen size={48} className="kemetra-empty-state-icon" />
               <p className="kemetra-empty-state-title">No dynasties found</p>
               <p className="kemetra-empty-state-desc">
                 Get started by adding your first dynasty
@@ -160,6 +211,7 @@ const DynastyPage = (props) => {
         >
           <Column
             field="nameEn"
+            body={(rowData) => rowData.nameEn || rowData.name_en || "-"}
             header="Name (English)"
             sortable
             headerClassName="kemetra-table-column-header"
@@ -167,10 +219,11 @@ const DynastyPage = (props) => {
           />
           <Column
             field="nameAr"
+            body={(rowData) => rowData.nameAr || rowData.name_ar || "-"}
             header="Name (Arabic)"
             sortable
             headerClassName="kemetra-table-column-header"
-            bodyClassName="kemetra-table-cell-arabic-rtl"
+            bodyClassName="kemetra-table-cell-arabic"
           />
           <Column
             field="eraId"

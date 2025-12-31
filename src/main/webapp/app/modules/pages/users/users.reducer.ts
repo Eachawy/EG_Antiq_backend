@@ -12,41 +12,41 @@ import {
 } from "@reduxjs/toolkit";
 import { serializeAxiosError } from "app/shared/reducers/reducer.utils";
 import {
-  GET_Eras_API,
-  CREATE_Era_API,
-  UPDATE_Era_API,
-  DELETE_Era_API,
+  GET_Users_API,
+  CREATE_User_API,
+  UPDATE_User_API,
+  DELETE_User_API,
 } from "app/config/constants";
 
 const initialState: any = {
   errorMessage: null,
   loading: false,
-  earsList: null,
+  usersList: null,
 };
 
-export type IErasListState = Readonly<typeof initialState>;
+export type IUsersListState = Readonly<typeof initialState>;
 
 // Actions
-export const getErasListData = createAsyncThunk(
-  "Eras/GET_ERAS_List",
-  async () => getVerifiedRequest(GET_Eras_API),
+export const getUsersListData = createAsyncThunk(
+  "Users/GET_USERS_List",
+  async () => getVerifiedRequest(GET_Users_API),
   {
     serializeError: serializeAxiosError,
   },
 );
 
-export const createEra = createAsyncThunk(
-  "Eras/CREATE_ERA",
-  async (data: any) => postVerifiedRequest(CREATE_Era_API, data),
+export const createUser = createAsyncThunk(
+  "Users/CREATE_USER",
+  async (data: any) => postVerifiedRequest(CREATE_User_API, data),
   {
     serializeError: serializeAxiosError,
   },
 );
 
-export const updateEra = createAsyncThunk(
-  "Eras/UPDATE_ERA",
+export const updateUser = createAsyncThunk(
+  "Users/UPDATE_USER",
   async ({ id, data }: { id: string | number; data: any }) => {
-    const url = `${UPDATE_Era_API}/${id}`;
+    const url = `${UPDATE_User_API}/${id}`;
     return putVerifiedRequest(url, data);
   },
   {
@@ -54,18 +54,18 @@ export const updateEra = createAsyncThunk(
   },
 );
 
-export const deleteEra = createAsyncThunk(
-  "Eras/DELETE_ERA",
+export const deleteUser = createAsyncThunk(
+  "Users/DELETE_USER",
   async (id: string | number) =>
-    deleteVerifiedRequest(`${DELETE_Era_API}/${id}`, {}),
+    deleteVerifiedRequest(`${DELETE_User_API}/${id}`, {}),
   {
     serializeError: serializeAxiosError,
   },
 );
 
-export const ErasState = createSlice({
-  name: "Eras",
-  initialState: initialState as IErasListState,
+export const UsersState = createSlice({
+  name: "Users",
+  initialState: initialState as IUsersListState,
   reducers: {
     reset() {
       return initialState;
@@ -73,26 +73,26 @@ export const ErasState = createSlice({
   },
   extraReducers(builder) {
     builder
-      // Get Eras List
-      .addCase(getErasListData.fulfilled, (state, action) => {
+      // Get Users List
+      .addCase(getUsersListData.fulfilled, (state, action) => {
         state.loading = false;
-        state.earsList = action.payload.data;
+        state.usersList = action.payload.data;
       })
-      // Create Era
-      .addCase(createEra.fulfilled, (state) => {
-        state.loading = false;
-      })
-      // Update Era
-      .addCase(updateEra.fulfilled, (state) => {
+      // Create User
+      .addCase(createUser.fulfilled, (state) => {
         state.loading = false;
       })
-      // Delete Era
-      .addCase(deleteEra.fulfilled, (state) => {
+      // Update User
+      .addCase(updateUser.fulfilled, (state) => {
+        state.loading = false;
+      })
+      // Delete User
+      .addCase(deleteUser.fulfilled, (state) => {
         state.loading = false;
       })
       // Pending states
       .addMatcher(
-        isPending(getErasListData, createEra, updateEra, deleteEra),
+        isPending(getUsersListData, createUser, updateUser, deleteUser),
         (state) => {
           state.loading = true;
           state.errorMessage = null;
@@ -100,7 +100,7 @@ export const ErasState = createSlice({
       )
       // Rejected states
       .addMatcher(
-        isRejected(getErasListData, createEra, updateEra, deleteEra),
+        isRejected(getUsersListData, createUser, updateUser, deleteUser),
         (state, action) => {
           state.loading = false;
           state.errorMessage = action.error.message;
@@ -109,7 +109,7 @@ export const ErasState = createSlice({
   },
 });
 
-export const { reset } = ErasState.actions;
+export const { reset } = UsersState.actions;
 
 // Reducer
-export default ErasState.reducer;
+export default UsersState.reducer;

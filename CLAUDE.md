@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a JHipster 9.0.0-beta.0 generated React + TypeScript application with Redux Toolkit state management. The project has been recently updated to use Tailwind CSS v4.1.18 for styling, replacing the previous styling approach.
+This is a JHipster 9.0.0-beta.0 generated React + TypeScript application with Redux Toolkit state management and Tailwind CSS v4.1.18 for styling. The application is an Egyptian antiquities management system with multiple page modules for managing monuments, eras, dynasties, galleries, and users.
 
 ## Essential Commands
 
@@ -61,24 +61,35 @@ The application uses Redux Toolkit (@reduxjs/toolkit) with a modular reducer str
 
 - Store configuration: `src/main/webapp/app/config/store.ts`
 - Root reducers combined in: `src/main/webapp/app/shared/reducers/index.ts`
-- Core reducers: `authentication`, `locale`, `applicationProfile`, and `loadingBar`
+- Core reducers: `authentication`, `locale`, `loadingBar`, and page-specific reducers (e.g., `Eras`)
 - Custom middleware stack includes: error handling, notifications, loading bar, and logger
 - Typed hooks `useAppSelector` and `useAppDispatch` for type-safe Redux access
 
 ### Application Bootstrap Flow
 
 1. Entry point: `src/main/webapp/app/index.tsx` creates root, sets up store and axios interceptors
-2. Main App: `src/main/webapp/app/app.tsx` handles session initialization, locale management, and routing
-3. Axios interceptors automatically attach JWT tokens from local/session storage
-4. Session and profile fetched on app mount via Redux actions
+2. Main App: `src/main/webapp/app/app.tsx` handles locale management, text direction, and routing
+3. Axios interceptors automatically attach JWT tokens from session storage (key: `token`)
+4. Session fetched on login via Redux actions
 
 ### Routing Architecture
 
 - React Router v7 with lazy loading via `react-loadable`
 - Routes defined in: `src/main/webapp/app/routes.tsx`
 - `ErrorBoundaryRoutes` wrapper provides error boundary protection
-- `PrivateRoute` component handles authentication-based route protection
-- Currently only home route is active; account and admin routes are commented out
+- `PrivateRoute` component available for authentication-based route protection
+- Login page is the index route; authenticated routes are wrapped in `LayoutSystemTemplete`
+- Active page routes: dashboard, eras, descriptionMonuments, dynasty, favourites, gallery, monuments, monumentsEra, monumentsType, portalUsers, savedSearch, userHistory, users
+- Account and admin routes are commented out
+
+### Authentication Flow
+
+- Login endpoint: `http://localhost:3000/api/v1/auth/login`
+- Authentication state managed via Redux (`authentication` reducer)
+- JWT token stored in session storage with key `token`
+- Token automatically attached to requests via axios interceptor
+- 401 responses trigger authentication clearing
+- User roles are checked from response: `response.data.data.user.roles`
 
 ### i18n Architecture
 
@@ -91,11 +102,12 @@ The application uses Redux Toolkit (@reduxjs/toolkit) with a modular reducer str
 
 ### Styling System
 
-- **Tailwind CSS v4.1.18** is the primary styling framework (recently migrated from v3)
+- **Tailwind CSS v4.1.18** is the primary styling framework
 - Tailwind imported via `@use "tailwindcss"` in `app.scss`
-- PostCSS configuration includes Tailwind, RTL CSS support, and autoprefixer
+- PostCSS configuration includes Tailwind, RTL CSS support via `postcss-rtlcss`, and autoprefixer
+- Additional UI libraries: PrimeReact (with Lara Light Blue theme), Lucide React icons
+- Custom CSS files: fonts.css, design-system.css, theme.css, kemetra.css (including RTL variant)
 - SCSS still supported for component-specific styles
-- Some legacy SCSS files remain (header, footer, home modules)
 
 ### TypeScript Configuration
 
@@ -111,7 +123,7 @@ The application uses Redux Toolkit (@reduxjs/toolkit) with a modular reducer str
 - Dev config: `webpack/webpack.dev.js` (hot reload, source maps, dev server)
 - Prod config: `webpack/webpack.prod.js` (minification, optimization)
 - Uses thread-loader for parallel TypeScript compilation
-- Filesystem caching enabled for faster rebuilds
+- Filesystem caching enabled for faster rebuilds in `target/webpack`
 - Path aliases automatically mapped from tsconfig
 
 ## Key Files & Patterns
@@ -119,10 +131,18 @@ The application uses Redux Toolkit (@reduxjs/toolkit) with a modular reducer str
 ### Configuration Files
 
 - `webpack/environment.js` - Environment variables and build constants
-- `src/main/webapp/app/config/constants.ts` - Application constants including AUTHORITIES
+- `src/main/webapp/app/config/constants.ts` - Application constants including AUTHORITIES, API endpoints, date formats
 - `src/main/webapp/app/config/axios-interceptor.ts` - HTTP interceptor setup
 - `src/main/webapp/app/config/translation.ts` - i18n configuration and text direction
 - `src/main/webapp/app/config/dayjs.ts` - Day.js configuration
+- `postcss.config.cjs` - PostCSS plugins (RTL CSS, autoprefixer, Tailwind)
+
+### API Configuration
+
+- Base URL: `http://localhost:3000/api` (defined in `constants.ts`)
+- Axios timeout: 60 seconds
+- Authentication header: `Authorization: Bearer <token>`
+- Example endpoints defined in constants: `/v1/auth/login`, `/v1/auth/logout`, `/v1/eras`
 
 ### Middleware Pattern
 
@@ -135,7 +155,15 @@ Redux middleware stack in store configuration handles cross-cutting concerns:
 
 ### Private Route Pattern
 
-Authentication is checked via `hasAnyAuthority()` helper function which verifies user authorities against required roles (ADMIN, USER). Currently, authentication routes are commented out in the main routes file.
+Authentication is checked via `hasAnyAuthority()` helper function which verifies user authorities against required roles (ADMIN, USER). The function is available in `src/main/webapp/app/shared/auth/private-route.tsx` but currently authentication routes are commented out in the main routes file.
+
+### Page Module Pattern
+
+Page modules follow a consistent structure in `src/main/webapp/app/modules/pages/{page-name}/`:
+
+- Component file (e.g., `eras.tsx`)
+- Reducer file with async thunks (e.g., `eras.reducer.ts`)
+- Reducers registered in `src/main/webapp/app/shared/reducers/index.ts`
 
 ### Testing Structure
 
@@ -144,13 +172,15 @@ Authentication is checked via `hasAnyAuthority()` helper function which verifies
 - Cypress support files and custom commands: `src/test/javascript/cypress/support/`
 - Jest config uses path alias mapping from tsconfig
 - Test setup file: `src/main/webapp/app/setup-tests.ts`
+- Test environment: `jest-fixed-jsdom`
 
 ## Important Notes
 
-- **Tailwind v4**: Recently migrated to Tailwind CSS v4. Use Tailwind utility classes for new components.
+- **Tailwind v4**: Use Tailwind utility classes for new components. RTL support is automatic via PostCSS.
 - **JHipster Conventions**: This is a JHipster-generated app; follow JHipster patterns for consistency.
 - **Path Aliases**: Use `app/*` imports instead of relative paths (e.g., `import { foo } from 'app/shared/util'`).
 - **No Backend Scripts**: The `backend:start` command mentioned in README is not defined in package.json.
-- **Code Quality**: Husky git hooks are configured. Linting runs before tests via `pretest` script.
+- **Code Quality**: Husky and lint-staged are configured. Linting runs before tests via `pretest` script.
 - **Bundle Size**: Uses code splitting with lazy loading for better performance.
 - **PWA Support**: Service worker code is commented out by default in `index.html`.
+- **Node Version**: Requires Node.js >= 24.11.1 (specified in package.json engines).
