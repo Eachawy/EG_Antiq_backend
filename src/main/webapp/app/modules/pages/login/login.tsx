@@ -35,7 +35,7 @@ const LoginPage = (pops) => {
   // }, []);
 
   if ($isAuthenticated) {
-    navigate("/dashoard");
+    navigate("/dashboard");
   }
 
   const handleLogin = (values) => {

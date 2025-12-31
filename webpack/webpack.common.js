@@ -82,6 +82,13 @@ module.exports = async (options) => {
           test: /\.jsx?$/,
           loader: "source-map-loader",
         },
+        {
+          test: /\.(svg|woff2?|eot|ttf|otf)$/,
+          type: "asset/resource",
+          generator: {
+            filename: "content/images/[name].[hash][ext]",
+          },
+        },
       ],
     },
     stats: {

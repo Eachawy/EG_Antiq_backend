@@ -16,3 +16,5 @@ export const APP_TWO_DIGITS_AFTER_POINT_NUMBER_FORMAT = "0,0.[00]";
 
 export const GATEWAY_SERVER_API_URL = "http://localhost:3000/api";
 export const AUTH_LOGIN = "/v1/auth/login";
+export const AUTH_LOGOUT = "/v1/auth/logout";
+export const GET_Eras_API = "/v1/eras";

@@ -9,7 +9,7 @@ import { setLocale } from "app/shared/reducers/locale";
 import { serializeAxiosError } from "./reducer.utils";
 import { AUTH_LOGIN } from "app/config/constants";
 
-const AUTH_TOKEN_KEY = "jhi-authenticationToken";
+const AUTH_TOKEN_KEY = "token";
 
 export const initialState = {
   loading: false,
@@ -28,22 +28,17 @@ export type AuthenticationState = Readonly<typeof initialState>;
 
 // Actions
 
-export const getSession = (): AppThunk => async (dispatch, getState) => {
-  await dispatch(getAccount());
+export const getSession =
+  (response): AppThunk =>
+  async (dispatch, getState) => {
+    await dispatch(getAccount(response));
 
-  const { account } = getState().authentication;
-  if (account?.langKey) {
-    const langKey = Storage.session.get("locale", account.langKey);
-    await dispatch(setLocale(langKey));
-  }
-};
+    const { account } = getState().authentication;
+  };
 
 export const getAccount = createAsyncThunk(
   "authentication/get_account",
-  async () => axios.get<any>("api/account"),
-  {
-    serializeError: serializeAxiosError,
-  },
+  (response: any) => response,
 );
 
 interface IAuthParams {
@@ -63,13 +58,9 @@ export const login: (username: string, password: string) => AppThunk =
   (email, password) => async (dispatch) => {
     const result = await dispatch(authenticate({ email, password }));
     const response = result.payload as AxiosResponse;
-    const bearerToken = response?.headers?.authorization;
-    if (bearerToken?.startsWith("Bearer ")) {
-      const jwt = bearerToken.slice(7, bearerToken.length);
-      // eslint-disable-next-line no-console
-      console.log(jwt);
-    }
-    // dispatch(getSession());
+    const Token = response?.data?.data?.accessToken;
+    Storage.session.set(AUTH_TOKEN_KEY, Token);
+    dispatch(getSession(response));
   };
 
 export const clearAuthToken = () => {
@@ -142,13 +133,13 @@ export const AuthenticationSlice = createSlice({
         errorMessage: action.error.message,
       }))
       .addCase(getAccount.fulfilled, (state, action) => {
-        const isAuthenticated = action.payload?.data?.activated;
+        const isAuthenticated = action.payload.data.data.user.roles.length > 0;
         return {
           ...state,
           isAuthenticated,
           loading: false,
           sessionHasBeenFetched: true,
-          account: action.payload.data,
+          account: action.payload.data.data.user,
         };
       })
       .addCase(authenticate.pending, (state) => {

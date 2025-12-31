@@ -1,67 +1,42 @@
 import "./eras.scss";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { DataTable } from "primereact/datatable";
 
-import { useAppSelector } from "app/config/store";
+import { useAppDispatch, useAppSelector } from "app/config/store";
 import { PenLine, Trash2, Plus, AlertCircle, PackageOpen } from "lucide-react";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import PageHeader from "app/shared/components/page-header/page-header";
 import EraFormDialog from "./EraFormDialog";
+import { useNavigate } from "react-router";
+import { getErasListData } from "./eras.reducer";
 
 export const ErasManagement = () => {
-  const [eras, setEras] = useState([
-    {
-      id: "1",
-      nameEn: "Pharaonic",
-      nameAr: "الفرعونية",
-      from: "5500 BC",
-      to: "332 BC",
-      Hijri_from: "-",
-      Hijri_to: "-",
-    },
-    {
-      id: "2",
-      nameEn: "Ptolemaic",
-      nameAr: "البطلمي",
-      from: "332 BC",
-      to: "30 BC",
-      Hijri_from: "-",
-      Hijri_to: "-",
-    },
-    {
-      id: "3",
-      nameEn: "Roman",
-      nameAr: "الروماني",
-      from: "30 BC",
-      to: "395 AD",
-      Hijri_from: "-",
-      Hijri_to: "-",
-    },
-    {
-      id: "4",
-      nameEn: "Byzantine",
-      nameAr: "البيزنطي",
-      from: "395 AD",
-      to: "641 AD",
-      Hijri_from: "-",
-      Hijri_to: "-",
-    },
-    {
-      id: "5",
-      nameEn: "Islamic",
-      nameAr: "الإسلامي",
-      from: "640 AD",
-      to: "-",
-      Hijri_from: "19 H",
-      Hijri_to: "41 H",
-    },
-  ]);
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const [eras, setEras] = useState();
   const [visible, setVisible] = useState(false);
   const [selectedEra, setSelectedEra] = useState(null);
   const [formData, setFormData]: any = useState({});
+
+  const $ErasList = useAppSelector((state) => state.Eras.earsList);
+
+  useEffect(() => {
+    getCompletedChartsDataFN();
+  }, []);
+
+  useEffect(() => {
+    if ($ErasList) {
+      // eslint-disable-next-line no-console
+      console.log($ErasList.data);
+    }
+  }, [$ErasList]);
+  const getCompletedChartsDataFN = async () => {
+    await dispatch(getErasListData());
+  };
 
   const openNew = () => {
     setFormData({});

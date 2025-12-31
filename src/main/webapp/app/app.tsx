@@ -13,10 +13,6 @@ import { useAppDispatch, useAppSelector } from "app/config/store";
 import AppRoutes from "app/routes";
 import { hasAnyAuthority } from "app/shared/auth/private-route";
 import ErrorBoundary from "app/shared/error/error-boundary";
-import Footer from "app/shared/layout/footer/footer";
-import Header from "app/shared/layout/header/header";
-import { getProfile } from "app/shared/reducers/application-profile";
-import { getSession } from "app/shared/reducers/authentication";
 import { Storage } from "react-jhipster";
 
 import { setTextDirection } from "./config/translation";
@@ -27,13 +23,6 @@ const baseHref = document
   .replace(/\/$/, "");
 
 export const App = () => {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(getSession());
-    dispatch(getProfile());
-  }, []);
-
   const currentLocale = useAppSelector((state) => state.locale.currentLocale);
   Storage.session.set("locale", currentLocale);
   // const isAuthenticated = useAppSelector(
