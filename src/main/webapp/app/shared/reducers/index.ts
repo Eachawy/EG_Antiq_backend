@@ -14,6 +14,8 @@ import PortalUsers from "app/modules/pages/portal-users/portal-users.reducer";
 import Favourites from "app/modules/pages/favourites/favourites.reducer";
 import SavedSearches from "app/modules/pages/saved-search/saved-search.reducer";
 import UserHistory from "app/modules/pages/user-history/user-history.reducer";
+import Roles from "app/modules/pages/roles/roles.reducer";
+import UserRoles from "app/modules/pages/user-roles/user-roles.reducer";
 
 const rootReducer: ReducersMapObject = {
   authentication,
@@ -31,6 +33,8 @@ const rootReducer: ReducersMapObject = {
   Favourites,
   SavedSearches,
   UserHistory,
+  Roles,
+  UserRoles,
 };
 
 export default rootReducer;

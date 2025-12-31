@@ -113,8 +113,14 @@ const PortalUsersPage = () => {
       }
       hideDialog();
       await dispatch(getPortalUsersListData());
-    } catch (error) {
-      toast.error("An error occurred while saving the portal user.");
+    } catch (error: any) {
+      // Extract error message from backend response (AxiosError structure)
+      const errorMessage =
+        error?.response?.data?.error?.message ||
+        error?.error?.message ||
+        error?.message ||
+        "An error occurred while saving the portal user.";
+      toast.error(errorMessage);
       console.error("Save error:", error);
     }
   };
@@ -124,8 +130,14 @@ const PortalUsersPage = () => {
       await dispatch(deletePortalUser(id)).unwrap();
       toast.success("Portal user deleted successfully!");
       await dispatch(getPortalUsersListData());
-    } catch (error) {
-      toast.error("An error occurred while deleting the portal user.");
+    } catch (error: any) {
+      // Extract error message from backend response (AxiosError structure)
+      const errorMessage =
+        error?.response?.data?.error?.message ||
+        error?.error?.message ||
+        error?.message ||
+        "An error occurred while deleting the portal user.";
+      toast.error(errorMessage);
       console.error("Delete error:", error);
     }
   };

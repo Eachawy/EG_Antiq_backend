@@ -22,6 +22,8 @@ import PortalUsersPage from "./modules/pages/portal-users/PortalUsers";
 import SavedSearchPage from "./modules/pages/saved-search/SavedSearch";
 import UserHistoryPage from "./modules/pages/user-history/UserHistory";
 import UsersPage from "./modules/pages/users/Users";
+import RolesPage from "./modules/pages/roles/Roles";
+import UserRolesPage from "./modules/pages/user-roles/UserRoles";
 
 const loading = <div>loading ...</div>;
 
@@ -59,6 +61,8 @@ const AppRoutes = () => {
           <Route path="savedSearch" element={<SavedSearchPage />} />
           <Route path="userHistory" element={<UserHistoryPage />} />
           <Route path="users" element={<UsersPage />} />
+          <Route path="roles" element={<RolesPage />} />
+          <Route path="userRoles" element={<UserRolesPage />} />
         </Route>
         {/* <Route path="account">
           <Route

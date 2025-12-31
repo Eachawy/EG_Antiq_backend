@@ -40,7 +40,8 @@ const Menu = (props) => {
       children: [
         { label: "Users", icon: Users, page: "users" },
         { label: "Portal Users", icon: User, page: "portalUsers" },
-        { label: "Rules", icon: BookmarkCheck, page: "rules" },
+        { label: "Roles", icon: BookmarkCheck, page: "Roles" },
+        { label: "User Roles", icon: BookmarkCheck, page: "userRoles" },
         { label: "Favourites", icon: Heart, page: "favourites" },
         { label: "Saved Search", icon: Search, page: "savedSearch" },
         { label: "User History", icon: History, page: "userHistory" },

@@ -129,8 +129,14 @@ const UsersPage = () => {
       }
       hideDialog();
       await dispatch(getUsersListData());
-    } catch (error) {
-      toast.error("An error occurred while saving the user.");
+    } catch (error: any) {
+      // Extract error message from backend response (AxiosError structure)
+      const errorMessage =
+        error?.response?.data?.error?.message ||
+        error?.error?.message ||
+        error?.message ||
+        "An error occurred while saving the user.";
+      toast.error(errorMessage);
       console.error("Save error:", error);
     }
   };
@@ -140,8 +146,14 @@ const UsersPage = () => {
       await dispatch(deleteUser(id)).unwrap();
       toast.success("User deleted successfully!");
       await dispatch(getUsersListData());
-    } catch (error) {
-      toast.error("An error occurred while deleting the user.");
+    } catch (error: any) {
+      // Extract error message from backend response (AxiosError structure)
+      const errorMessage =
+        error?.response?.data?.error?.message ||
+        error?.error?.message ||
+        error?.message ||
+        "An error occurred while deleting the user.";
+      toast.error(errorMessage);
       console.error("Delete error:", error);
     }
   };

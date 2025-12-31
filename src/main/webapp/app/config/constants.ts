@@ -89,3 +89,12 @@ export const DELETE_SavedSearch_API = "/v1/admin/portal-users/saved-searches"; /
 // Browsing History APIs (Admin)
 export const GET_BrowsingHistory_API = "/v1/admin/portal-users/history/all";
 export const DELETE_BrowsingHistory_API = "/v1/admin/portal-users/history"; // Will append /:id
+
+// Roles APIs
+export const GET_Roles_API = "/v1/roles";
+export const CREATE_Role_API = "/v1/roles";
+export const UPDATE_Role_API = "/v1/roles"; // Will append /:id
+export const DELETE_Role_API = "/v1/roles"; // Will append /:id
+export const ASSIGN_Role_API = "/v1/roles/assign";
+export const REMOVE_Role_API = "/v1/roles"; // Will append /:roleId/users/:userId
+export const GET_RoleUsers_API = "/v1/roles"; // Will append /:id/users
