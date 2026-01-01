@@ -1,6 +1,6 @@
 export const AUTHORITIES = {
-  ADMIN: "ADMIN",
-  USER: "ROLE_USER",
+  ADMIN: "admin",
+  USER: "member",
   PORTAL_ADMIN: "PORTAL_ADMIN",
 };
 
@@ -15,10 +15,12 @@ export const APP_LOCAL_DATETIME_FORMAT = "YYYY-MM-DDTHH:mm";
 export const APP_WHOLE_NUMBER_FORMAT = "0,0";
 export const APP_TWO_DIGITS_AFTER_POINT_NUMBER_FORMAT = "0,0.[00]";
 export const AUTH_TOKEN_KEY = "token";
+export const REFRESH_TOKEN_KEY = "refreshToken";
 
 export const GATEWAY_SERVER_API_URL = "http://localhost:3000/api";
 export const AUTH_LOGIN = "/v1/auth/login";
 export const AUTH_LOGOUT = "/v1/auth/logout";
+export const AUTH_REFRESH = "/v1/auth/refresh";
 
 // Eras APIs
 export const GET_Eras_API = "/v1/eras";

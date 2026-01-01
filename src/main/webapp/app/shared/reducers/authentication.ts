@@ -7,7 +7,12 @@ import { AppThunk } from "app/config/store";
 import { setLocale } from "app/shared/reducers/locale";
 
 import { serializeAxiosError } from "./reducer.utils";
-import { AUTH_LOGIN, AUTH_TOKEN_KEY } from "app/config/constants";
+import {
+  AUTH_LOGIN,
+  AUTH_LOGOUT,
+  AUTH_TOKEN_KEY,
+  REFRESH_TOKEN_KEY,
+} from "app/config/constants";
 
 export const initialState = {
   loading: false,
@@ -54,8 +59,13 @@ export const login: (username: string, password: string) => AppThunk =
   (email, password) => async (dispatch) => {
     const result = await dispatch(authenticate({ email, password }));
     const response = result.payload as AxiosResponse;
-    const Token = response?.data?.data?.accessToken;
-    Storage.session.set(AUTH_TOKEN_KEY, Token);
+    const accessToken = response?.data?.data?.accessToken;
+    const refreshToken = response?.data?.data?.refreshToken;
+
+    // Store both access and refresh tokens
+    Storage.session.set(AUTH_TOKEN_KEY, accessToken);
+    Storage.session.set(REFRESH_TOKEN_KEY, refreshToken);
+
     dispatch(getSession(response));
   };
 
@@ -66,11 +76,43 @@ export const clearAuthToken = () => {
   if (Storage.session.get(AUTH_TOKEN_KEY)) {
     Storage.session.remove(AUTH_TOKEN_KEY);
   }
+  if (Storage.local.get(REFRESH_TOKEN_KEY)) {
+    Storage.local.remove(REFRESH_TOKEN_KEY);
+  }
+  if (Storage.session.get(REFRESH_TOKEN_KEY)) {
+    Storage.session.remove(REFRESH_TOKEN_KEY);
+  }
+
+  if (Storage.session.get("isAuthenticated")) {
+    Storage.session.remove("isAuthenticated");
+  }
+  if (Storage.session.get("account")) {
+    Storage.session.remove("account");
+  }
+  if (Storage.session.get("sessionHasBeenFetched")) {
+    Storage.session.remove("sessionHasBeenFetched");
+  }
 };
 
-export const logout: () => AppThunk = () => (dispatch) => {
-  clearAuthToken();
-  dispatch(logoutSession());
+export const logout: () => AppThunk = () => async (dispatch) => {
+  try {
+    // Get refresh token before clearing
+    const refreshToken =
+      Storage.local.get(REFRESH_TOKEN_KEY) ||
+      Storage.session.get(REFRESH_TOKEN_KEY);
+
+    // Call backend logout endpoint to invalidate refresh token
+    if (refreshToken) {
+      await axios.post(AUTH_LOGOUT, { refreshToken });
+    }
+  } catch (error) {
+    // Continue with logout even if backend call fails
+    console.error("Logout error:", error);
+  } finally {
+    // Clear tokens from storage
+    clearAuthToken();
+    dispatch(logoutSession());
+  }
 };
 
 export const clearAuthentication = (messageKey) => (dispatch) => {

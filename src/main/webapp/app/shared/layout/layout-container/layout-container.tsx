@@ -3,18 +3,30 @@ import ErrorBoundary from "app/shared/error/error-boundary";
 import { OverlayPanel } from "primereact/overlaypanel";
 import Footer from "app/shared/layout/footer/footer";
 import Header from "app/shared/layout/header/header";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Menu from "../menu/menu";
+import { useAppDispatch } from "app/config/store";
+import { logout } from "app/shared/reducers/authentication";
 
 export const LayoutSystemTemplete = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [mainMargin, setMainMargin] = useState("260px");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarVisible, setMobileSidebarVisible] = useState(false);
   const notificationsRef = React.useRef<OverlayPanel>(null);
   const profileRef = React.useRef<OverlayPanel>(null);
+
   const handleLogout = () => {
-    // eslint-disable-next-line no-console
-    console.log("LogOut");
+    try {
+      dispatch(logout());
+      // Redirect to login page after logout
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // Still navigate to login even if logout fails
+      navigate("/");
+    }
   };
 
   useEffect(() => {

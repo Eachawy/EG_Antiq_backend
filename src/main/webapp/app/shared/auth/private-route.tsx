@@ -1,5 +1,5 @@
 import React from "react";
-import { Translate } from "react-jhipster";
+import { Storage, Translate } from "react-jhipster";
 import { Navigate, PathRouteProps, useLocation } from "react-router-dom";
 
 import { useAppSelector } from "app/config/store";
@@ -16,12 +16,23 @@ export const PrivateRoute = ({
   ...rest
 }: IOwnProps) => {
   const isAuthenticated = useAppSelector(
-    (state) => state.authentication.isAuthenticated,
+    (state) =>
+      Storage.session.get("isAuthenticated") ||
+      state.authentication.isAuthenticated,
   );
-  const sessionHasBeenFetched = useAppSelector(
-    (state) => state.authentication.sessionHasBeenFetched,
-  );
-  const account = useAppSelector((state) => state.authentication.account);
+
+  const sessionHasBeenFetched =
+    Storage.session.get("sessionHasBeenFetched") ||
+    useAppSelector((state) => state.authentication.sessionHasBeenFetched);
+
+  const account =
+    Storage.session.get("account") ||
+    useAppSelector((state) => state.authentication.account);
+
+  Storage.session.set("isAuthenticated", isAuthenticated);
+  Storage.session.set("sessionHasBeenFetched", sessionHasBeenFetched);
+  Storage.session.set("account", account);
+
   const isAuthorized = hasAnyAuthority(account.roles, hasAnyAuthorities);
   const pageLocation = useLocation();
 
