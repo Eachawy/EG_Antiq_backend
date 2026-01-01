@@ -137,6 +137,8 @@ const MonumentsPage = () => {
         monumentType,
         era,
         dynasty,
+        monumentDescriptions,
+        galleries,
         descriptionEn,
         descriptionAr,
         ...allowedData
