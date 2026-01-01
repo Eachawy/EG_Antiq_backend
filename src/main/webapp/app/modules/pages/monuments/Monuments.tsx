@@ -286,19 +286,19 @@ const MonumentsPage = () => {
         description="Manage monuments with descriptions"
         actionLabel="Add Monument"
         onAction={openNew}
+        csvImport={() => setCsvImportVisible(true)}
       />
 
-      {/* Import CSV Button */}
-      <div className="mb-4 flex justify-end">
+      {/* <div className="mb-4 flex justify-end">
         <Button
           label="Import from CSV"
           icon={<FileUp size={18} />}
           onClick={() => setCsvImportVisible(true)}
           outlined
           severity="secondary"
-          className="kemetra-btn-secondary"
+          className="kemetra-btn-primary"
         />
-      </div>
+      </div> */}
 
       <div className="kemetra-page-table-container">
         <DataTable

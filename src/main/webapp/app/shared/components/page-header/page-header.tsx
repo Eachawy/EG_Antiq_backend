@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "primereact/button";
-import { Plus } from "lucide-react";
+import { FileUp, Plus } from "lucide-react";
 
 const PageHeader = (props) => {
   return (
@@ -15,14 +15,27 @@ const PageHeader = (props) => {
           </div>
         )}
       </div>
-      {props.actionLabel && props.onAction && (
-        <Button
-          label={props.actionLabel}
-          icon={<Plus size={18} />}
-          onClick={props.onAction}
-          className="kemetra-btn-primary"
-        />
-      )}
+      <div className="mb-4 flex justify-end gap-3">
+        {/* Import CSV Button */}
+        {props.csvImport && (
+          <Button
+            label="Import from CSV"
+            icon={<FileUp size={18} />}
+            onClick={props.csvImport}
+            outlined
+            severity="secondary"
+            className="kemetra-btn-primary"
+          />
+        )}
+        {props.actionLabel && props.onAction && (
+          <Button
+            label={props.actionLabel}
+            icon={<Plus size={18} />}
+            onClick={props.onAction}
+            className="kemetra-btn-primary"
+          />
+        )}
+      </div>
     </div>
   );
 };
