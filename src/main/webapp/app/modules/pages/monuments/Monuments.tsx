@@ -6,7 +6,15 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Chip } from "primereact/chip";
 import PageHeader from "app/shared/components/page-header/page-header";
 import MonumentFormDialog from "./MonumentFormDialog";
-import { Trash2, Plus, AlertCircle, PackageOpen, PenLine } from "lucide-react";
+import CsvImportDialog from "./CsvImportDialog";
+import {
+  Trash2,
+  Plus,
+  AlertCircle,
+  PackageOpen,
+  PenLine,
+  FileUp,
+} from "lucide-react";
 import { useAppDispatch, useAppSelector } from "app/config/store";
 import {
   getMonumentsListData,
@@ -28,6 +36,7 @@ const MonumentsPage = () => {
   const [eras, setEras] = useState([]);
   const [dynasties, setDynasties] = useState([]);
   const [visible, setVisible] = useState(false);
+  const [csvImportVisible, setCsvImportVisible] = useState(false);
   const [selectedMonument, setSelectedMonument] = useState(null);
   const [formData, setFormData]: any = useState({});
 
@@ -261,6 +270,11 @@ const MonumentsPage = () => {
     return dynastyName;
   };
 
+  const handleCsvImportComplete = async () => {
+    await fetchData();
+    setCsvImportVisible(false);
+  };
+
   return (
     <div>
       <ConfirmDialog />
@@ -271,6 +285,18 @@ const MonumentsPage = () => {
         actionLabel="Add Monument"
         onAction={openNew}
       />
+
+      {/* Import CSV Button */}
+      <div className="mb-4 flex justify-end">
+        <Button
+          label="Import from CSV"
+          icon={<FileUp size={18} />}
+          onClick={() => setCsvImportVisible(true)}
+          outlined
+          severity="secondary"
+          className="kemetra-btn-secondary"
+        />
+      </div>
 
       <div className="kemetra-page-table-container">
         <DataTable
@@ -377,6 +403,12 @@ const MonumentsPage = () => {
         onHide={hideDialog}
         onSave={saveMonument}
         onFormDataChange={setFormData}
+      />
+
+      <CsvImportDialog
+        visible={csvImportVisible}
+        onHide={() => setCsvImportVisible(false)}
+        onImportComplete={handleCsvImportComplete}
       />
     </div>
   );

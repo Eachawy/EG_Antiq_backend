@@ -24,6 +24,8 @@ import {
 } from "./gallery.reducer";
 import { getMonumentsListData } from "app/modules/pages/monuments/monuments.reducer";
 import { toast } from "react-toastify";
+import { Storage } from "react-jhipster";
+import { AUTH_TOKEN_KEY } from "app/config/constants";
 
 import {
   Trash2,
@@ -34,6 +36,7 @@ import {
   Check,
   Inbox,
   Upload,
+  Filter,
 } from "lucide-react";
 import { PenLine } from "lucide-react";
 
@@ -46,6 +49,7 @@ const GalleryPage = (props) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [formData, setFormData]: any = useState({ images: [] });
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [filterMonumentId, setFilterMonumentId] = useState<number | null>(null);
   const fileUploadRef = React.useRef<FileUpload>(null);
 
   const $GalleryList = useAppSelector((state) => state.Gallery.galleryList);
@@ -117,12 +121,50 @@ const GalleryPage = (props) => {
         return;
       }
 
-      // For each uploaded file, create a gallery record
-      // Note: In production, you would upload files to a server first
-      // and get back the file paths. For now, using object URLs as placeholder
-      for (const file of uploadedFiles) {
+      // Upload files to server first
+      const formDataToUpload = new FormData();
+      uploadedFiles.forEach((file) => {
+        formDataToUpload.append("files", file);
+      });
+
+      // Get token from storage (checks both local and session)
+      const token =
+        Storage.local.get(AUTH_TOKEN_KEY) ||
+        Storage.session.get(AUTH_TOKEN_KEY);
+
+      if (!token) {
+        toast.error("Authentication required. Please login again.");
+        return;
+      }
+
+      // Upload files to server
+      const uploadResponse = await fetch(
+        "http://localhost:3000/api/v1/upload/images",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formDataToUpload,
+        },
+      );
+
+      if (!uploadResponse.ok) {
+        const errorData = await uploadResponse.json();
+        const errorMessage =
+          errorData?.error?.message ||
+          errorData?.message ||
+          "Failed to upload images";
+        throw new Error(errorMessage);
+      }
+
+      const uploadResult = await uploadResponse.json();
+      const uploadedImagePaths = uploadResult.data;
+
+      // Create gallery records with the uploaded file paths
+      for (const uploadedImage of uploadedImagePaths) {
         const galleryData = {
-          galleryPath: URL.createObjectURL(file), // TODO: Replace with actual upload endpoint
+          galleryPath: uploadedImage.path,
           monumentsId: formData.monumentId,
           dynastyId: selectedMonument.dynastyId,
           eraId: selectedMonument.eraId,
@@ -137,8 +179,10 @@ const GalleryPage = (props) => {
       );
       hideDialog();
       await dispatch(getGalleryListData());
-    } catch (error) {
-      toast.error("An error occurred while saving the gallery.");
+    } catch (error: any) {
+      const errorMessage =
+        error?.message || "An error occurred while saving the gallery.";
+      toast.error(errorMessage);
       console.error("Save error:", error);
     }
   };
@@ -225,18 +269,32 @@ const GalleryPage = (props) => {
   };
 
   const monumentBodyTemplate = (rowData: any) => {
-    return getMonumentName(rowData.monumentsId);
+    // The backend includes the full monument object, use it directly
+    return (
+      rowData.monument?.monumentNameEn ||
+      rowData.monument?.nameEn ||
+      rowData.monument?.name_en ||
+      getMonumentName(rowData.monumentsId)
+    );
   };
 
   const imageBodyTemplate = (rowData: any) => {
+    // Convert path to full URL if it starts with /uploads
+    const imageSrc = rowData.galleryPath?.startsWith("/uploads")
+      ? `http://localhost:3000${rowData.galleryPath}`
+      : rowData.galleryPath || "https://picsum.photos/seed/default/80";
+
     return (
       <Image
-        src={rowData.galleryPath || "https://via.placeholder.com/80"}
+        src={imageSrc}
         alt="Gallery Image"
         width="80"
         height="80"
         preview
         className="rounded object-cover border kemetra-gallery-image-preview"
+        onError={(e: any) => {
+          e.target.src = "https://picsum.photos/seed/default/80";
+        }}
       />
     );
   };
@@ -312,6 +370,11 @@ const GalleryPage = (props) => {
     );
   };
 
+  // Filter gallery items by monument
+  const filteredGalleryItems = filterMonumentId
+    ? galleryItems.filter((item: any) => item.monumentsId === filterMonumentId)
+    : galleryItems;
+
   return (
     <div>
       <ConfirmDialog />
@@ -323,9 +386,50 @@ const GalleryPage = (props) => {
         onAction={openNew}
       />
 
+      {/* Filter Section */}
+      <div className="mb-4 p-4 bg-white rounded-lg shadow-sm border">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Filter size={20} className="text-gray-600" />
+            <span className="font-semibold text-gray-700">
+              Filter by Monument:
+            </span>
+          </div>
+          <div className="flex-1 max-w-md">
+            <Dropdown
+              value={filterMonumentId}
+              options={monuments}
+              optionLabel="monumentNameEn"
+              optionValue="id"
+              onChange={(e) => setFilterMonumentId(e.value)}
+              placeholder="Select a monument to filter"
+              filter
+              showClear
+              className="w-full"
+            />
+          </div>
+          {filterMonumentId && (
+            <Button
+              label="Clear Filter"
+              icon={<X size={16} />}
+              outlined
+              severity="secondary"
+              onClick={() => setFilterMonumentId(null)}
+              className="kemetra-btn-cancel"
+            />
+          )}
+          {filterMonumentId && (
+            <div className="ml-auto text-sm text-gray-600">
+              Showing {filteredGalleryItems.length} of {galleryItems.length}
+              images
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="kemetra-table-container">
         <DataTable
-          value={galleryItems}
+          value={filteredGalleryItems}
           loading={loading}
           paginator
           rows={10}
@@ -334,17 +438,32 @@ const GalleryPage = (props) => {
             <div className="kemetra-empty-state-container">
               <Inbox size={48} className="kemetra-empty-state-icon" />
               <p className="text-lg font-medium mb-2 kemetra-empty-state-title">
-                No gallery images found
+                {filterMonumentId
+                  ? "No images found for selected monument"
+                  : "No gallery images found"}
               </p>
               <p className="text-sm mb-4 kemetra-empty-state-description">
-                Get started by adding your first gallery images
+                {filterMonumentId
+                  ? "Try selecting a different monument or clear the filter"
+                  : "Get started by adding your first gallery images"}
               </p>
-              <Button
-                label="Add Gallery Images"
-                icon={<Plus size={18} />}
-                onClick={openNew}
-                className="kemetra-empty-state-button"
-              />
+              {!filterMonumentId && (
+                <Button
+                  label="Add Gallery Images"
+                  icon={<Plus size={18} />}
+                  onClick={openNew}
+                  className="kemetra-empty-state-button"
+                />
+              )}
+              {filterMonumentId && (
+                <Button
+                  label="Clear Filter"
+                  icon={<X size={18} />}
+                  onClick={() => setFilterMonumentId(null)}
+                  outlined
+                  className="kemetra-empty-state-button"
+                />
+              )}
             </div>
           }
           rowHover
@@ -436,6 +555,7 @@ const GalleryPage = (props) => {
               id="monumentId"
               value={formData.monumentId}
               options={monuments}
+              optionLabel="monumentNameEn"
               itemTemplate={monumentItemTemplate}
               valueTemplate={monumentItemTemplate}
               optionValue="id"
