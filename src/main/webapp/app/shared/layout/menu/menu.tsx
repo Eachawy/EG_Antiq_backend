@@ -33,6 +33,10 @@ const Menu = (props) => {
     { label: "Monuments Era", icon: GitBranch, page: "monumentsEra" },
     { label: "Descriptions", icon: Languages, page: "descriptionMonuments" },
     { label: "Gallery", icon: ImageIcon, page: "gallery" },
+    { label: "Sources", icon: ImageIcon, page: "sources" },
+    { label: "Books", icon: ImageIcon, page: "books" },
+    { label: "Monument Sources", icon: ImageIcon, page: "monumentSources" },
+    { label: "Monument Books", icon: ImageIcon, page: "monumentBooks" },
     {
       label: "Admin",
       icon: Shield,

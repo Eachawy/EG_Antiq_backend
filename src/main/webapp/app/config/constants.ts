@@ -101,3 +101,34 @@ export const DELETE_Role_API = "/v1/roles"; // Will append /:id
 export const ASSIGN_Role_API = "/v1/roles/assign";
 export const REMOVE_Role_API = "/v1/roles"; // Will append /:roleId/users/:userId
 export const GET_RoleUsers_API = "/v1/roles"; // Will append /:id/users
+
+// Sources APIs
+export const GET_Sources_API = "/v1/sources";
+export const CREATE_Source_API = "/v1/sources";
+export const UPDATE_Source_API = "/v1/sources"; // Will append /:id
+export const DELETE_Source_API = "/v1/sources"; // Will append /:id
+export const IMPORT_Sources_CSV_API = "/v1/sources/import-csv";
+
+// Books APIs
+export const GET_Books_API = "/v1/books";
+export const CREATE_Book_API = "/v1/books";
+export const UPDATE_Book_API = "/v1/books"; // Will append /:id
+export const DELETE_Book_API = "/v1/books"; // Will append /:id
+export const IMPORT_Books_CSV_API = "/v1/books/import-csv";
+
+// Monument Sources APIs (Junction table)
+export const GET_MonumentSources_API = "/v1/monument-sources";
+export const CREATE_MonumentSource_API = "/v1/monument-sources";
+export const UPDATE_MonumentSource_API = "/v1/monument-sources"; // Will append /:id
+export const BULK_LINK_MonumentSources_API = "/v1/monument-sources/bulk";
+export const DELETE_MonumentSource_API = "/v1/monument-sources"; // Will append /:id
+export const GET_MonumentSources_ByMonument_API =
+  "/v1/monument-sources/monument"; // Will append /:monumentId
+
+// Monument Books APIs (Junction table)
+export const GET_MonumentBooks_API = "/v1/monument-books";
+export const CREATE_MonumentBook_API = "/v1/monument-books";
+export const UPDATE_MonumentBook_API = "/v1/monument-books"; // Will append /:id
+export const BULK_LINK_MonumentBooks_API = "/v1/monument-books/bulk";
+export const DELETE_MonumentBook_API = "/v1/monument-books"; // Will append /:id
+export const GET_MonumentBooks_ByMonument_API = "/v1/monument-books/monument"; // Will append /:monumentId

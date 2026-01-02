@@ -24,6 +24,10 @@ import UserHistoryPage from "./modules/pages/user-history/UserHistory";
 import UsersPage from "./modules/pages/users/Users";
 import RolesPage from "./modules/pages/roles/Roles";
 import UserRolesPage from "./modules/pages/user-roles/UserRoles";
+import SourcesPage from "./modules/pages/sources/sources";
+import BooksPage from "./modules/pages/books/books";
+import MonumentSourcesPage from "./modules/pages/monument-sources/MonumentSources";
+import MonumentBooksPage from "./modules/pages/monument-books/MonumentBooks";
 
 const loading = <div>loading ...</div>;
 
@@ -56,6 +60,10 @@ const AppRoutes = () => {
           <Route path="monuments" element={<MonumentsPage />} />
           <Route path="monumentsEra" element={<MonumentsEraPage />} />
           <Route path="monumentsType" element={<MonumentsTypePage />} />
+          <Route path="sources" element={<SourcesPage />} />
+          <Route path="books" element={<BooksPage />} />
+          <Route path="monumentSources" element={<MonumentSourcesPage />} />
+          <Route path="monumentBooks" element={<MonumentBooksPage />} />
 
           <Route
             path="users"

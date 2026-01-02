@@ -16,6 +16,10 @@ import SavedSearches from "app/modules/pages/saved-search/saved-search.reducer";
 import UserHistory from "app/modules/pages/user-history/user-history.reducer";
 import Roles from "app/modules/pages/roles/roles.reducer";
 import UserRoles from "app/modules/pages/user-roles/user-roles.reducer";
+import Sources from "app/modules/pages/sources/sources.reducer";
+import Books from "app/modules/pages/books/books.reducer";
+import MonumentSources from "app/modules/pages/monument-sources/monument-sources.reducer";
+import MonumentBooks from "app/modules/pages/monument-books/monument-books.reducer";
 
 const rootReducer: ReducersMapObject = {
   authentication,
@@ -35,6 +39,10 @@ const rootReducer: ReducersMapObject = {
   UserHistory,
   Roles,
   UserRoles,
+  Sources,
+  Books,
+  MonumentSources,
+  MonumentBooks,
 };
 
 export default rootReducer;
