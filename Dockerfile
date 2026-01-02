@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install --legacy-peer-deps
+RUN npm ci --legacy-peer-deps
 
 # Copy application source
 COPY . .
@@ -44,8 +44,10 @@ RUN echo '<!DOCTYPE html><html><body>OK</body></html>' > /usr/share/nginx/html/h
 RUN chown -R appuser:appuser /usr/share/nginx/html && \
     chown -R appuser:appuser /var/cache/nginx && \
     chown -R appuser:appuser /var/log/nginx && \
+    chown -R appuser:appuser /etc/nginx && \
     touch /var/run/nginx.pid && \
-    chown -R appuser:appuser /var/run/nginx.pid
+    chown -R appuser:appuser /var/run/nginx.pid && \
+    chown appuser:appuser /docker-entrypoint.sh
 
 # Switch to non-root user
 USER appuser
