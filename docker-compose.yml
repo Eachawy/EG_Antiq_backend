@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  antiquities-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: eg-antiquities-prod
+    ports:
+      - "9000:8080"
+    environment:
+      - BACKEND_URL=${BACKEND_URL}
+      - NODE_ENV=production
+    env_file:
+      - .env.production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - antiquities-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  antiquities-network:
+    driver: bridge

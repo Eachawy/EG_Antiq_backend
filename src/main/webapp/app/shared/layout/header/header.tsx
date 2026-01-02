@@ -96,16 +96,16 @@ const Header = (props) => {
             <div className="hidden md:block kemetra-divider-vertical" />
 
             {/* Notifications */}
-            <button
+            {/* <button
               className="kemetra-icon-btn kemetra-hover-lift"
               onClick={(e) => notificationsRef.current?.toggle(e as any)}
             >
               <Bell size={20} />
               <div className="kemetra-notification-badge" />
-            </button>
+            </button> */}
 
             {/* Divider */}
-            <div className="hidden md:block kemetra-divider-vertical" />
+            {/* <div className="hidden md:block kemetra-divider-vertical" /> */}
 
             {/* Profile Button */}
             <button
@@ -131,9 +131,8 @@ const Header = (props) => {
       </div>
 
       {/* Notifications Overlay */}
-      <OverlayPanel ref={notificationsRef} className="kemetra-overlay-panel">
+      {/* <OverlayPanel ref={notificationsRef} className="kemetra-overlay-panel">
         <div className="p-2">
-          {/* Header */}
           <div className="flex items-center justify-between mb-4 pb-3 kemetra-overlay-header-border">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg flex items-center justify-center kemetra-overlay-header-icon-box">
@@ -148,7 +147,6 @@ const Header = (props) => {
             </div>
           </div>
 
-          {/* Notifications List */}
           <div className="space-y-2">
             {[
               {
@@ -185,12 +183,11 @@ const Header = (props) => {
             ))}
           </div>
 
-          {/* View All Button */}
           <button className="w-full mt-4 py-2.5 px-4 rounded-xl font-semibold text-sm transition-all duration-200 kemetra-view-all-notifications-btn">
             View All Notifications
           </button>
         </div>
-      </OverlayPanel>
+      </OverlayPanel> */}
 
       {/* Profile Overlay */}
       <OverlayPanel ref={profileRef} className="kemetra-overlay-panel">
@@ -214,7 +211,7 @@ const Header = (props) => {
           </div>
 
           {/* Menu Items */}
-          <div className="space-y-1">
+          {/* <div className="space-y-1">
             <button className="w-full text-left rounded-xl flex items-center gap-3 transition-all duration-200 kemetra-profile-menu-btn">
               <div className="w-8 h-8 rounded-lg flex items-center justify-center kemetra-profile-menu-icon-box">
                 <User size={16} className="kemetra-profile-menu-icon" />
@@ -232,10 +229,10 @@ const Header = (props) => {
                 Settings
               </span>
             </button>
-          </div>
+          </div> */}
 
           {/* Divider */}
-          <div className="my-4 kemetra-profile-divider" />
+          {/* <div className="my-4 kemetra-profile-divider" /> */}
 
           {/* Logout Button */}
           <button

@@ -79,17 +79,27 @@ The application uses Redux Toolkit (@reduxjs/toolkit) with a modular reducer str
 - `ErrorBoundaryRoutes` wrapper provides error boundary protection
 - `PrivateRoute` component available for authentication-based route protection
 - Login page is the index route; authenticated routes are wrapped in `LayoutSystemTemplete`
-- Active page routes: dashboard, eras, descriptionMonuments, dynasty, favourites, gallery, monuments, monumentsEra, monumentsType, portalUsers, savedSearch, userHistory, users
+- Active page routes: dashboard, eras, descriptionMonuments, dynasty, favourites, gallery, monuments, monumentsEra, monumentsType, portalUsers, savedSearch, userHistory, users, roles, userRoles, sources, books, monumentSources, monumentBooks
+- Some routes (users, portalUsers, roles, userRoles, favourites, savedSearch, userHistory) are protected with `PrivateRoute` requiring `PORTAL_ADMIN` authority
 - Account and admin routes are commented out
 
 ### Authentication Flow
 
-- Login endpoint: `http://localhost:3000/api/v1/auth/login`
-- Authentication state managed via Redux (`authentication` reducer)
-- JWT token stored in session storage with key `token`
-- Token automatically attached to requests via axios interceptor
-- 401 responses trigger authentication clearing
-- User roles are checked from response: `response.data.data.user.roles`
+- **Login endpoint**: `http://localhost:3000/api/v1/auth/login`
+- **Logout endpoint**: `http://localhost:3000/api/v1/auth/logout`
+- **Refresh endpoint**: `http://localhost:3000/api/v1/auth/refresh`
+- Authentication state managed via Redux (`authentication` reducer in `src/main/webapp/app/shared/reducers/authentication.ts`)
+- **Tokens**: Both access token and refresh token stored in session/local storage
+  - Access token key: `token` (from `AUTH_TOKEN_KEY` constant)
+  - Refresh token key: `refreshToken` (from `REFRESH_TOKEN_KEY` constant)
+- **Token refresh flow**:
+  - On 401 responses, axios interceptor automatically attempts to refresh the access token
+  - Uses refresh token to get new access token via `/v1/auth/refresh` endpoint
+  - Queues failed requests and retries them with new token
+  - If refresh fails, clears all tokens and redirects to login
+- Token automatically attached to all requests via axios interceptor (`Authorization: Bearer <token>`)
+- User roles are checked from login response: `response.data.data.user.roles`
+- **Authorities**: Three roles defined in constants - `ADMIN: "admin"`, `USER: "member"`, `PORTAL_ADMIN: "PORTAL_ADMIN"`
 
 ### i18n Architecture
 
@@ -165,6 +175,17 @@ Page modules follow a consistent structure in `src/main/webapp/app/modules/pages
 - Reducer file with async thunks (e.g., `eras.reducer.ts`)
 - Reducers registered in `src/main/webapp/app/shared/reducers/index.ts`
 
+**Typical reducer pattern**:
+- Uses `createAsyncThunk` for async API calls
+- Network requests use helper functions from `app/config/network-server-reducer`:
+  - `getVerifiedRequest(url)` for GET
+  - `postVerifiedRequest(url, data)` for POST
+  - `putVerifiedRequest(url, data)` for PUT
+  - `deleteVerifiedRequest(url, data)` for DELETE
+- Standard actions: get list, create, update, delete
+- Uses `isPending` and `isRejected` matchers for loading/error states
+- Example API endpoints follow pattern: `/v1/{resource}` with `/:id` suffix for specific items
+
 ### Testing Structure
 
 - Unit tests co-located with components: `*.spec.ts(x)` files
@@ -173,6 +194,40 @@ Page modules follow a consistent structure in `src/main/webapp/app/modules/pages
 - Jest config uses path alias mapping from tsconfig
 - Test setup file: `src/main/webapp/app/setup-tests.ts`
 - Test environment: `jest-fixed-jsdom`
+
+## Docker Deployment
+
+### Production & Staging Deployment
+
+The application includes complete Docker support for both production and staging environments:
+
+**Quick Start:**
+```bash
+# Production
+cp .env.production.example .env.production
+docker-compose up -d
+
+# Staging
+cp .env.staging.example .env.staging
+docker-compose -f docker-compose.staging.yml up -d
+```
+
+**Key Files:**
+- `Dockerfile` - Multi-stage build (Node.js builder + Nginx server)
+- `docker-compose.yml` - Production configuration (port 9000)
+- `docker-compose.staging.yml` - Staging configuration (port 9001)
+- `nginx.conf` - Web server configuration with API proxy
+- `docker-entrypoint.sh` - Dynamic backend URL configuration
+
+**Build Output:**
+- Production build creates static files in `target/classes/static/`
+- Nginx serves static files and proxies `/api/*` requests to backend
+- Runs as non-root user (appuser:1001) for security
+- Health check endpoint: `/health`
+
+**Documentation:**
+- See [DEPLOYMENT.md](./DEPLOYMENT.md) for comprehensive deployment guide
+- See [DEPLOYMENT_QUICK_REFERENCE.md](./DEPLOYMENT_QUICK_REFERENCE.md) for quick commands
 
 ## Important Notes
 
@@ -184,3 +239,4 @@ Page modules follow a consistent structure in `src/main/webapp/app/modules/pages
 - **Bundle Size**: Uses code splitting with lazy loading for better performance.
 - **PWA Support**: Service worker code is commented out by default in `index.html`.
 - **Node Version**: Requires Node.js >= 24.11.1 (specified in package.json engines).
+- **Backend Dependency**: Frontend requires backend API to be accessible. Configure `BACKEND_URL` in environment files.
