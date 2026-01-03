@@ -21,8 +21,24 @@ echo ""
 # Check if Nginx is installed
 if ! command -v nginx &> /dev/null; then
     echo -e "${YELLOW}Nginx not found. Installing...${NC}"
-    apt update
-    apt install -y nginx
+
+    # Detect package manager
+    if command -v apt &> /dev/null; then
+        # Debian/Ubuntu
+        apt update
+        apt install -y nginx
+    elif command -v yum &> /dev/null; then
+        # CentOS/RHEL 7
+        yum install -y epel-release
+        yum install -y nginx
+    elif command -v dnf &> /dev/null; then
+        # CentOS/RHEL 8+
+        dnf install -y nginx
+    else
+        echo -e "${RED}Error: No supported package manager found (apt/yum/dnf)${NC}"
+        exit 1
+    fi
+
     echo -e "${GREEN}✓ Nginx installed${NC}"
 else
     echo -e "${GREEN}✓ Nginx already installed${NC}"

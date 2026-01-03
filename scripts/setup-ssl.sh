@@ -31,8 +31,23 @@ echo -e "${BLUE}Step 1: Installing Certbot...${NC}"
 
 # Install certbot
 if ! command -v certbot &> /dev/null; then
-    apt update
-    apt install -y certbot python3-certbot-nginx
+    # Detect package manager
+    if command -v apt &> /dev/null; then
+        # Debian/Ubuntu
+        apt update
+        apt install -y certbot python3-certbot-nginx
+    elif command -v yum &> /dev/null; then
+        # CentOS/RHEL 7
+        yum install -y epel-release
+        yum install -y certbot python3-certbot-nginx
+    elif command -v dnf &> /dev/null; then
+        # CentOS/RHEL 8+
+        dnf install -y certbot python3-certbot-nginx
+    else
+        echo -e "${RED}Error: No supported package manager found (apt/yum/dnf)${NC}"
+        exit 1
+    fi
+
     echo -e "${GREEN}✓ Certbot installed${NC}"
 else
     echo -e "${GREEN}✓ Certbot already installed${NC}"
