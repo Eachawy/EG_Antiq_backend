@@ -5,14 +5,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: eg-antiquities-prod
+    container_name: production-frontend
     ports:
       - "3001:8080"
     environment:
-      - BACKEND_URL=${BACKEND_URL}
+      - BACKEND_URL=http://153.92.209.167:3000
       - NODE_ENV=production
-    env_file:
-      - .env.production
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          memory: 256M
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
@@ -21,7 +26,7 @@ services:
       retries: 3
       start_period: 40s
     networks:
-      - antiquities-network
+      - production-network
     logging:
       driver: "json-file"
       options:
@@ -29,5 +34,5 @@ services:
         max-file: "3"
 
 networks:
-  antiquities-network:
+  production-network:
     driver: bridge
