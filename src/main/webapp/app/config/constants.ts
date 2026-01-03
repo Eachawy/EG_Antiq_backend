@@ -17,7 +17,8 @@ export const APP_TWO_DIGITS_AFTER_POINT_NUMBER_FORMAT = "0,0.[00]";
 export const AUTH_TOKEN_KEY = "token";
 export const REFRESH_TOKEN_KEY = "refreshToken";
 
-export const GATEWAY_SERVER_API_URL = "http://localhost:3000/api";
+export const SERVER_API_URL = `${process.env.BACKEND_URL}`;
+export const GATEWAY_SERVER_API_URL = `${process.env.BACKEND_URL}/api`;
 export const AUTH_LOGIN = "/v1/auth/login";
 export const AUTH_LOGOUT = "/v1/auth/logout";
 export const AUTH_REFRESH = "/v1/auth/refresh";

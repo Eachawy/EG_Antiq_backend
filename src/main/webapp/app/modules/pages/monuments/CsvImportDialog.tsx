@@ -13,7 +13,7 @@ import {
   Download,
 } from "lucide-react";
 import { Storage } from "react-jhipster";
-import { AUTH_TOKEN_KEY } from "app/config/constants";
+import { AUTH_TOKEN_KEY, GATEWAY_SERVER_API_URL } from "app/config/constants";
 import { toast } from "react-toastify";
 
 interface CsvImportDialogProps {
@@ -70,7 +70,7 @@ const CsvImportDialog: React.FC<CsvImportDialogProps> = ({
       }
 
       const response = await fetch(
-        "http://localhost:3000/api/v1/monuments/import-csv",
+        `${GATEWAY_SERVER_API_URL}/v1/monuments/import-csv`,
         {
           method: "POST",
           headers: {

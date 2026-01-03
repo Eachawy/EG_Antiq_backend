@@ -25,7 +25,11 @@ import {
 import { getMonumentsListData } from "app/modules/pages/monuments/monuments.reducer";
 import { toast } from "react-toastify";
 import { Storage } from "react-jhipster";
-import { AUTH_TOKEN_KEY } from "app/config/constants";
+import {
+  AUTH_TOKEN_KEY,
+  GATEWAY_SERVER_API_URL,
+  SERVER_API_URL,
+} from "app/config/constants";
 
 import {
   Trash2,
@@ -139,7 +143,7 @@ const GalleryPage = (props) => {
 
       // Upload files to server
       const uploadResponse = await fetch(
-        "http://localhost:3000/api/v1/upload/images",
+        `${GATEWAY_SERVER_API_URL}/v1/upload/images`,
         {
           method: "POST",
           headers: {
@@ -281,7 +285,7 @@ const GalleryPage = (props) => {
   const imageBodyTemplate = (rowData: any) => {
     // Convert path to full URL if it starts with /uploads
     const imageSrc = rowData.galleryPath?.startsWith("/uploads")
-      ? `http://localhost:3000${rowData.galleryPath}`
+      ? `${SERVER_API_URL}${rowData.galleryPath}`
       : rowData.galleryPath || "https://picsum.photos/seed/default/80";
 
     return (
