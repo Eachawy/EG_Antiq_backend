@@ -2,6 +2,10 @@
 # Stage 1: Build the application
 FROM node:24.11.1-alpine AS builder
 
+# Accept build argument for backend URL
+ARG BACKEND_URL
+ENV BACKEND_URL=${BACKEND_URL}
+
 # Set working directory
 WORKDIR /app
 
