@@ -47,16 +47,25 @@ fi
 echo ""
 echo -e "${BLUE}Step 1: Installing Nginx configuration...${NC}"
 
-# Copy nginx config
-cp nginx/kemetra.conf /etc/nginx/sites-available/kemetra.conf
+# Detect Nginx config directory
+if [ -d /etc/nginx/sites-available ]; then
+    # Debian/Ubuntu style
+    NGINX_AVAILABLE=/etc/nginx/sites-available
+    NGINX_ENABLED=/etc/nginx/sites-enabled
 
-# Create symlink
-ln -sf /etc/nginx/sites-available/kemetra.conf /etc/nginx/sites-enabled/kemetra.conf
+    cp nginx/kemetra.conf $NGINX_AVAILABLE/kemetra.conf
+    ln -sf $NGINX_AVAILABLE/kemetra.conf $NGINX_ENABLED/kemetra.conf
 
-# Remove default config if exists
-if [ -f /etc/nginx/sites-enabled/default ]; then
-    rm /etc/nginx/sites-enabled/default
-    echo -e "${YELLOW}  Removed default Nginx config${NC}"
+    # Remove default
+    [ -f $NGINX_ENABLED/default ] && rm $NGINX_ENABLED/default
+else
+    # CentOS/RHEL style
+    NGINX_CONF_DIR=/etc/nginx/conf.d
+
+    cp nginx/kemetra.conf $NGINX_CONF_DIR/kemetra.conf
+
+    # Remove/rename default
+    [ -f $NGINX_CONF_DIR/default.conf ] && mv $NGINX_CONF_DIR/default.conf $NGINX_CONF_DIR/default.conf.disabled
 fi
 
 echo -e "${GREEN}✓ Nginx configuration installed${NC}"
