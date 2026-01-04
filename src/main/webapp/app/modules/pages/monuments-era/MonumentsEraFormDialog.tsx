@@ -16,12 +16,12 @@ const MonumentsEraFormDialog = (props) => {
           </div>
           <div>
             <h3 className="kemetra-dialog-title-text">
-              {props.selectedItem ? "Edit Link" : "Add Monument-Era Link"}
+              {props.selectedItem ? "Edit Link" : "Add Monument Type-Era Link"}
             </h3>
             <p className="kemetra-dialog-subtitle-text">
               {props.selectedItem
-                ? "Update monument-era connection"
-                : "Link a monument to a historical era"}
+                ? "Update monument type-era connection"
+                : "Link a monument type to a historical era"}
             </p>
           </div>
         </div>
@@ -32,17 +32,20 @@ const MonumentsEraFormDialog = (props) => {
     >
       <div className="space-y-5 pt-4">
         <div>
-          <label htmlFor="monumentId" className="kemetra-field-label">
-            Monument <span className="kemetra-field-required">*</span>
+          <label htmlFor="monumentsTypeId" className="kemetra-field-label">
+            Monument Type <span className="kemetra-field-required">*</span>
           </label>
           <Dropdown
-            id="monumentId"
-            value={props.formData.monumentId}
-            options={props.monuments}
+            id="monumentsTypeId"
+            value={props.formData.monumentsTypeId}
+            options={props.monumentTypes}
             onChange={(e) =>
-              props.onFormDataChange({ ...props.formData, monumentId: e.value })
+              props.onFormDataChange({
+                ...props.formData,
+                monumentsTypeId: e.value,
+              })
             }
-            placeholder="Select a monument"
+            placeholder="Select a monument type"
             filter
             className="kemetra-field-input"
           />

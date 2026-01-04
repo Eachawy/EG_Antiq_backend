@@ -11,15 +11,15 @@
   --kemetra-gold-primary: #C9A24D;
   --kemetra-gold-secondary: #B8913D;
   --kemetra-gold-light: #FFD700;
-  
+
   /* Neutral Tones */
   --kemetra-brown-dark: #6B5744;
   --kemetra-brown-medium: #8B7355;
-  
+
   /* Status Colors */
   --kemetra-red-primary: #C92A2A;
   --kemetra-red-light: #FF6B6B;
-  
+
   /* Background Colors */
   --kemetra-bg-overlay: rgba(245, 230, 211, 0.85);
   --kemetra-surface-primary: rgba(255, 255, 255, 0.95);
@@ -901,7 +901,7 @@
 
 /* Password Input Wrapper */
 .p-password .p-inputwrapper,
-.p-password > .p-inputwrapper {
+.p-password>.p-inputwrapper {
   width: 100% !important;
   display: flex !important;
 }
@@ -909,7 +909,7 @@
 /* Password Input Field */
 .p-password .p-inputtext,
 .p-password-input,
-.p-password > .p-inputtext {
+.p-password>.p-inputtext {
   width: 100% !important;
   flex: 1 !important;
 }
@@ -925,7 +925,7 @@
   display: block !important;
 }
 
-.password-field-full-width > .p-inputwrapper {
+.password-field-full-width>.p-inputwrapper {
   width: 100% !important;
   display: flex !important;
 }
@@ -937,7 +937,7 @@
 
 /* Password Field in Form Groups */
 .p-field .p-password,
-.p-field > .p-password {
+.p-field>.p-password {
   width: 100% !important;
 }
 
@@ -950,7 +950,7 @@
   width: 100% !important;
 }
 
-.p-password .p-input-icon-right > .p-inputtext {
+.p-password .p-input-icon-right>.p-inputtext {
   width: 100% !important;
   padding-right: 2.5rem !important;
 }
@@ -962,7 +962,7 @@
   .kemetra-brand-title {
     font-size: 1.25rem;
   }
-  
+
   .kemetra-overlay-panel {
     width: 90%;
     max-width: 320px;
@@ -2054,14 +2054,12 @@
 /* Details Separator */
 .kemetra-details-separator {
   height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(201, 162, 77, 0.2) 15%,
-    rgba(201, 162, 77, 0.3) 50%,
-    rgba(201, 162, 77, 0.2) 85%,
-    transparent
-  );
+  background: linear-gradient(to right,
+      transparent,
+      rgba(201, 162, 77, 0.2) 15%,
+      rgba(201, 162, 77, 0.3) 50%,
+      rgba(201, 162, 77, 0.2) 85%,
+      transparent);
   margin: 1.25rem 0;
   position: relative;
 }
@@ -2409,4 +2407,105 @@
 .kemetra-action-btn-view:hover {
   color: #2563EB;
   background: rgba(59, 130, 246, 0.1);
+}
+
+/* ========================================
+   MONUMENT SEARCH STYLES
+   ======================================== */
+
+/* Monument Search Container */
+.kemetra-monument-search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.kemetra-monument-search-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--kemetra-brown-medium);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.kemetra-monument-search-input {
+  padding-left: 42px !important;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(201, 162, 77, 0.3);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.kemetra-monument-search-input:focus {
+  background: rgba(255, 255, 255, 1);
+  border-color: var(--kemetra-gold-primary);
+  box-shadow: 0 0 0 3px rgba(201, 162, 77, 0.1);
+}
+
+.kemetra-monument-search-results {
+  color: var(--kemetra-brown-medium);
+  font-style: italic;
+}
+
+/* Monument Dropdown Item Styles */
+.kemetra-monument-dropdown-item {
+  padding: 8px 0;
+}
+
+.kemetra-monument-dropdown-item-ar {
+  color: var(--kemetra-brown-medium);
+  direction: rtl;
+  text-align: right;
+  margin-top: 2px;
+}
+
+/* Monument Dropdown Selected Value */
+.kemetra-monument-dropdown-selected {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.kemetra-monument-dropdown-selected-ar {
+  font-size: 0.875rem;
+  color: var(--kemetra-brown-medium);
+  direction: rtl;
+  text-align: right;
+}
+
+/* Monument Search/Filter Section */
+.kemetra-search-filter-section {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(201, 162, 77, 0.2);
+}
+
+.kemetra-monument-search-label {
+  color: var(--kemetra-brown-dark);
+}
+
+.kemetra-monument-filter-dropdown {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(201, 162, 77, 0.3);
+}
+
+.kemetra-filter-status {
+  padding-top: 16px;
+  border-top: 1px solid rgba(201, 162, 77, 0.15);
+}
+
+.kemetra-btn-clear-filter {
+  color: var(--kemetra-brown-medium);
+  border-color: var(--kemetra-brown-medium);
+  transition: all 0.3s ease;
+}
+
+.kemetra-btn-clear-filter:hover {
+  background: var(--kemetra-gold-primary);
+  color: white;
+  border-color: var(--kemetra-gold-primary);
 }

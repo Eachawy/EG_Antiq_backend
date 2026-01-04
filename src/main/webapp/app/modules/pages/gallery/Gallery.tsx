@@ -41,8 +41,10 @@ import {
   Inbox,
   Upload,
   Filter,
+  Search,
 } from "lucide-react";
 import { PenLine } from "lucide-react";
+import { InputText } from "primereact/inputtext";
 
 const GalleryPage = (props) => {
   const dispatch = useAppDispatch();
@@ -379,6 +381,10 @@ const GalleryPage = (props) => {
     ? galleryItems.filter((item: any) => item.monumentsId === filterMonumentId)
     : galleryItems;
 
+  const handleClearFilters = () => {
+    setFilterMonumentId(null);
+  };
+
   return (
     <div>
       <ConfirmDialog />
@@ -390,16 +396,17 @@ const GalleryPage = (props) => {
         onAction={openNew}
       />
 
-      {/* Filter Section */}
-      <div className="mb-4 p-4 bg-white rounded-lg shadow-sm border">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Filter size={20} className="text-gray-600" />
-            <span className="font-semibold text-gray-700">
-              Filter by Monument:
-            </span>
-          </div>
-          <div className="flex-1 max-w-md">
+      {/* Monument Search and Filter Section */}
+      <div className="mb-6 kemetra-search-filter-section">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Monument Filter Dropdown */}
+          <div>
+            <label
+              htmlFor="monumentFilter"
+              className="block text-sm font-semibold mb-2 kemetra-monument-search-label"
+            >
+              Filter by Monument
+            </label>
             <Dropdown
               value={filterMonumentId}
               options={monuments}
@@ -412,23 +419,34 @@ const GalleryPage = (props) => {
               className="w-full"
             />
           </div>
-          {filterMonumentId && (
+        </div>
+
+        {/* Filter Status and Clear Button */}
+        {filterMonumentId && (
+          <div className="mt-4 flex items-center justify-between kemetra-filter-status">
+            <div className="flex items-center gap-2">
+              <span className="text-sm kemetra-monument-search-results">
+                {filterMonumentId
+                  ? `Showing galleries for: ${monuments.find((m) => m.id === filterMonumentId)?.monumentNameEn}`
+                  : `Found ${galleryItems.length} monument${galleryItems.length !== 1 ? "s" : ""}`}
+              </span>
+              {filterMonumentId && (
+                <Tag
+                  value={`${filteredGalleryItems.length} ${filteredGalleryItems.length === 1 ? "gallery" : "galleries"}`}
+                  className="kemetra-gallery-count-tag"
+                />
+              )}
+            </div>
             <Button
-              label="Clear Filter"
+              label="Clear Filters"
               icon={<X size={16} />}
               outlined
-              severity="secondary"
-              onClick={() => setFilterMonumentId(null)}
-              className="kemetra-btn-cancel"
+              size="small"
+              onClick={handleClearFilters}
+              className="kemetra-btn-clear-filter"
             />
-          )}
-          {filterMonumentId && (
-            <div className="ml-auto text-sm text-gray-600">
-              Showing {filteredGalleryItems.length} of {galleryItems.length}
-              images
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       <div className="kemetra-table-container">
