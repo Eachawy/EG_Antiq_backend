@@ -1,37 +1,29 @@
 import "./books.scss";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { DataTable } from "primereact/datatable";
 import { useAppDispatch, useAppSelector } from "app/config/store";
-import {
-  PenLine,
-  Trash2,
-  Plus,
-  AlertCircle,
-  PackageOpen,
-  Upload,
-} from "lucide-react";
+import { PenLine, Trash2, Plus, AlertCircle, PackageOpen } from "lucide-react";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
-import { FileUpload } from "primereact/fileupload";
 import PageHeader from "app/shared/components/page-header/page-header";
 import BookFormDialog from "./BookFormDialog";
+import BooksCsvImportDialog from "./BooksCsvImportDialog";
 import {
   getBooksListData,
   createBook,
   updateBook,
   deleteBook,
-  importBooksCSV,
 } from "./books.reducer";
 import { toast } from "react-toastify";
 
 export const BooksManagement = () => {
   const dispatch = useAppDispatch();
-  const fileUploadRef = useRef(null);
 
   const [books, setBooks] = useState([]);
   const [visible, setVisible] = useState(false);
+  const [csvImportVisible, setCsvImportVisible] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null);
   const [formData, setFormData]: any = useState({});
 
@@ -132,17 +124,9 @@ export const BooksManagement = () => {
     });
   };
 
-  const handleCSVUpload = async (event: any) => {
-    const file = event.files[0];
-    try {
-      await dispatch(importBooksCSV(file)).unwrap();
-      toast.success("CSV imported successfully!");
-      await dispatch(getBooksListData());
-      fileUploadRef.current?.clear();
-    } catch (error) {
-      toast.error("An error occurred while importing CSV.");
-      console.error("Import error:", error);
-    }
+  const handleCsvImportComplete = async () => {
+    await getBooksDataFN();
+    setCsvImportVisible(false);
   };
 
   const actionBodyTemplate = (rowData: any) => {
@@ -191,22 +175,8 @@ export const BooksManagement = () => {
         description="Manage related books and publications"
         actionLabel="Add Book"
         onAction={openNew}
+        csvImport={() => setCsvImportVisible(true)}
       />
-
-      <div className="mb-4">
-        <FileUpload
-          ref={fileUploadRef}
-          mode="basic"
-          name="file"
-          accept=".csv"
-          maxFileSize={10000000}
-          customUpload
-          uploadHandler={handleCSVUpload}
-          auto
-          chooseLabel="Import CSV"
-          className="kemetra-btn-upload"
-        />
-      </div>
 
       <div className="kemetra-page-table-container">
         <DataTable
@@ -314,6 +284,12 @@ export const BooksManagement = () => {
         onHide={hideDialog}
         onSave={saveBook}
         onFormDataChange={setFormData}
+      />
+
+      <BooksCsvImportDialog
+        visible={csvImportVisible}
+        onHide={() => setCsvImportVisible(false)}
+        onImportComplete={handleCsvImportComplete}
       />
     </div>
   );

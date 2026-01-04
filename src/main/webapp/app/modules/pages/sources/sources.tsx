@@ -1,37 +1,29 @@
 import "./sources.scss";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { DataTable } from "primereact/datatable";
 import { useAppDispatch, useAppSelector } from "app/config/store";
-import {
-  PenLine,
-  Trash2,
-  Plus,
-  AlertCircle,
-  PackageOpen,
-  Upload,
-} from "lucide-react";
+import { PenLine, Trash2, Plus, AlertCircle, PackageOpen } from "lucide-react";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
-import { FileUpload } from "primereact/fileupload";
 import PageHeader from "app/shared/components/page-header/page-header";
 import SourceFormDialog from "./SourceFormDialog";
+import SourcesCsvImportDialog from "./SourcesCsvImportDialog";
 import {
   getSourcesListData,
   createSource,
   updateSource,
   deleteSource,
-  importSourcesCSV,
 } from "./sources.reducer";
 import { toast } from "react-toastify";
 
 export const SourcesManagement = () => {
   const dispatch = useAppDispatch();
-  const fileUploadRef = useRef(null);
 
   const [sources, setSources] = useState([]);
   const [visible, setVisible] = useState(false);
+  const [csvImportVisible, setCsvImportVisible] = useState(false);
   const [selectedSource, setSelectedSource] = useState(null);
   const [formData, setFormData]: any = useState({});
 
@@ -132,17 +124,9 @@ export const SourcesManagement = () => {
     });
   };
 
-  const handleCSVUpload = async (event: any) => {
-    const file = event.files[0];
-    try {
-      await dispatch(importSourcesCSV(file)).unwrap();
-      toast.success("CSV imported successfully!");
-      await dispatch(getSourcesListData());
-      fileUploadRef.current?.clear();
-    } catch (error) {
-      toast.error("An error occurred while importing CSV.");
-      console.error("Import error:", error);
-    }
+  const handleCsvImportComplete = async () => {
+    await getSourcesDataFN();
+    setCsvImportVisible(false);
   };
 
   const actionBodyTemplate = (rowData: any) => {
@@ -182,22 +166,8 @@ export const SourcesManagement = () => {
         description="Manage academic sources and references"
         actionLabel="Add Source"
         onAction={openNew}
+        csvImport={() => setCsvImportVisible(true)}
       />
-
-      <div className="mb-4">
-        <FileUpload
-          ref={fileUploadRef}
-          mode="basic"
-          name="file"
-          accept=".csv"
-          maxFileSize={10000000}
-          customUpload
-          uploadHandler={handleCSVUpload}
-          auto
-          chooseLabel="Import CSV"
-          className="kemetra-btn-upload"
-        />
-      </div>
 
       <div className="kemetra-page-table-container">
         <DataTable
@@ -305,6 +275,12 @@ export const SourcesManagement = () => {
         onHide={hideDialog}
         onSave={saveSource}
         onFormDataChange={setFormData}
+      />
+
+      <SourcesCsvImportDialog
+        visible={csvImportVisible}
+        onHide={() => setCsvImportVisible(false)}
+        onImportComplete={handleCsvImportComplete}
       />
     </div>
   );
