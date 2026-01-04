@@ -21,11 +21,11 @@ export const LayoutSystemTemplete = () => {
     try {
       dispatch(logout());
       // Redirect to login page after logout
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);
       // Still navigate to login even if logout fails
-      navigate("/");
+      navigate("/login");
     }
   };
 

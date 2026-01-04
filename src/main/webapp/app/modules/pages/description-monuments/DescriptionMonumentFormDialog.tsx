@@ -6,19 +6,16 @@ import { Button } from "primereact/button";
 import { FileText, X, Check } from "lucide-react";
 
 const DescriptionMonumentFormDialog = (props) => {
-  // Item templates for dropdowns
-  const eraItemTemplate = (option: any) => {
-    return <span>{option?.nameEn || option?.name_en || "Unknown Era"}</span>;
-  };
-
-  const dynastyItemTemplate = (option: any) => {
+  // Item template for monuments dropdown
+  const monumentItemTemplate = (option: any) => {
     return (
-      <span>{option?.nameEn || option?.name_en || "Unknown Dynasty"}</span>
+      <span>
+        {option?.monumentNameEn ||
+          option?.nameEn ||
+          option?.name_en ||
+          "Unknown Monument"}
+      </span>
     );
-  };
-
-  const monumentTypeItemTemplate = (option: any) => {
-    return <span>{option?.nameEn || option?.name_en || "Unknown Type"}</span>;
   };
 
   return (
@@ -48,69 +45,24 @@ const DescriptionMonumentFormDialog = (props) => {
       draggable={false}
     >
       <div className="space-y-5 pt-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label htmlFor="eraId" className="kemetra-field-label">
-              Era <span className="kemetra-field-required">*</span>
-            </label>
-            <Dropdown
-              id="eraId"
-              value={props.formData.eraId}
-              options={props.eras}
-              optionValue="id"
-              itemTemplate={eraItemTemplate}
-              valueTemplate={eraItemTemplate}
-              onChange={(e) =>
-                props.setFormData({ ...props.formData, eraId: e.value })
-              }
-              placeholder="Select an era"
-              filter
-              className="kemetra-field-input"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="dynastyId" className="kemetra-field-label">
-              Dynasty <span className="kemetra-field-required">*</span>
-            </label>
-            <Dropdown
-              id="dynastyId"
-              value={props.formData.dynastyId}
-              options={props.dynasties}
-              optionValue="id"
-              itemTemplate={dynastyItemTemplate}
-              valueTemplate={dynastyItemTemplate}
-              onChange={(e) =>
-                props.setFormData({ ...props.formData, dynastyId: e.value })
-              }
-              placeholder="Select a dynasty"
-              filter
-              className="kemetra-field-input"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="monumentsTypeId" className="kemetra-field-label">
-              Monument Type <span className="kemetra-field-required">*</span>
-            </label>
-            <Dropdown
-              id="monumentsTypeId"
-              value={props.formData.monumentsTypeId}
-              options={props.monumentTypes}
-              itemTemplate={monumentTypeItemTemplate}
-              valueTemplate={monumentTypeItemTemplate}
-              optionValue="id"
-              onChange={(e) =>
-                props.setFormData({
-                  ...props.formData,
-                  monumentsTypeId: e.value,
-                })
-              }
-              placeholder="Select a type"
-              filter
-              className="kemetra-field-input"
-            />
-          </div>
+        <div>
+          <label htmlFor="monumentId" className="kemetra-field-label">
+            Monument <span className="kemetra-field-required">*</span>
+          </label>
+          <Dropdown
+            id="monumentId"
+            value={props.formData.monumentId}
+            options={props.monuments}
+            optionValue="id"
+            itemTemplate={monumentItemTemplate}
+            valueTemplate={monumentItemTemplate}
+            onChange={(e) =>
+              props.setFormData({ ...props.formData, monumentId: e.value })
+            }
+            placeholder="Select a monument"
+            filter
+            className="kemetra-field-input"
+          />
         </div>
 
         <div>

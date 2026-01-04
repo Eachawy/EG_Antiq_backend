@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   CalendarClock,
@@ -18,13 +18,33 @@ import {
 } from "lucide-react";
 import { Badge } from "primereact/badge";
 import { useNavigate } from "react-router";
+import { hasAnyAuthority } from "app/shared/auth/private-route";
+import { AUTHORITIES } from "app/config/constants";
+import { useAppSelector } from "app/config/store";
+import { Storage } from "react-jhipster";
 
 const Menu = (props) => {
   const navigate = useNavigate();
   const [adminExpanded, setAdminExpanded] = useState(false);
   const [currentPage, setCurrentPage] = useState("dashboard");
+  const $Account = useAppSelector((state) => state.authentication.account);
 
-  const navItems: any = [
+  // const navItems: any = [
+  //   { label: "Dashboard", icon: LayoutDashboard, page: "dashboard" },
+  //   { label: "Eras", icon: CalendarClock, page: "eras" },
+  //   { label: "Monuments Type", icon: Landmark, page: "monumentsType" },
+  //   { label: "Dynasty", icon: Crown, page: "dynasty" },
+  //   { label: "Monuments", icon: Castle, page: "monuments" },
+  //   { label: "Monuments Era", icon: GitBranch, page: "monumentsEra" },
+  //   { label: "Descriptions", icon: Languages, page: "descriptionMonuments" },
+  //   { label: "Gallery", icon: ImageIcon, page: "gallery" },
+  //   { label: "Sources", icon: ImageIcon, page: "sources" },
+  //   { label: "Books", icon: ImageIcon, page: "books" },
+  //   { label: "Monument Sources", icon: ImageIcon, page: "monumentSources" },
+  //   { label: "Monument Books", icon: ImageIcon, page: "monumentBooks" },
+  // ];
+
+  const [navItems, setNavItems] = useState<any>([
     { label: "Dashboard", icon: LayoutDashboard, page: "dashboard" },
     { label: "Eras", icon: CalendarClock, page: "eras" },
     { label: "Monuments Type", icon: Landmark, page: "monumentsType" },
@@ -37,21 +57,36 @@ const Menu = (props) => {
     { label: "Books", icon: ImageIcon, page: "books" },
     { label: "Monument Sources", icon: ImageIcon, page: "monumentSources" },
     { label: "Monument Books", icon: ImageIcon, page: "monumentBooks" },
-    {
-      label: "Admin",
-      icon: Shield,
-      page: "admin",
-      children: [
-        { label: "Users", icon: Users, page: "users" },
-        { label: "Portal Users", icon: User, page: "portalUsers" },
-        { label: "Roles", icon: BookmarkCheck, page: "Roles" },
-        { label: "User Roles", icon: BookmarkCheck, page: "userRoles" },
-        { label: "Favourites", icon: Heart, page: "favourites" },
-        { label: "Saved Search", icon: Search, page: "savedSearch" },
-        { label: "User History", icon: History, page: "userHistory" },
-      ],
-    },
-  ];
+  ]);
+
+  useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log(hasAnyAuthority($Account?.roles, [AUTHORITIES.PORTAL_ADMIN]));
+
+    if (
+      Storage.session.get("isAdmin") ||
+      hasAnyAuthority($Account?.roles, [AUTHORITIES.PORTAL_ADMIN])
+    ) {
+      setNavItems((prevState) => [
+        ...prevState,
+        {
+          label: "Admin",
+          icon: Shield,
+          page: "admin",
+          children: [
+            { label: "Users", icon: Users, page: "users" },
+            { label: "Portal Users", icon: User, page: "portalUsers" },
+            { label: "Roles", icon: BookmarkCheck, page: "Roles" },
+            { label: "User Roles", icon: BookmarkCheck, page: "userRoles" },
+            { label: "Favourites", icon: Heart, page: "favourites" },
+            { label: "Saved Search", icon: Search, page: "savedSearch" },
+            { label: "User History", icon: History, page: "userHistory" },
+          ],
+        },
+      ]);
+      Storage.session.set("isAdmin", true);
+    }
+  }, []);
 
   const handleNavClick = (page: string) => {
     setCurrentPage(page);
@@ -73,7 +108,7 @@ const Menu = (props) => {
         <nav className="p-3">
           {navItems.map((item) => (
             <div key={item.page}>
-              {item.children ? (
+              {item?.children ? (
                 <div>
                   <button
                     onClick={() => setAdminExpanded(!adminExpanded)}

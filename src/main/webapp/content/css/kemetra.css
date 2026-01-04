@@ -29,13 +29,13 @@
 /* ========================================
    TYPOGRAPHY
    ======================================== */
-.kemetra-font-primary {
+/* .kemetra-font-primary {
   font-family: 'Playfair Display', serif;
-}
+} */
 
-.kemetra-font-secondary {
+/* .kemetra-font-secondary {
   font-family: 'Cormorant Garamond', serif;
-}
+} */
 
 .kemetra-text-primary {
   color: var(--kemetra-brown-dark);
@@ -272,14 +272,14 @@
 /* Logo Container */
 .kemetra-logo-container {
   position: relative;
-  width: 48px;
-  height: 48px;
+  width: 38px;
+  height: 38px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #C9A24D 0%, #B8913D 100%);
+  /* background: linear-gradient(135deg, #C9A24D 0%, #B8913D 100%); */
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(201, 162, 77, 0.4);
+  /* box-shadow: 0 4px 16px rgba(201, 162, 77, 0.4); */
 }
 
 .kemetra-logo-accent {
@@ -298,19 +298,21 @@
   font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: 2px;
-  background: linear-gradient(135deg, #C9A24D 0%, #8B7355 100%);
+  /* background: linear-gradient(135deg, #C9A24D 0%, #8B7355 100%); */
+  background: #C9A24D;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-family: 'Playfair Display', serif;
+  /* font-family: 'Playfair Display', serif; */
   text-shadow: 0 2px 4px rgba(201, 162, 77, 0.1);
+  line-height: 29px;
 }
 
 /* Brand Subtitle */
 .kemetra-brand-subtitle {
   font-size: 0.6875rem;
   color: #8B7355;
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
   font-style: italic;
   margin-top: -2px;
   letter-spacing: 0.5px;
@@ -445,7 +447,7 @@
 /* Overlay Panel Title */
 .kemetra-overlay-title {
   color: #6B5744;
-  font-family: 'Playfair Display', serif;
+  /* font-family: 'Playfair Display', serif; */
 }
 
 /* Overlay Panel Badge */
@@ -471,13 +473,13 @@
 /* Notification Title */
 .kemetra-notification-title {
   color: #6B5744;
-  font-family: 'Playfair Display', serif;
+  /* font-family: 'Playfair Display', serif; */
 }
 
 /* Notification Message */
 .kemetra-notification-message {
   color: #8B7355;
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
 }
 
 /* Notification Time */
@@ -515,13 +517,13 @@
 /* Profile Name */
 .kemetra-profile-name {
   color: #6B5744;
-  font-family: 'Playfair Display', serif;
+  /* font-family: 'Playfair Display', serif; */
 }
 
 /* Profile Role */
 .kemetra-profile-role {
   color: #8B7355;
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
   font-size: 0.8125rem;
 }
 
@@ -551,7 +553,7 @@
 /* Profile Menu Text */
 .kemetra-profile-menu-text {
   color: #6B5744;
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
 }
 
 /* Profile Divider */
@@ -586,7 +588,7 @@
 /* Logout Text */
 .kemetra-logout-text {
   color: #C92A2A;
-  font-family: 'Playfair Display', serif;
+  /* font-family: 'Playfair Display', serif; */
 }
 
 /* Sidebar Desktop */
@@ -1020,7 +1022,7 @@
 .kemetra-login-hero-title {
   font-size: 3.75rem;
   margin-bottom: 1.5rem;
-  font-family: 'Playfair Display', serif;
+  /* font-family: 'Playfair Display', serif; */
   font-weight: 700;
   letter-spacing: 0.02em;
   text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.5);
@@ -1030,7 +1032,7 @@
   font-size: 1.5rem;
   margin-bottom: 2rem;
   opacity: 0.9;
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
   font-weight: 400;
   letter-spacing: 0.01em;
 }
@@ -1111,14 +1113,14 @@
 .kemetra-login-mobile-title {
   font-size: 2.25rem;
   margin-bottom: 0.5rem;
-  font-family: 'Playfair Display', serif;
+  /* font-family: 'Playfair Display', serif; */
   font-weight: 700;
   color: #3D2817;
 }
 
 .kemetra-login-mobile-subtitle {
   font-size: 1.125rem;
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
   color: #6B5744;
 }
 
@@ -1130,7 +1132,7 @@
 .kemetra-login-welcome-title {
   font-size: 1.875rem;
   margin-bottom: 0.5rem;
-  font-family: 'Playfair Display', serif;
+  /* font-family: 'Playfair Display', serif; */
   font-weight: 600;
   color: #3D2817;
 }
@@ -1894,7 +1896,7 @@
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--kemetra-brown-dark);
-  font-family: 'Playfair Display', serif;
+  /* font-family: 'Playfair Display', serif; */
 }
 
 /* Form Container */
@@ -1925,7 +1927,7 @@
 
 .kemetra-dropdown-input {
   color: var(--kemetra-brown-dark);
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
 }
 
 .kemetra-dropdown-trigger {
@@ -1998,7 +2000,7 @@
   border-radius: 12px;
   border: 2px solid rgba(201, 162, 77, 0.2);
   padding: 0.75rem;
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
   color: var(--kemetra-brown-dark);
   font-size: 0.9375rem;
   line-height: 1.6;
@@ -2048,7 +2050,7 @@
   color: var(--kemetra-brown-medium);
   font-size: 0.75rem;
   font-weight: 500;
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
 }
 
 /* Details Separator */
@@ -2113,7 +2115,7 @@
 }
 
 .kemetra-details-section-title {
-  font-family: 'Playfair Display', serif;
+  /* font-family: 'Playfair Display', serif; */
   color: var(--kemetra-brown-primary);
   margin: 0;
   font-weight: 600;
@@ -2130,8 +2132,8 @@
 }
 
 .kemetra-avatar-large {
-  width: 64px !important;
-  height: 64px !important;
+  width: 44px !important;
+  height: 44px !important;
   border: 3px solid rgba(201, 162, 77, 0.2);
   box-shadow: 0 4px 12px rgba(201, 162, 77, 0.15);
 }
@@ -2141,7 +2143,7 @@
 }
 
 .kemetra-details-user-name {
-  font-family: 'Playfair Display', serif;
+  /* font-family: 'Playfair Display', serif; */
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--kemetra-brown-primary);
@@ -2166,7 +2168,7 @@
 }
 
 .kemetra-details-item-label {
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--kemetra-brown-medium);
@@ -2198,7 +2200,7 @@
 }
 
 .kemetra-details-bilingual-primary {
-  font-family: 'Playfair Display', serif;
+  /* font-family: 'Playfair Display', serif; */
   font-size: 1.0625rem;
   font-weight: 600;
   color: var(--kemetra-brown-primary);
@@ -2213,7 +2215,7 @@
   border-radius: 12px;
   color: var(--kemetra-brown-primary);
   font-weight: 500;
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
   font-size: 0.9375rem;
 }
 
@@ -2225,7 +2227,7 @@
 }
 
 .kemetra-details-note-text {
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
   font-size: 1rem;
   line-height: 1.6;
   color: var(--kemetra-brown-primary);
@@ -2233,7 +2235,7 @@
 }
 
 .kemetra-details-note-empty {
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
   font-size: 0.9375rem;
   font-style: italic;
   color: var(--kemetra-brown-medium);
@@ -2282,7 +2284,7 @@
 
 .kemetra-calendar-input {
   color: var(--kemetra-brown-dark);
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
 }
 
 /* Input Number Styles */
@@ -2298,7 +2300,7 @@
 
 .kemetra-input-number-input {
   color: var(--kemetra-brown-dark);
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
 }
 
 /* Dialog Width 60% */
@@ -2327,7 +2329,7 @@
   border-radius: 12px;
   border: 2px solid rgba(201, 162, 77, 0.2);
   padding: 0.75rem;
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
   color: var(--kemetra-brown-dark);
   font-size: 0.9375rem;
   line-height: 1.6;
@@ -2477,7 +2479,7 @@
 
 /* Monument Search/Filter Section */
 .kemetra-search-filter-section {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgb(255 255 255 / 53%);
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);

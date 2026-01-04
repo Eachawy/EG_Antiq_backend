@@ -4,12 +4,20 @@ import React, { useEffect, useState } from "react";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { DataTable } from "primereact/datatable";
 import { useAppDispatch, useAppSelector } from "app/config/store";
-import { PenLine, Trash2, Plus, AlertCircle, PackageOpen } from "lucide-react";
+import {
+  PenLine,
+  Trash2,
+  Plus,
+  AlertCircle,
+  X,
+  PackageOpen,
+} from "lucide-react";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import PageHeader from "app/shared/components/page-header/page-header";
 import SourceFormDialog from "./SourceFormDialog";
 import SourcesCsvImportDialog from "./SourcesCsvImportDialog";
+import { Tag } from "primereact/tag";
 import {
   getSourcesListData,
   createSource,
@@ -17,6 +25,7 @@ import {
   deleteSource,
 } from "./sources.reducer";
 import { toast } from "react-toastify";
+import { InputText } from "primereact/inputtext";
 
 export const SourcesManagement = () => {
   const dispatch = useAppDispatch();
@@ -25,7 +34,9 @@ export const SourcesManagement = () => {
   const [visible, setVisible] = useState(false);
   const [csvImportVisible, setCsvImportVisible] = useState(false);
   const [selectedSource, setSelectedSource] = useState(null);
-  const [formData, setFormData]: any = useState({});
+  const [formData, setFormData] = useState<any>({});
+  const [searchTitleEn, setSearchTitleEn]: any = useState("");
+  const [searchTitleAr, setSearchTitleAr]: any = useState("");
 
   const $SourcesList = useAppSelector((state) => state.Sources.sourcesList);
   const loading = useAppSelector((state) => state.Sources.loading);
@@ -158,6 +169,26 @@ export const SourcesManagement = () => {
     return rowData.sourceType || "-";
   };
 
+  // Filter sources by English and Arabic title
+  const filteredSources = sources.filter((source: any) => {
+    const titleEn = (source.titleEn || source.title_en || "").toLowerCase();
+    const titleAr = source.titleAr || source.title_ar || "";
+    const searchEn = searchTitleEn.toLowerCase();
+    const searchAr = searchTitleAr;
+
+    const matchesEn = searchTitleEn === "" || titleEn.includes(searchEn);
+    const matchesAr = searchTitleAr === "" || titleAr.includes(searchAr);
+
+    return matchesEn && matchesAr;
+  });
+
+  const handleClearFilters = () => {
+    setSearchTitleEn("");
+    setSearchTitleAr("");
+  };
+
+  const hasActiveFilters = searchTitleEn !== "" || searchTitleAr !== "";
+
   return (
     <div>
       <ConfirmDialog />
@@ -169,9 +200,72 @@ export const SourcesManagement = () => {
         csvImport={() => setCsvImportVisible(true)}
       />
 
+      {/* Search and Filter Section */}
+      <div className="mb-6 kemetra-search-filter-section">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* English Title Search */}
+          <div>
+            <label
+              htmlFor="searchTitleEn"
+              className="block text-sm font-semibold mb-2 kemetra-monument-search-label"
+            >
+              Search by English Title
+            </label>
+            <InputText
+              id="searchTitleEn"
+              value={searchTitleEn}
+              onChange={(e) => setSearchTitleEn(e.target.value)}
+              placeholder="Enter English title..."
+              className="w-full"
+            />
+          </div>
+
+          {/* Arabic Title Search */}
+          <div>
+            <label
+              htmlFor="searchTitleAr"
+              className="block text-sm font-semibold mb-2 kemetra-monument-search-label"
+            >
+              Search by Arabic Title
+            </label>
+            <InputText
+              id="searchTitleAr"
+              value={searchTitleAr}
+              onChange={(e) => setSearchTitleAr(e.target.value)}
+              placeholder="أدخل العنوان بالعربية..."
+              className="w-full"
+            />
+          </div>
+        </div>
+
+        {/* Filter Status and Clear Button */}
+        {hasActiveFilters && (
+          <div className="mt-4 flex items-center justify-between kemetra-filter-status">
+            <div className="flex items-center gap-2">
+              <span className="text-sm kemetra-monument-search-results">
+                Found {filteredSources.length} source
+                {filteredSources.length !== 1 ? "s" : ""}
+              </span>
+              <Tag
+                value={`${filteredSources.length} ${filteredSources.length === 1 ? "result" : "results"}`}
+                className="kemetra-gallery-count-tag"
+              />
+            </div>
+            <Button
+              label="Clear Filters"
+              icon={<X size={16} />}
+              outlined
+              size="small"
+              onClick={handleClearFilters}
+              className="kemetra-btn-clear-filter"
+            />
+          </div>
+        )}
+      </div>
+
       <div className="kemetra-page-table-container">
         <DataTable
-          value={sources}
+          value={filteredSources}
           loading={loading}
           paginator
           rows={10}
@@ -179,16 +273,33 @@ export const SourcesManagement = () => {
           emptyMessage={
             <div className="kemetra-empty-state-container">
               <PackageOpen size={48} className="kemetra-empty-state-icon" />
-              <p className="kemetra-empty-state-title">No sources found</p>
-              <p className="kemetra-empty-state-desc">
-                Get started by adding your first source
+              <p className="kemetra-empty-state-title">
+                {hasActiveFilters
+                  ? "No sources found matching your search"
+                  : "No sources found"}
               </p>
-              <Button
-                label="Add Source"
-                icon={<Plus size={18} />}
-                onClick={openNew}
-                className="kemetra-empty-state-btn"
-              />
+              <p className="kemetra-empty-state-desc">
+                {hasActiveFilters
+                  ? "Try adjusting your search criteria or clear the filters"
+                  : "Get started by adding your first source"}
+              </p>
+              {!hasActiveFilters && (
+                <Button
+                  label="Add Source"
+                  icon={<Plus size={18} />}
+                  onClick={openNew}
+                  className="kemetra-empty-state-btn"
+                />
+              )}
+              {hasActiveFilters && (
+                <Button
+                  label="Clear Filters"
+                  icon={<X size={18} />}
+                  onClick={handleClearFilters}
+                  outlined
+                  className="kemetra-empty-state-btn"
+                />
+              )}
             </div>
           }
           rowHover

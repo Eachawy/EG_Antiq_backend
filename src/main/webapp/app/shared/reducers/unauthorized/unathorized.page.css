@@ -1,0 +1,206 @@
+/* ========================================
+   KEMETRA 403 UNAUTHORIZED PAGE STYLES
+   ======================================== */
+
+/* 403 Container */
+.kemetra-403-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, rgba(250, 235, 230, 0.6) 0%, rgba(255, 245, 240, 0.8) 100%);
+    position: relative;
+}
+
+.kemetra-403-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="100" opacity="0.02" fill="%23C9A24D">🛡️</text></svg>') repeat;
+    background-size: 200px 200px;
+    pointer-events: none;
+    opacity: 0.3;
+}
+
+.kemetra-403-content {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    width: 100%;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    padding: 60px 40px;
+    box-shadow: 0 20px 60px rgba(201, 162, 77, 0.2);
+    border: 2px solid rgba(201, 162, 77, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+/* 403 Number */
+.kemetra-403-number {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.kemetra-403-digit {
+    /* font-family: 'Playfair Display', serif; */
+    font-size: 120px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #d97706 0%, #ea580c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    text-shadow: 0 4px 20px rgba(217, 119, 6, 0.3);
+}
+
+.kemetra-403-digit-middle {
+    transform: scale(1.2);
+    margin: 0 10px;
+}
+
+/* 403 Icon */
+.kemetra-403-icon {
+    color: #d97706;
+    margin-bottom: 30px;
+    opacity: 0.8;
+}
+
+/* 403 Title */
+.kemetra-403-title {
+    /* font-family: 'Playfair Display', serif; */
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--kemetra-brown-dark);
+    margin-bottom: 16px;
+    line-height: 1.3;
+}
+
+/* 403 Description */
+.kemetra-403-description {
+    /* font-family: 'Cormorant Garamond', serif; */
+    font-size: 18px;
+    color: var(--kemetra-brown-medium);
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+/* Permission Notice Box */
+.kemetra-403-notice {
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.08) 0%, rgba(234, 88, 12, 0.05) 100%);
+    border: 1px solid rgba(217, 119, 6, 0.3);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    text-align: left;
+}
+
+.kemetra-403-notice-icon {
+    color: #d97706;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.kemetra-403-notice-text {
+    /* font-family: 'Cormorant Garamond', serif; */
+    font-size: 16px;
+    color: var(--kemetra-brown-dark);
+    line-height: 1.6;
+}
+
+.kemetra-403-notice-text strong {
+    color: #d97706;
+    font-weight: 700;
+}
+
+/* 403 Action Buttons */
+.kemetra-403-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.kemetra-403-btn-primary {
+    min-width: 180px;
+}
+
+.kemetra-403-btn-secondary {
+    min-width: 140px;
+    color: var(--kemetra-brown-dark);
+    border-color: var(--kemetra-brown-medium);
+}
+
+.kemetra-403-btn-secondary:hover {
+    background: var(--kemetra-brown-dark);
+    color: white;
+    border-color: var(--kemetra-brown-dark);
+}
+
+/* 403 Footer */
+.kemetra-403-footer {
+    padding-top: 30px;
+    border-top: 2px solid rgba(201, 162, 77, 0.2);
+}
+
+.kemetra-403-footer-text {
+    /* font-family: 'Cormorant Garamond', serif; */
+    font-size: 14px;
+    color: var(--kemetra-brown-medium);
+    font-style: italic;
+    line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .kemetra-403-content {
+        padding: 40px 24px;
+    }
+
+    .kemetra-403-digit {
+        font-size: 80px;
+    }
+
+    .kemetra-403-title {
+        font-size: 28px;
+    }
+
+    .kemetra-403-description {
+        font-size: 16px;
+    }
+
+    .kemetra-403-icon {
+        transform: scale(0.8);
+    }
+
+    .kemetra-403-notice {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .kemetra-403-notice-text {
+        text-align: center;
+    }
+
+    .kemetra-403-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .kemetra-403-btn-primary,
+    .kemetra-403-btn-secondary {
+        width: 100%;
+    }
+}

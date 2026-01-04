@@ -92,6 +92,9 @@ export const clearAuthToken = () => {
   if (Storage.session.get("sessionHasBeenFetched")) {
     Storage.session.remove("sessionHasBeenFetched");
   }
+  if (Storage.session.get("isAdmin")) {
+    Storage.session.remove("isAdmin");
+  }
 };
 
 export const logout: () => AppThunk = () => async (dispatch) => {

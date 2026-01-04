@@ -14,7 +14,10 @@ import {
   PackageOpen,
   PenLine,
   FileUp,
+  X,
 } from "lucide-react";
+import { InputText } from "primereact/inputtext";
+import { Tag } from "primereact/tag";
 import { useAppDispatch, useAppSelector } from "app/config/store";
 import {
   getMonumentsListData,
@@ -39,6 +42,8 @@ const MonumentsPage = () => {
   const [csvImportVisible, setCsvImportVisible] = useState(false);
   const [selectedMonument, setSelectedMonument] = useState(null);
   const [formData, setFormData]: any = useState({});
+  const [searchNameEn, setSearchNameEn] = useState("");
+  const [searchNameAr, setSearchNameAr] = useState("");
 
   const $MonumentsList = useAppSelector(
     (state) => state.Monuments.monumentsList,
@@ -272,10 +277,60 @@ const MonumentsPage = () => {
     return dynastyName;
   };
 
+  const imageBodyTemplate = (rowData) => {
+    const imageUrl = rowData.image;
+    if (!imageUrl || imageUrl === "test.jpg") {
+      return (
+        <div className="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-md">
+          <span className="text-gray-400 text-xs">No Image</span>
+        </div>
+      );
+    }
+    return (
+      <img
+        src={imageUrl}
+        alt={rowData.monumentNameEn || rowData.nameEn || "Monument"}
+        className="w-16 h-16 object-cover rounded-md border border-gray-200"
+        onError={(e) => {
+          e.currentTarget.src = "";
+          e.currentTarget.style.display = "none";
+          e.currentTarget.parentElement.innerHTML =
+            '<div class="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-md"><span class="text-gray-400 text-xs">No Image</span></div>';
+        }}
+      />
+    );
+  };
+
   const handleCsvImportComplete = async () => {
     await fetchData();
     setCsvImportVisible(false);
   };
+
+  // Filter monuments by English and Arabic name
+  const filteredMonuments = monuments.filter((monument: any) => {
+    const nameEn = (
+      monument.monumentNameEn ||
+      monument.nameEn ||
+      monument.name_en ||
+      ""
+    ).toLowerCase();
+    const nameAr =
+      monument.monumentNameAr || monument.nameAr || monument.name_ar || "";
+    const searchEn = searchNameEn.toLowerCase();
+    const searchAr = searchNameAr;
+
+    const matchesNameEn = searchNameEn === "" || nameEn.includes(searchEn);
+    const matchesNameAr = searchNameAr === "" || nameAr.includes(searchAr);
+
+    return matchesNameEn && matchesNameAr;
+  });
+
+  const handleClearFilters = () => {
+    setSearchNameEn("");
+    setSearchNameAr("");
+  };
+
+  const hasActiveFilters = searchNameEn !== "" || searchNameAr !== "";
 
   return (
     <div>
@@ -289,20 +344,72 @@ const MonumentsPage = () => {
         csvImport={() => setCsvImportVisible(true)}
       />
 
-      {/* <div className="mb-4 flex justify-end">
-        <Button
-          label="Import from CSV"
-          icon={<FileUp size={18} />}
-          onClick={() => setCsvImportVisible(true)}
-          outlined
-          severity="secondary"
-          className="kemetra-btn-primary"
-        />
-      </div> */}
+      {/* Search and Filter Section */}
+      <div className="mb-6 kemetra-search-filter-section">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* English Name Search */}
+          <div>
+            <label
+              htmlFor="searchNameEn"
+              className="block text-sm font-semibold mb-2 kemetra-monument-search-label"
+            >
+              Search by English Name
+            </label>
+            <InputText
+              id="searchNameEn"
+              value={searchNameEn}
+              onChange={(e) => setSearchNameEn(e.target.value)}
+              placeholder="Enter English name..."
+              className="w-full"
+            />
+          </div>
+
+          {/* Arabic Name Search */}
+          <div>
+            <label
+              htmlFor="searchNameAr"
+              className="block text-sm font-semibold mb-2 kemetra-monument-search-label"
+            >
+              Search by Arabic Name
+            </label>
+            <InputText
+              id="searchNameAr"
+              value={searchNameAr}
+              onChange={(e) => setSearchNameAr(e.target.value)}
+              placeholder="أدخل الاسم بالعربية..."
+              className="w-full"
+            />
+          </div>
+        </div>
+
+        {/* Filter Status and Clear Button */}
+        {hasActiveFilters && (
+          <div className="mt-4 flex items-center justify-between kemetra-filter-status">
+            <div className="flex items-center gap-2">
+              <span className="text-sm kemetra-monument-search-results">
+                Found {filteredMonuments.length} monument
+                {filteredMonuments.length !== 1 ? "s" : ""}
+              </span>
+              <Tag
+                value={`${filteredMonuments.length} ${filteredMonuments.length === 1 ? "result" : "results"}`}
+                className="kemetra-gallery-count-tag"
+              />
+            </div>
+            <Button
+              label="Clear Filters"
+              icon={<X size={16} />}
+              outlined
+              size="small"
+              onClick={handleClearFilters}
+              className="kemetra-btn-clear-filter"
+            />
+          </div>
+        )}
+      </div>
 
       <div className="kemetra-page-table-container">
         <DataTable
-          value={monuments}
+          value={filteredMonuments}
           loading={loading}
           paginator
           rows={10}
@@ -310,16 +417,33 @@ const MonumentsPage = () => {
           emptyMessage={
             <div className="kemetra-empty-state-container">
               <PackageOpen size={48} className="kemetra-empty-state-icon" />
-              <p className="kemetra-empty-state-title">No monuments found</p>
-              <p className="kemetra-empty-state-desc">
-                Get started by adding your first monument
+              <p className="kemetra-empty-state-title">
+                {hasActiveFilters
+                  ? "No monuments found matching your search"
+                  : "No monuments found"}
               </p>
-              <Button
-                label="Add Monument"
-                icon={<Plus size={18} />}
-                onClick={openNew}
-                className="kemetra-empty-state-btn"
-              />
+              <p className="kemetra-empty-state-desc">
+                {hasActiveFilters
+                  ? "Try adjusting your search criteria or clear the filters"
+                  : "Get started by adding your first monument"}
+              </p>
+              {!hasActiveFilters && (
+                <Button
+                  label="Add Monument"
+                  icon={<Plus size={18} />}
+                  onClick={openNew}
+                  className="kemetra-empty-state-btn"
+                />
+              )}
+              {hasActiveFilters && (
+                <Button
+                  label="Clear Filters"
+                  icon={<X size={18} />}
+                  onClick={handleClearFilters}
+                  outlined
+                  className="kemetra-empty-state-btn"
+                />
+              )}
             </div>
           }
           rowHover
@@ -339,6 +463,14 @@ const MonumentsPage = () => {
             },
           }}
         >
+          <Column
+            field="monumentimage"
+            body={(rowData) => imageBodyTemplate(rowData)}
+            header="monument image"
+            sortable
+            headerClassName="kemetra-table-column-header"
+            bodyClassName="kemetra-table-cell-arabic"
+          />
           <Column
             field="monumentNameEn"
             body={(rowData) =>

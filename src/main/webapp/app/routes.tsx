@@ -28,6 +28,7 @@ import SourcesPage from "./modules/pages/sources/sources";
 import BooksPage from "./modules/pages/books/books";
 import MonumentSourcesPage from "./modules/pages/monument-sources/MonumentSources";
 import MonumentBooksPage from "./modules/pages/monument-books/MonumentBooks";
+import UnauthorizedPage from "./shared/reducers/unauthorized/unathorized.page";
 
 const loading = <div>loading ...</div>;
 
@@ -48,7 +49,18 @@ const AppRoutes = () => {
     <div className="view-routes">
       <ErrorBoundaryRoutes>
         <Route index element={<LoginPage />} />
-        <Route path="" element={<LayoutSystemTemplete />}>
+        <Route path="login" element={<LoginPage />} />
+
+        <Route
+          path="/"
+          element={
+            <PrivateRoute
+              hasAnyAuthorities={[AUTHORITIES.USER, AUTHORITIES.ADMIN]}
+            >
+              <LayoutSystemTemplete />
+            </PrivateRoute>
+          }
+        >
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="eras" element={<ErasManagement />} />
           <Route
@@ -123,6 +135,7 @@ const AppRoutes = () => {
           />
         </Route>
         <Route path="*" element={<PageNotFound />} />
+        <Route path="unauthorized" element={<UnauthorizedPage />} />
       </ErrorBoundaryRoutes>
     </div>
   );

@@ -103,7 +103,9 @@ module.exports = async (options) => {
         DEVELOPMENT: JSON.stringify(development),
         VERSION: JSON.stringify(environment.VERSION),
         SERVER_API_URL: JSON.stringify(environment.SERVER_API_URL),
-        "process.env.BACKEND_URL": JSON.stringify(process.env.BACKEND_URL || ""),
+        "process.env.BACKEND_URL": JSON.stringify(
+          process.env.BACKEND_URL || "http://localhost:3000",
+        ),
       }),
       new ESLintPlugin({
         configType: "flat",

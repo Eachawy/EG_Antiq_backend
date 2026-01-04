@@ -6,7 +6,7 @@
 .kemetra-monument-cell-name-ar {
   font-size: 0.75rem;
   color: var(--kemetra-brown-medium);
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
   direction: rtl;
 }
 
@@ -14,7 +14,7 @@
 .kemetra-bilingual-cell-ar {
   font-size: 0.75rem;
   color: var(--kemetra-brown-medium);
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
   direction: rtl;
 }
 
@@ -71,7 +71,7 @@
 
 /* Details Bilingual Secondary (Arabic) */
 .kemetra-details-bilingual-secondary {
-  font-family: 'Cormorant Garamond', serif;
+  /* font-family: 'Cormorant Garamond', serif; */
   font-size: 0.9375rem;
   color: var(--kemetra-brown-medium);
   direction: rtl;

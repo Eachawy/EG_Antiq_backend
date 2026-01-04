@@ -4,9 +4,18 @@ import React, { useEffect, useState } from "react";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { DataTable } from "primereact/datatable";
 import { useAppDispatch, useAppSelector } from "app/config/store";
-import { PenLine, Trash2, Plus, AlertCircle, PackageOpen } from "lucide-react";
+import {
+  PenLine,
+  Trash2,
+  Plus,
+  AlertCircle,
+  PackageOpen,
+  X,
+} from "lucide-react";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
+import { InputText } from "primereact/inputtext";
+import { Tag } from "primereact/tag";
 import PageHeader from "app/shared/components/page-header/page-header";
 import BookFormDialog from "./BookFormDialog";
 import BooksCsvImportDialog from "./BooksCsvImportDialog";
@@ -26,6 +35,9 @@ export const BooksManagement = () => {
   const [csvImportVisible, setCsvImportVisible] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null);
   const [formData, setFormData]: any = useState({});
+  const [searchTitleEn, setSearchTitleEn] = useState("");
+  const [searchTitleAr, setSearchTitleAr] = useState("");
+  const [searchAuthor, setSearchAuthor] = useState("");
 
   const $BooksList = useAppSelector((state) => state.Books.booksList);
   const loading = useAppSelector((state) => state.Books.loading);
@@ -167,6 +179,36 @@ export const BooksManagement = () => {
     return "-";
   };
 
+  // Filter books by English title, Arabic title, and author
+  const filteredBooks = books.filter((book: any) => {
+    const titleEn = (book.titleEn || book.title_en || "").toLowerCase();
+    const titleAr = book.titleAr || book.title_ar || "";
+    const authorEn = (book.authorEn || book.author_en || "").toLowerCase();
+    const authorAr = book.authorAr || book.author_ar || "";
+
+    const searchEn = searchTitleEn.toLowerCase();
+    const searchAr = searchTitleAr;
+    const searchAuth = searchAuthor.toLowerCase();
+
+    const matchesTitleEn = searchTitleEn === "" || titleEn.includes(searchEn);
+    const matchesTitleAr = searchTitleAr === "" || titleAr.includes(searchAr);
+    const matchesAuthor =
+      searchAuthor === "" ||
+      authorEn.includes(searchAuth) ||
+      authorAr.includes(searchAuthor);
+
+    return matchesTitleEn && matchesTitleAr && matchesAuthor;
+  });
+
+  const handleClearFilters = () => {
+    setSearchTitleEn("");
+    setSearchTitleAr("");
+    setSearchAuthor("");
+  };
+
+  const hasActiveFilters =
+    searchTitleEn !== "" || searchTitleAr !== "" || searchAuthor !== "";
+
   return (
     <div>
       <ConfirmDialog />
@@ -178,9 +220,89 @@ export const BooksManagement = () => {
         csvImport={() => setCsvImportVisible(true)}
       />
 
+      {/* Search and Filter Section */}
+      <div className="mb-6 kemetra-search-filter-section">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* English Title Search */}
+          <div>
+            <label
+              htmlFor="searchTitleEn"
+              className="block text-sm font-semibold mb-2 kemetra-monument-search-label"
+            >
+              Search by English Title
+            </label>
+            <InputText
+              id="searchTitleEn"
+              value={searchTitleEn}
+              onChange={(e) => setSearchTitleEn(e.target.value)}
+              placeholder="Enter English title..."
+              className="w-full"
+            />
+          </div>
+
+          {/* Arabic Title Search */}
+          <div>
+            <label
+              htmlFor="searchTitleAr"
+              className="block text-sm font-semibold mb-2 kemetra-monument-search-label"
+            >
+              Search by Arabic Title
+            </label>
+            <InputText
+              id="searchTitleAr"
+              value={searchTitleAr}
+              onChange={(e) => setSearchTitleAr(e.target.value)}
+              placeholder="أدخل العنوان بالعربية..."
+              className="w-full"
+            />
+          </div>
+
+          {/* Author Search */}
+          <div>
+            <label
+              htmlFor="searchAuthor"
+              className="block text-sm font-semibold mb-2 kemetra-monument-search-label"
+            >
+              Search by Author
+            </label>
+            <InputText
+              id="searchAuthor"
+              value={searchAuthor}
+              onChange={(e) => setSearchAuthor(e.target.value)}
+              placeholder="Enter author name..."
+              className="w-full"
+            />
+          </div>
+        </div>
+
+        {/* Filter Status and Clear Button */}
+        {hasActiveFilters && (
+          <div className="mt-4 flex items-center justify-between kemetra-filter-status">
+            <div className="flex items-center gap-2">
+              <span className="text-sm kemetra-monument-search-results">
+                Found {filteredBooks.length} book
+                {filteredBooks.length !== 1 ? "s" : ""}
+              </span>
+              <Tag
+                value={`${filteredBooks.length} ${filteredBooks.length === 1 ? "result" : "results"}`}
+                className="kemetra-gallery-count-tag"
+              />
+            </div>
+            <Button
+              label="Clear Filters"
+              icon={<X size={16} />}
+              outlined
+              size="small"
+              onClick={handleClearFilters}
+              className="kemetra-btn-clear-filter"
+            />
+          </div>
+        )}
+      </div>
+
       <div className="kemetra-page-table-container">
         <DataTable
-          value={books}
+          value={filteredBooks}
           loading={loading}
           paginator
           rows={10}
@@ -188,16 +310,33 @@ export const BooksManagement = () => {
           emptyMessage={
             <div className="kemetra-empty-state-container">
               <PackageOpen size={48} className="kemetra-empty-state-icon" />
-              <p className="kemetra-empty-state-title">No books found</p>
-              <p className="kemetra-empty-state-desc">
-                Get started by adding your first book
+              <p className="kemetra-empty-state-title">
+                {hasActiveFilters
+                  ? "No books found matching your search"
+                  : "No books found"}
               </p>
-              <Button
-                label="Add Book"
-                icon={<Plus size={18} />}
-                onClick={openNew}
-                className="kemetra-empty-state-btn"
-              />
+              <p className="kemetra-empty-state-desc">
+                {hasActiveFilters
+                  ? "Try adjusting your search criteria or clear the filters"
+                  : "Get started by adding your first book"}
+              </p>
+              {!hasActiveFilters && (
+                <Button
+                  label="Add Book"
+                  icon={<Plus size={18} />}
+                  onClick={openNew}
+                  className="kemetra-empty-state-btn"
+                />
+              )}
+              {hasActiveFilters && (
+                <Button
+                  label="Clear Filters"
+                  icon={<X size={18} />}
+                  onClick={handleClearFilters}
+                  outlined
+                  className="kemetra-empty-state-btn"
+                />
+              )}
             </div>
           }
           rowHover

@@ -60,19 +60,22 @@ const Header = (props) => {
             </button>
 
             {/* KEMETRA Logo & Branding */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1">
               <div className="kemetra-logo-container">
-                <Castle className="text-white" size={24} />
-                {/* Egyptian corner accent */}
-                <div className="kemetra-logo-accent" />
+                {/* <Castle className="text-white" size={24} /> */}
+                {/* <div className="kemetra-logo-accent" /> */}
+                <img
+                  src={"./content/images/kemetra-logo.png"}
+                  alt="Kemetra Logo"
+                />
               </div>
               <div className="hidden md:block">
                 <div className="flex items-center gap-2">
-                  <h1 className="kemetra-brand-title">KEMETRA</h1>
-                  <Sparkles
+                  <h1 className="kemetra-brand-title">EMETRA</h1>
+                  {/* <Sparkles
                     size={16}
                     className="kemetra-text-gold kemetra-lang-icon-filter"
-                  />
+                  /> */}
                 </div>
                 <p className="kemetra-brand-subtitle">
                   Where Egypt&apos;s History Meets the Map

@@ -14,9 +14,6 @@ import {
   deleteDescriptionMonument,
 } from "./description-monuments.reducer";
 import { getMonumentsListData } from "app/modules/pages/monuments/monuments.reducer";
-import { getErasListData } from "app/modules/pages/eras/eras.reducer";
-import { getDynastiesListData } from "app/modules/pages/dynasty/dynasty.reducer";
-import { getMonumentsTypeListData } from "app/modules/pages/monuments-type/monuments-type.reducer";
 import { toast } from "react-toastify";
 
 const DescriptionMonumentsPage = (props) => {
@@ -24,9 +21,6 @@ const DescriptionMonumentsPage = (props) => {
 
   const [descriptions, setDescriptions] = useState([]);
   const [monuments, setMonuments] = useState([]);
-  const [eras, setEras] = useState([]);
-  const [dynasties, setDynasties] = useState([]);
-  const [monumentTypes, setMonumentTypes] = useState([]);
   const [visible, setVisible] = useState(false);
   const [selectedDesc, setSelectedDesc] = useState(null);
   const [formData, setFormData] = useState({});
@@ -37,13 +31,6 @@ const DescriptionMonumentsPage = (props) => {
   const loading = useAppSelector((state) => state.DescriptionMonuments.loading);
   const $MonumentsList = useAppSelector(
     (state) => state.Monuments.monumentsList,
-  );
-  const $ErasList = useAppSelector((state) => state.Eras.earsList);
-  const $DynastiesList = useAppSelector(
-    (state) => state.Dynasties.dynastiesList,
-  );
-  const $MonumentTypesList = useAppSelector(
-    (state) => state.MonumentsType.monumentsTypeList,
   );
 
   useEffect(() => {
@@ -73,42 +60,9 @@ const DescriptionMonumentsPage = (props) => {
     }
   }, [$MonumentsList]);
 
-  useEffect(() => {
-    if ($ErasList) {
-      if ($ErasList.data && Array.isArray($ErasList.data)) {
-        setEras($ErasList.data);
-      } else if (Array.isArray($ErasList)) {
-        setEras($ErasList);
-      }
-    }
-  }, [$ErasList]);
-
-  useEffect(() => {
-    if ($DynastiesList) {
-      if ($DynastiesList.data && Array.isArray($DynastiesList.data)) {
-        setDynasties($DynastiesList.data);
-      } else if (Array.isArray($DynastiesList)) {
-        setDynasties($DynastiesList);
-      }
-    }
-  }, [$DynastiesList]);
-
-  useEffect(() => {
-    if ($MonumentTypesList) {
-      if ($MonumentTypesList.data && Array.isArray($MonumentTypesList.data)) {
-        setMonumentTypes($MonumentTypesList.data);
-      } else if (Array.isArray($MonumentTypesList)) {
-        setMonumentTypes($MonumentTypesList);
-      }
-    }
-  }, [$MonumentTypesList]);
-
   const fetchData = async () => {
     await dispatch(getDescriptionMonumentsListData());
     await dispatch(getMonumentsListData());
-    await dispatch(getErasListData());
-    await dispatch(getDynastiesListData());
-    await dispatch(getMonumentsTypeListData());
   };
 
   const openNew = () => {
@@ -133,11 +87,9 @@ const DescriptionMonumentsPage = (props) => {
     try {
       // Build description data with only allowed fields
       const descriptionData = {
+        monumentId: formData["monumentId"],
         descriptionEn: formData["descriptionEn"] || "",
         descriptionAr: formData["descriptionAr"] || "",
-        eraId: formData["eraId"],
-        monumentsTypeId: formData["monumentsTypeId"],
-        dynastyId: formData["dynastyId"],
       };
 
       if (selectedDesc) {
@@ -183,14 +135,6 @@ const DescriptionMonumentsPage = (props) => {
     });
   };
 
-  const getMonumentName = (monumentId: number) => {
-    if (!monumentId) return "N/A";
-    const monument = monuments?.find((m) => m.id === monumentId);
-    return monument
-      ? monument?.monumentNameEn || monument?.nameEn || monument?.name_en
-      : "-";
-  };
-
   const actionBodyTemplate = (rowData) => {
     return (
       <div className="flex gap-2">
@@ -217,7 +161,14 @@ const DescriptionMonumentsPage = (props) => {
   };
 
   const monumentBodyTemplate = (rowData) => {
-    return <span>{getMonumentName(rowData.monumentId)}</span>;
+    // Use the monument relation directly from the API response
+    const monument = rowData.monument;
+    const monumentName =
+      monument?.monumentNameEn ||
+      monument?.nameEn ||
+      monument?.name_en ||
+      "N/A";
+    return <span>{monumentName}</span>;
   };
 
   return (
@@ -312,9 +263,6 @@ const DescriptionMonumentsPage = (props) => {
         selectedDesc={selectedDesc}
         formData={formData}
         monuments={monuments}
-        eras={eras}
-        dynasties={dynasties}
-        monumentTypes={monumentTypes}
         setFormData={setFormData}
         onHide={hideDialog}
         onSave={save}
