@@ -185,6 +185,7 @@ const MonumentFormDialog = (props) => {
                   name="monumentImage"
                   accept="image/*"
                   maxFileSize={5000000}
+                  onSelect={props.onFileSelect}
                   emptyTemplate={
                     <div className="flex flex-col items-center gap-3 py-6">
                       <Upload
@@ -207,7 +208,15 @@ const MonumentFormDialog = (props) => {
                     className: "p-button-outlined kemetra-gallery-choose-btn",
                   }}
                 />
-                {props.formData.image && (
+                {props.uploadedFile && (
+                  <div className="mt-3 p-3 rounded-lg kemetra-monument-current-file-bg">
+                    <p className="text-sm kemetra-monument-current-file-text">
+                      Selected: {props.uploadedFile.name} (
+                      {(props.uploadedFile.size / 1024).toFixed(2)} KB)
+                    </p>
+                  </div>
+                )}
+                {!props.uploadedFile && props.formData.image && (
                   <div className="mt-3 p-3 rounded-lg kemetra-monument-current-file-bg">
                     <p className="text-sm kemetra-monument-current-file-text">
                       Current: {props.formData.image}

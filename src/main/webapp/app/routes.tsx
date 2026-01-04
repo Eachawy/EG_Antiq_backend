@@ -51,16 +51,7 @@ const AppRoutes = () => {
         <Route index element={<LoginPage />} />
         <Route path="login" element={<LoginPage />} />
 
-        <Route
-          path="/"
-          element={
-            <PrivateRoute
-              hasAnyAuthorities={[AUTHORITIES.USER, AUTHORITIES.ADMIN]}
-            >
-              <LayoutSystemTemplete />
-            </PrivateRoute>
-          }
-        >
+        <Route path="/" element={<LayoutSystemTemplete />}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="eras" element={<ErasManagement />} />
           <Route

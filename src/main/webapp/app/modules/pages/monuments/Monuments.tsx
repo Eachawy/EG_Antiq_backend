@@ -30,6 +30,12 @@ import { getDynastiesListData } from "app/modules/pages/dynasty/dynasty.reducer"
 import { getMonumentsTypeListData } from "app/modules/pages/monuments-type/monuments-type.reducer";
 import { getDescriptionMonumentsListData } from "app/modules/pages/description-monuments/description-monuments.reducer";
 import { toast } from "react-toastify";
+import { Storage } from "react-jhipster";
+import {
+  AUTH_TOKEN_KEY,
+  GATEWAY_SERVER_API_URL,
+  SERVER_API_URL,
+} from "app/config/constants";
 
 const MonumentsPage = () => {
   const dispatch = useAppDispatch();
@@ -44,6 +50,7 @@ const MonumentsPage = () => {
   const [formData, setFormData]: any = useState({});
   const [searchNameEn, setSearchNameEn] = useState("");
   const [searchNameAr, setSearchNameAr] = useState("");
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   const $MonumentsList = useAppSelector(
     (state) => state.Monuments.monumentsList,
@@ -111,6 +118,7 @@ const MonumentsPage = () => {
   const openNew = () => {
     setFormData({});
     setSelectedMonument(null);
+    setUploadedFile(null);
     setVisible(true);
   };
 
@@ -124,6 +132,7 @@ const MonumentsPage = () => {
     };
     setFormData(formDataWithDescription);
     setSelectedMonument(monument);
+    setUploadedFile(null);
     setVisible(true);
   };
 
@@ -131,6 +140,14 @@ const MonumentsPage = () => {
     setVisible(false);
     setFormData({});
     setSelectedMonument(null);
+    setUploadedFile(null);
+  };
+
+  const onFileSelect = (e: any) => {
+    const files = e.files as File[];
+    if (files && files.length > 0) {
+      setUploadedFile(files[0]); // Only take the first file for monument image
+    }
   };
 
   const saveMonument = async () => {
@@ -149,9 +166,56 @@ const MonumentsPage = () => {
         ...allowedData
       } = formData;
 
+      let uploadedImagePath = allowedData.image || "";
+
+      // Upload image file if a new file was selected
+      if (uploadedFile) {
+        const formDataToUpload = new FormData();
+        formDataToUpload.append("files", uploadedFile);
+
+        // Get token from storage (checks both local and session)
+        const token =
+          Storage.local.get(AUTH_TOKEN_KEY) ||
+          Storage.session.get(AUTH_TOKEN_KEY);
+
+        if (!token) {
+          toast.error("Authentication required. Please login again.");
+          return;
+        }
+
+        // Upload file to server
+        const uploadResponse = await fetch(
+          `${GATEWAY_SERVER_API_URL}/v1/upload/images`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: formDataToUpload,
+          },
+        );
+
+        if (!uploadResponse.ok) {
+          const errorData = await uploadResponse.json();
+          const errorMessage =
+            errorData?.error?.message ||
+            errorData?.message ||
+            "Failed to upload image";
+          throw new Error(errorMessage);
+        }
+
+        const uploadResult = await uploadResponse.json();
+        const uploadedImages = uploadResult.data;
+
+        if (uploadedImages && uploadedImages.length > 0) {
+          uploadedImagePath = uploadedImages[0].path;
+        }
+      }
+
       // Transform flat description fields into descriptions array format
       const monumentData = {
         ...allowedData,
+        image: uploadedImagePath,
         // Only add descriptions array if both fields have values
         ...(descriptionEn || descriptionAr
           ? {
@@ -183,8 +247,10 @@ const MonumentsPage = () => {
       // Refresh both monuments and descriptions
       await dispatch(getMonumentsListData());
       await dispatch(getDescriptionMonumentsListData());
-    } catch (error) {
-      toast.error("An error occurred while saving the monument.");
+    } catch (error: any) {
+      const errorMessage =
+        error?.message || "An error occurred while saving the monument.";
+      toast.error(errorMessage);
       console.error("Save error:", error);
     }
   };
@@ -279,23 +345,27 @@ const MonumentsPage = () => {
 
   const imageBodyTemplate = (rowData) => {
     const imageUrl = rowData.image;
-    if (!imageUrl || imageUrl === "test.jpg") {
+    if (!imageUrl || imageUrl === "test.jpg" || imageUrl === "") {
       return (
         <div className="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-md">
           <span className="text-gray-400 text-xs">No Image</span>
         </div>
       );
     }
+
+    // Convert path to full URL if it starts with /uploads
+    const imageSrc = imageUrl?.startsWith("/uploads")
+      ? `${SERVER_API_URL}${imageUrl}`
+      : imageUrl;
+
     return (
       <img
-        src={imageUrl}
+        src={imageSrc}
         alt={rowData.monumentNameEn || rowData.nameEn || "Monument"}
         className="w-16 h-16 object-cover rounded-md border border-gray-200"
         onError={(e) => {
-          e.currentTarget.src = "";
+          // Hide the broken image
           e.currentTarget.style.display = "none";
-          e.currentTarget.parentElement.innerHTML =
-            '<div class="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-md"><span class="text-gray-400 text-xs">No Image</span></div>';
         }}
       />
     );
@@ -537,6 +607,8 @@ const MonumentsPage = () => {
         onHide={hideDialog}
         onSave={saveMonument}
         onFormDataChange={setFormData}
+        onFileSelect={onFileSelect}
+        uploadedFile={uploadedFile}
       />
 
       <CsvImportDialog

@@ -10,7 +10,7 @@ const PageNotFound = () => {
   const navigate = useNavigate();
   const handleGoToDashboard = () => {
     if (navigate) {
-      navigate("dashboard");
+      navigate("/dashboard");
     }
   };
 
@@ -60,25 +60,25 @@ const PageNotFound = () => {
           </p>
           <div className="kemetra-404-links-grid">
             <button
-              onClick={() => handleGoToPage("monuments")}
+              onClick={() => handleGoToPage("/monuments")}
               className="kemetra-404-link"
             >
               Monuments
             </button>
             <button
-              onClick={() => handleGoToPage("gallery")}
+              onClick={() => handleGoToPage("/gallery")}
               className="kemetra-404-link"
             >
               Gallery
             </button>
             <button
-              onClick={() => handleGoToPage("monuments-type")}
+              onClick={() => handleGoToPage("/monumentsType")}
               className="kemetra-404-link"
             >
               Types
             </button>
             <button
-              onClick={() => handleGoToPage("eras")}
+              onClick={() => handleGoToPage("/eras")}
               className="kemetra-404-link"
             >
               Eras
