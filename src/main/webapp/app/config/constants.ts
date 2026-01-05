@@ -1,6 +1,6 @@
 export const AUTHORITIES = {
-  ADMIN: "ADMIN",
-  USER: "MEMBER",
+  ADMIN: "admin",
+  USER: "member",
   PORTAL_ADMIN: "PORTAL_ADMIN",
 };
 

@@ -4,8 +4,16 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { Avatar } from "primereact/avatar";
 import PageHeader from "app/shared/components/page-header/page-header";
-import { Plus, Inbox, PenLine, Trash2, AlertTriangle } from "lucide-react";
+import {
+  Plus,
+  Inbox,
+  PenLine,
+  Trash2,
+  AlertTriangle,
+  User,
+} from "lucide-react";
 import PortalUserFormDialog from "./PortalUserFormDialog";
 import { useAppDispatch, useAppSelector } from "app/config/store";
 import {
@@ -15,6 +23,7 @@ import {
   deletePortalUser,
 } from "./portal-users.reducer";
 import { toast } from "react-toastify";
+import { SERVER_API_URL } from "app/config/constants";
 
 const PortalUsersPage = () => {
   const dispatch = useAppDispatch();
@@ -84,11 +93,13 @@ const PortalUsersPage = () => {
         if (formData.email) updateData.email = formData.email;
         if (formData.firstName) updateData.firstName = formData.firstName;
         if (formData.lastName) updateData.lastName = formData.lastName;
-        if (formData.phone !== undefined) updateData.phone = formData.phone;
+        if (formData.phone !== undefined)
+          updateData.phone = formData.phone || null;
         if (formData.location !== undefined)
-          updateData.location = formData.location;
-        if (formData.bio !== undefined) updateData.bio = formData.bio;
-        if (formData.avatar !== undefined) updateData.avatar = formData.avatar;
+          updateData.location = formData.location || null;
+        if (formData.bio !== undefined) updateData.bio = formData.bio || null;
+        if (formData.avatar !== undefined)
+          updateData.avatar = formData.avatar || null;
         if (formData.status) updateData.status = formData.status;
 
         await dispatch(
@@ -152,6 +163,39 @@ const PortalUsersPage = () => {
     });
   };
 
+  const avatarBodyTemplate = (rowData) => {
+    const avatarUrl = rowData.avatar;
+
+    // If no avatar, show default user icon
+    if (!avatarUrl || avatarUrl === "") {
+      return (
+        <Avatar
+          icon={<User size={20} />}
+          shape="circle"
+          size="large"
+          className="bg-blue-100 text-blue-600"
+        />
+      );
+    }
+
+    // Convert path to full URL if it starts with /uploads
+    const avatarSrc = avatarUrl?.startsWith("/uploads")
+      ? `${SERVER_API_URL}${avatarUrl}`
+      : avatarUrl;
+
+    return (
+      <Avatar
+        image={avatarSrc}
+        shape="circle"
+        size="large"
+        onImageError={(e: any) => {
+          // Fallback to icon on error
+          e.currentTarget.style.display = "none";
+        }}
+      />
+    );
+  };
+
   const actionBodyTemplate = (rowData) => {
     return (
       <div className="flex gap-2">
@@ -209,6 +253,13 @@ const PortalUsersPage = () => {
           rowHover
           stripedRows
         >
+          <Column
+            body={avatarBodyTemplate}
+            header={"Avatar"}
+            headerClassName="kemetra-table-column-header"
+            bodyClassName="kemetra-table-cell"
+            style={{ width: "100px" }}
+          />
           <Column
             field="email"
             header={"Email"}

@@ -138,11 +138,6 @@ const DynastyPage = () => {
     });
   };
 
-  const getEraName = (eraId: string) => {
-    const era = eras.find((e) => e.id === eraId);
-    return era ? era.nameEn : "-";
-  };
-
   const actionBodyTemplate = (rowData) => {
     return (
       <div className="flex gap-2">
@@ -241,7 +236,7 @@ const DynastyPage = () => {
             headerClassName="kemetra-table-column-header"
             body={(rowData) => (
               <span className="kemetra-table-cell-secondary">
-                {getEraName(rowData.eraId)}
+                {rowData.era?.nameEn || rowData.era?.name_en || "-"}
               </span>
             )}
           />

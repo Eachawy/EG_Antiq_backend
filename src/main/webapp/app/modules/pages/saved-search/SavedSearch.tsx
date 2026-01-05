@@ -42,6 +42,7 @@ const SavedSearchPage = () => {
     (state) => state.PortalUsers.portalUsersList,
   );
   const $ErasList = useAppSelector((state) => state.Eras.earsList);
+  const erasLoading = useAppSelector((state) => state.Eras.loading);
 
   const [portalUsers, setPortalUsers] = useState([]);
   const [eras, setEras] = useState([]);
@@ -165,13 +166,36 @@ const SavedSearchPage = () => {
     );
   };
 
-  const eraBodyTemplate = (rowData) => {
-    const era = rowData.era;
-    if (!era) return <span className="kemetra-text-secondary">-</span>;
+  const eraBodyTemplate = (rowData: any) => {
+    // SavedSearch stores eraIds as an array
+    const eraIds = rowData.eraIds || [];
+
+    // If no eras selected in this search
+    if (!eraIds || eraIds.length === 0) {
+      return <span className="kemetra-text-secondary">-</span>;
+    }
+
+    // If eras data not loaded yet, show loading
+    if (!eras || eras.length === 0) {
+      return <span className="kemetra-text-secondary">Loading...</span>;
+    }
+
+    // Get era names for all IDs in the array
+    const eraNames = eraIds
+      .map((eraId: number) => {
+        const era = eras.find((e: any) => e.id === eraId);
+        return era ? era.nameEn || era.name_en : null;
+      })
+      .filter(Boolean);
+
+    // If couldn't find any matching eras
+    if (eraNames.length === 0) {
+      return <span className="kemetra-text-secondary">-</span>;
+    }
+
     return (
       <div className="kemetra-bilingual-cell">
-        <div className="kemetra-bilingual-cell-en">{era.nameEn}</div>
-        <div className="kemetra-bilingual-cell-ar">{era.nameAr}</div>
+        <div className="kemetra-bilingual-cell-en">{eraNames.join(", ")}</div>
       </div>
     );
   };
@@ -216,8 +240,9 @@ const SavedSearchPage = () => {
 
       <div className="kemetra-table-container">
         <DataTable
+          key={`datatable-${eras.length}`}
           value={searches}
-          loading={loading}
+          loading={loading || erasLoading}
           paginator
           rows={10}
           dataKey="id"
