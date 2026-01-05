@@ -8,7 +8,7 @@ const UnauthorizedPage = () => {
   const navigate = useNavigate();
   const handleGoToDashboard = () => {
     if (navigate) {
-      navigate("/dashboard");
+      navigate("/login");
     }
   };
 
@@ -57,7 +57,7 @@ const UnauthorizedPage = () => {
         {/* Action Buttons */}
         <div className="kemetra-403-actions">
           <Button
-            label="Go to Dashboard"
+            label="Go to Login"
             icon={<Home size={18} />}
             onClick={handleGoToDashboard}
             className="kemetra-btn-primary kemetra-403-btn-primary"

@@ -2,9 +2,7 @@ import "./page-not-found.css";
 import { Home, MapPin, Search } from "lucide-react";
 import { Button } from "primereact/button";
 import React from "react";
-import { Translate } from "react-jhipster";
 import { useNavigate } from "react-router";
-import { Alert } from "reactstrap";
 
 const PageNotFound = () => {
   const navigate = useNavigate();

@@ -50,28 +50,117 @@ const AppRoutes = () => {
       <ErrorBoundaryRoutes>
         <Route index element={<LoginPage />} />
         <Route path="login" element={<LoginPage />} />
+        <Route path="*" element={<PageNotFound />} />
+        <Route path="unauthorized" element={<UnauthorizedPage />} />
 
-        <Route path="/" element={<LayoutSystemTemplete />}>
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="eras" element={<ErasManagement />} />
-          <Route
-            path="descriptionMonuments"
-            element={<DescriptionMonumentsPage />}
-          />
-          <Route path="dynasty" element={<DynastyPage />} />
-          <Route path="gallery" element={<GalleryPage />} />
-          <Route path="monuments" element={<MonumentsPage />} />
-          <Route path="monumentsEra" element={<MonumentsEraPage />} />
-          <Route path="monumentsType" element={<MonumentsTypePage />} />
-          <Route path="sources" element={<SourcesPage />} />
-          <Route path="books" element={<BooksPage />} />
-          <Route path="monumentSources" element={<MonumentSourcesPage />} />
-          <Route path="monumentBooks" element={<MonumentBooksPage />} />
-
+        <Route path="" element={<LayoutSystemTemplete />}>
+          <Route path="/">
+            <Route
+              path="dashboard"
+              element={
+                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                  <Dashboard />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="eras"
+              element={
+                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                  <ErasManagement />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="descriptionMonuments"
+              element={
+                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                  <DescriptionMonumentsPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="dynasty"
+              element={
+                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                  <DynastyPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="gallery"
+              element={
+                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                  <GalleryPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="monuments"
+              element={
+                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                  <MonumentsPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="monumentsEra"
+              element={
+                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                  <MonumentsEraPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="monumentsType"
+              element={
+                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                  <MonumentsTypePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="sources"
+              element={
+                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                  <SourcesPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="books"
+              element={
+                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                  <BooksPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="monumentSources"
+              element={
+                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                  <MonumentSourcesPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="monumentBooks"
+              element={
+                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                  <MonumentBooksPage />
+                </PrivateRoute>
+              }
+            />
+          </Route>
           <Route
             path="users"
             element={
-              <PrivateRoute hasAnyAuthorities={[AUTHORITIES.PORTAL_ADMIN]}>
+              <PrivateRoute
+                hasAnyAuthorities={[
+                  AUTHORITIES.PORTAL_ADMIN,
+                  AUTHORITIES.ADMIN,
+                ]}
+              >
                 <UsersPage />
               </PrivateRoute>
             }
@@ -79,7 +168,12 @@ const AppRoutes = () => {
           <Route
             path="portalUsers"
             element={
-              <PrivateRoute hasAnyAuthorities={[AUTHORITIES.PORTAL_ADMIN]}>
+              <PrivateRoute
+                hasAnyAuthorities={[
+                  AUTHORITIES.PORTAL_ADMIN,
+                  AUTHORITIES.ADMIN,
+                ]}
+              >
                 <PortalUsersPage />
               </PrivateRoute>
             }
@@ -87,7 +181,12 @@ const AppRoutes = () => {
           <Route
             path="roles"
             element={
-              <PrivateRoute hasAnyAuthorities={[AUTHORITIES.PORTAL_ADMIN]}>
+              <PrivateRoute
+                hasAnyAuthorities={[
+                  AUTHORITIES.PORTAL_ADMIN,
+                  AUTHORITIES.ADMIN,
+                ]}
+              >
                 <RolesPage />
               </PrivateRoute>
             }
@@ -95,7 +194,12 @@ const AppRoutes = () => {
           <Route
             path="userRoles"
             element={
-              <PrivateRoute hasAnyAuthorities={[AUTHORITIES.PORTAL_ADMIN]}>
+              <PrivateRoute
+                hasAnyAuthorities={[
+                  AUTHORITIES.PORTAL_ADMIN,
+                  AUTHORITIES.ADMIN,
+                ]}
+              >
                 <UserRolesPage />
               </PrivateRoute>
             }
@@ -103,7 +207,12 @@ const AppRoutes = () => {
           <Route
             path="favourites"
             element={
-              <PrivateRoute hasAnyAuthorities={[AUTHORITIES.PORTAL_ADMIN]}>
+              <PrivateRoute
+                hasAnyAuthorities={[
+                  AUTHORITIES.PORTAL_ADMIN,
+                  AUTHORITIES.ADMIN,
+                ]}
+              >
                 <FavouritesPage />
               </PrivateRoute>
             }
@@ -111,7 +220,12 @@ const AppRoutes = () => {
           <Route
             path="savedSearch"
             element={
-              <PrivateRoute hasAnyAuthorities={[AUTHORITIES.PORTAL_ADMIN]}>
+              <PrivateRoute
+                hasAnyAuthorities={[
+                  AUTHORITIES.PORTAL_ADMIN,
+                  AUTHORITIES.ADMIN,
+                ]}
+              >
                 <SavedSearchPage />
               </PrivateRoute>
             }
@@ -119,14 +233,17 @@ const AppRoutes = () => {
           <Route
             path="userHistory"
             element={
-              <PrivateRoute hasAnyAuthorities={[AUTHORITIES.PORTAL_ADMIN]}>
+              <PrivateRoute
+                hasAnyAuthorities={[
+                  AUTHORITIES.PORTAL_ADMIN,
+                  AUTHORITIES.ADMIN,
+                ]}
+              >
                 <UserHistoryPage />
               </PrivateRoute>
             }
           />
         </Route>
-        <Route path="*" element={<PageNotFound />} />
-        <Route path="unauthorized" element={<UnauthorizedPage />} />
       </ErrorBoundaryRoutes>
     </div>
   );

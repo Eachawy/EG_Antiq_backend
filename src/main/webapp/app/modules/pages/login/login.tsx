@@ -26,17 +26,21 @@ const LoginPage = (pops) => {
   const $isAuthenticated = useAppSelector(
     (state) => state.authentication.isAuthenticated,
   );
+  const $sessionHasBeenFetched = useAppSelector(
+    (state) => state.authentication.sessionHasBeenFetched,
+  );
+
+  const $account = useAppSelector((state) => state.authentication.account);
   const loading = useAppSelector((state) => state.authentication.loading);
 
-  // React.useEffect(() => {
-  //   Storage.session.set("locale", "ar");
-  //   dispatch(setLocale("ar"));
-  //   setTextDirection("ar");
-  // }, []);
-
-  if ($isAuthenticated) {
-    navigate("/dashboard");
-  }
+  React.useEffect(() => {
+    if ($isAuthenticated) {
+      Storage.session.set("isAuthenticated", $isAuthenticated);
+      Storage.session.set("sessionHasBeenFetched", $sessionHasBeenFetched);
+      Storage.session.set("account", $account);
+      navigate("/dashboard");
+    }
+  }, [$isAuthenticated]);
 
   const handleLogin = (values) => {
     dispatch(login(values.username, values.password));

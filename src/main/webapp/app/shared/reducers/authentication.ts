@@ -70,28 +70,21 @@ export const login: (username: string, password: string) => AppThunk =
   };
 
 export const clearAuthToken = () => {
-  if (Storage.local.get(AUTH_TOKEN_KEY)) {
-    Storage.local.remove(AUTH_TOKEN_KEY);
-  }
   if (Storage.session.get(AUTH_TOKEN_KEY)) {
     Storage.session.remove(AUTH_TOKEN_KEY);
-  }
-  if (Storage.local.get(REFRESH_TOKEN_KEY)) {
-    Storage.local.remove(REFRESH_TOKEN_KEY);
   }
   if (Storage.session.get(REFRESH_TOKEN_KEY)) {
     Storage.session.remove(REFRESH_TOKEN_KEY);
   }
-
   if (Storage.session.get("isAuthenticated")) {
     Storage.session.remove("isAuthenticated");
   }
   if (Storage.session.get("account")) {
     Storage.session.remove("account");
   }
-  if (Storage.session.get("sessionHasBeenFetched")) {
-    Storage.session.remove("sessionHasBeenFetched");
-  }
+  // if (Storage.session.get("sessionHasBeenFetched")) {
+  //   Storage.session.remove("sessionHasBeenFetched");
+  // }
   if (Storage.session.get("isAdmin")) {
     Storage.session.remove("isAdmin");
   }
@@ -99,6 +92,9 @@ export const clearAuthToken = () => {
 
 export const logout: () => AppThunk = () => async (dispatch) => {
   try {
+    // Clear tokens from storage
+    clearAuthToken();
+    dispatch(logoutSession());
     // Get refresh token before clearing
     const refreshToken =
       Storage.local.get(REFRESH_TOKEN_KEY) ||
@@ -111,10 +107,6 @@ export const logout: () => AppThunk = () => async (dispatch) => {
   } catch (error) {
     // Continue with logout even if backend call fails
     console.error("Logout error:", error);
-  } finally {
-    // Clear tokens from storage
-    clearAuthToken();
-    dispatch(logoutSession());
   }
 };
 

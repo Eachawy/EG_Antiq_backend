@@ -21,17 +21,15 @@ export const PrivateRoute = ({
       state.authentication.isAuthenticated,
   );
 
-  const sessionHasBeenFetched =
-    Storage.session.get("sessionHasBeenFetched") ||
-    useAppSelector((state) => state.authentication.sessionHasBeenFetched);
+  const sessionHasBeenFetched = useAppSelector(
+    (state) =>
+      Storage.session.get("sessionHasBeenFetched") ||
+      state.authentication.sessionHasBeenFetched,
+  );
 
-  const account =
-    Storage.session.get("account") ||
-    useAppSelector((state) => state.authentication.account);
-
-  Storage.session.set("isAuthenticated", isAuthenticated);
-  Storage.session.set("sessionHasBeenFetched", sessionHasBeenFetched);
-  Storage.session.set("account", account);
+  const account = useAppSelector(
+    (state) => Storage.session.get("account") || state.authentication.account,
+  );
 
   const isAuthorized = hasAnyAuthority(account.roles, hasAnyAuthorities);
   const pageLocation = useLocation();
@@ -43,7 +41,7 @@ export const PrivateRoute = ({
   }
 
   if (!sessionHasBeenFetched) {
-    return <div></div>;
+    return <></>;
   }
 
   if (isAuthenticated) {
@@ -56,7 +54,6 @@ export const PrivateRoute = ({
         to={{
           pathname: "/unauthorized",
         }}
-        replace
       />
     );
   }
