@@ -226,19 +226,37 @@ const MonumentFormDialog = (props) => {
               </div>
             </div>
 
-            <div>
-              <label className="kemetra-field-label">Monument Date</label>
-              <InputText
-                value={props.formData.mDate || ""}
-                onChange={(e) =>
-                  props.onFormDataChange({
-                    ...props.formData,
-                    mDate: e.target.value,
-                  })
-                }
-                placeholder="e.g., 2560 BC"
-                className="kemetra-field-input"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="kemetra-field-label">Monument Date</label>
+                <InputText
+                  value={props.formData.mDate || ""}
+                  onChange={(e) =>
+                    props.onFormDataChange({
+                      ...props.formData,
+                      mDate: e.target.value,
+                    })
+                  }
+                  placeholder="e.g., 2560 BC"
+                  className="kemetra-field-input"
+                />
+              </div>
+              <div>
+                <label className="kemetra-field-label">
+                  Monument Date (Hijri)
+                </label>
+                <InputText
+                  value={props.formData.mDateHijri || ""}
+                  onChange={(e) =>
+                    props.onFormDataChange({
+                      ...props.formData,
+                      mDateHijri: e.target.value,
+                    })
+                  }
+                  placeholder="e.g., 15/03/1446"
+                  className="kemetra-field-input"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

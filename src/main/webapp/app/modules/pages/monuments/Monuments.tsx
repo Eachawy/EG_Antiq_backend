@@ -588,6 +588,14 @@ const MonumentsPage = () => {
             bodyClassName="kemetra-table-cell-secondary"
           />
           <Column
+            field="mDateHijri"
+            body={(rowData) => rowData.mDateHijri || "-"}
+            header="Date (Hijri)"
+            sortable
+            headerClassName="kemetra-table-column-header"
+            bodyClassName="kemetra-table-cell-secondary"
+          />
+          <Column
             body={actionBodyTemplate}
             header="Actions"
             style={{ width: "120px" }}
