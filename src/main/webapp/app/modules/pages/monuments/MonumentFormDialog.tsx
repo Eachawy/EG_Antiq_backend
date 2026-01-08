@@ -226,15 +226,16 @@ const MonumentFormDialog = (props) => {
               </div>
             </div>
 
+            {/* Gregorian Dates */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="kemetra-field-label">Monument Date</label>
+                <label className="kemetra-field-label">Start Date</label>
                 <InputText
-                  value={props.formData.mDate || ""}
+                  value={props.formData.startDate || ""}
                   onChange={(e) =>
                     props.onFormDataChange({
                       ...props.formData,
-                      mDate: e.target.value,
+                      startDate: e.target.value,
                     })
                   }
                   placeholder="e.g., 2560 BC"
@@ -242,18 +243,50 @@ const MonumentFormDialog = (props) => {
                 />
               </div>
               <div>
-                <label className="kemetra-field-label">
-                  Monument Date (Hijri)
-                </label>
+                <label className="kemetra-field-label">End Date</label>
                 <InputText
-                  value={props.formData.mDateHijri || ""}
+                  value={props.formData.endDate || ""}
                   onChange={(e) =>
                     props.onFormDataChange({
                       ...props.formData,
-                      mDateHijri: e.target.value,
+                      endDate: e.target.value,
+                    })
+                  }
+                  placeholder="e.g., 2540 BC"
+                  className="kemetra-field-input"
+                />
+              </div>
+            </div>
+
+            {/* Hijri Dates */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="kemetra-field-label">
+                  Start Date (Hijri)
+                </label>
+                <InputText
+                  value={props.formData.startDateHijri || ""}
+                  onChange={(e) =>
+                    props.onFormDataChange({
+                      ...props.formData,
+                      startDateHijri: e.target.value,
                     })
                   }
                   placeholder="e.g., 15/03/1446"
+                  className="kemetra-field-input"
+                />
+              </div>
+              <div>
+                <label className="kemetra-field-label">End Date (Hijri)</label>
+                <InputText
+                  value={props.formData.endDateHijri || ""}
+                  onChange={(e) =>
+                    props.onFormDataChange({
+                      ...props.formData,
+                      endDateHijri: e.target.value,
+                    })
+                  }
+                  placeholder="e.g., 20/05/1446"
                   className="kemetra-field-input"
                 />
               </div>

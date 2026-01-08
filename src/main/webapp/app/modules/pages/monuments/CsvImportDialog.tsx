@@ -124,8 +124,8 @@ const CsvImportDialog: React.FC<CsvImportDialogProps> = ({
 
   const downloadTemplate = () => {
     // Create a sample CSV template
-    const csvContent = `monumentNameAr,monumentNameEn,monumentBiographyAr,monumentBiographyEn,lat,lng,image,mDate,mDateHijri,monumentsTypeId,eraId,dynastyId,zoom,center,descriptionEn,descriptionAr
-معبد الكرنك,Karnak Temple,معبد الكرنك هو مجمع معابد ضخم,The Karnak Temple Complex comprises a vast mix of decayed temples,25.718833,32.657444,uploads/monuments/karnak.jpg,2560 BC,15/03/1446,1,1,1,11,25.718833;32.657444,Temple description in English,وصف المعبد بالعربية`;
+    const csvContent = `monumentNameAr,monumentNameEn,monumentBiographyAr,monumentBiographyEn,lat,lng,image,startDate,endDate,startDateHijri,endDateHijri,monumentsTypeId,eraId,dynastyId,zoom,center,descriptionEn,descriptionAr
+معبد الكرنك,Karnak Temple,معبد الكرنك هو مجمع معابد ضخم,The Karnak Temple Complex comprises a vast mix of decayed temples,25.718833,32.657444,uploads/monuments/karnak.jpg,2560 BC,2540 BC,15/03/1446,20/05/1446,1,1,1,11,25.718833;32.657444,Temple description in English,وصف المعبد بالعربية`;
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
@@ -184,7 +184,7 @@ const CsvImportDialog: React.FC<CsvImportDialogProps> = ({
         {/* CSV Format Info */}
         <Message
           severity="info"
-          text="Required columns: monumentNameAr, monumentNameEn, monumentBiographyAr, monumentBiographyEn, lat, lng, image, mDate, monumentsTypeId, eraId, dynastyId, zoom, center. Optional: mDateHijri, descriptionEn, descriptionAr"
+          text="Required columns: monumentNameAr, monumentNameEn, monumentBiographyAr, monumentBiographyEn, lat, lng, image, startDate, monumentsTypeId, eraId, dynastyId, zoom, center. Optional: endDate, startDateHijri, endDateHijri, descriptionEn, descriptionAr"
           className="mb-4"
         />
 

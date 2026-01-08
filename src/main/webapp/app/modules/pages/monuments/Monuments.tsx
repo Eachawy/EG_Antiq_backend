@@ -580,17 +580,33 @@ const MonumentsPage = () => {
             bodyClassName="kemetra-table-cell"
           />
           <Column
-            field="mDate"
-            body={(rowData) => rowData.mDate || rowData.monumentDate || "-"}
-            header="Date"
+            field="startDate"
+            body={(rowData) => rowData.startDate || "-"}
+            header="Start Date"
             sortable
             headerClassName="kemetra-table-column-header"
             bodyClassName="kemetra-table-cell-secondary"
           />
           <Column
-            field="mDateHijri"
-            body={(rowData) => rowData.mDateHijri || "-"}
-            header="Date (Hijri)"
+            field="endDate"
+            body={(rowData) => rowData.endDate || "-"}
+            header="End Date"
+            sortable
+            headerClassName="kemetra-table-column-header"
+            bodyClassName="kemetra-table-cell-secondary"
+          />
+          <Column
+            field="startDateHijri"
+            body={(rowData) => rowData.startDateHijri || "-"}
+            header="Start Date (Hijri)"
+            sortable
+            headerClassName="kemetra-table-column-header"
+            bodyClassName="kemetra-table-cell-secondary"
+          />
+          <Column
+            field="endDateHijri"
+            body={(rowData) => rowData.endDateHijri || "-"}
+            header="End Date (Hijri)"
             sortable
             headerClassName="kemetra-table-column-header"
             bodyClassName="kemetra-table-cell-secondary"
