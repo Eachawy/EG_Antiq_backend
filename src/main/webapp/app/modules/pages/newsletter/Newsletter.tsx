@@ -8,16 +8,7 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import PageHeader from "app/shared/components/page-header/page-header";
-import {
-  Mail,
-  Users,
-  Send,
-  FileDown,
-  Trash2,
-  Eye,
-  Plus,
-} from "lucide-react";
-import SendNewsletterDialog from "./SendNewsletterDialog";
+import { Mail, Users, Send, FileDown, Trash2, Eye, Plus } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "app/config/store";
 import {
   getSubscribers,
@@ -25,6 +16,7 @@ import {
   exportSubscribers,
   getCampaigns,
   getCampaignDetails,
+  sendNewsletterWithTemplate,
 } from "./newsletter.reducer";
 import { toast } from "react-toastify";
 import { APP_DATE_FORMAT } from "app/config/constants";
@@ -38,12 +30,14 @@ const NewsletterPage = () => {
   const [campaigns, setCampaigns] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [sendDialogVisible, setSendDialogVisible] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
 
   const $Subscribers = useAppSelector((state) => state.Newsletter.subscribers);
   const $Campaigns = useAppSelector((state) => state.Newsletter.campaigns);
   const loading = useAppSelector((state) => state.Newsletter.loading);
+  const sendingNewsletter = useAppSelector(
+    (state) => state.Newsletter.sendingNewsletter,
+  );
 
   useEffect(() => {
     fetchSubscribers();
@@ -107,10 +101,28 @@ const NewsletterPage = () => {
     fetchSubscribers();
   };
 
-  const handleSendSuccess = () => {
-    setSendDialogVisible(false);
-    fetchCampaigns();
-    toast.success("Newsletter sent successfully!");
+  const handleSendNewsletter = () => {
+    const subscriberCount = subscribers.filter(
+      (s: any) => s.isSubscribed,
+    ).length;
+
+    confirmDialog({
+      message: `Are you sure you want to send the newsletter to ${subscriberCount} subscribers? This will use the default template with the latest monuments.`,
+      header: "Confirm Send Newsletter",
+      icon: "pi pi-exclamation-triangle",
+      acceptClassName: "p-button-primary",
+      async accept() {
+        try {
+          await dispatch(sendNewsletterWithTemplate()).unwrap();
+          toast.success("Newsletter sent successfully!");
+          fetchCampaigns();
+        } catch (error: any) {
+          toast.error(
+            error?.message || "Failed to send newsletter. Please try again.",
+          );
+        }
+      },
+    });
   };
 
   const statusOptions = [
@@ -173,13 +185,6 @@ const NewsletterPage = () => {
       />
 
       <ConfirmDialog />
-
-      <SendNewsletterDialog
-        visible={sendDialogVisible}
-        onHide={() => setSendDialogVisible(false)}
-        onSuccess={handleSendSuccess}
-        subscriberCount={subscribers.filter((s: any) => s.isSubscribed).length}
-      />
 
       <div className="mt-6">
         <TabView
@@ -274,18 +279,30 @@ const NewsletterPage = () => {
                 <h3 className="text-2xl font-semibold mb-2">
                   Send Newsletter to All Subscribers
                 </h3>
-                <p className="text-gray-600 mb-6">
-                  You have <strong>{subscribers.filter((s: any) => s.isSubscribed).length}</strong> active
-                  subscribers ready to receive your newsletter.
+                <p className="text-gray-600 mb-4">
+                  You have{" "}
+                  <strong>
+                    {subscribers.filter((s: any) => s.isSubscribed).length}
+                  </strong>{" "}
+                  active subscribers ready to receive your newsletter.
+                </p>
+                <p className="text-sm text-gray-500 mb-6">
+                  The newsletter will use the default template with the latest 4
+                  monuments from the database.
                 </p>
                 <Button
-                  label="Compose Newsletter"
-                  icon={<Plus size={16} />}
+                  label="Send Newsletter"
+                  icon={<Send size={16} />}
                   className="p-button-lg"
-                  onClick={() => setSendDialogVisible(true)}
-                  disabled={subscribers.filter((s: any) => s.isSubscribed).length === 0}
+                  onClick={handleSendNewsletter}
+                  loading={sendingNewsletter}
+                  disabled={
+                    subscribers.filter((s: any) => s.isSubscribed).length ===
+                      0 || sendingNewsletter
+                  }
                 />
-                {subscribers.filter((s: any) => s.isSubscribed).length === 0 && (
+                {subscribers.filter((s: any) => s.isSubscribed).length ===
+                  0 && (
                   <p className="text-sm text-red-500 mt-2">
                     No active subscribers to send newsletter to
                   </p>

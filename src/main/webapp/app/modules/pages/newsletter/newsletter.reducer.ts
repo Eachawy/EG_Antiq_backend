@@ -110,6 +110,14 @@ export const sendNewsletter = createAsyncThunk(
   },
 );
 
+export const sendNewsletterWithTemplate = createAsyncThunk(
+  "Newsletter/SEND_NEWSLETTER_TEMPLATE",
+  async () => postVerifiedRequest(SEND_Newsletter_API, {}),
+  {
+    serializeError: serializeAxiosError,
+  },
+);
+
 export const getCampaigns = createAsyncThunk(
   "Newsletter/GET_CAMPAIGNS",
   async (params?: { page?: number; limit?: number }) => {
@@ -175,6 +183,18 @@ export const NewsletterState = createSlice({
         state.sendingNewsletter = false;
       })
       .addCase(sendNewsletter.rejected, (state, action) => {
+        state.sendingNewsletter = false;
+        state.errorMessage = action.error.message;
+      })
+      // Send Newsletter with Template
+      .addCase(sendNewsletterWithTemplate.pending, (state) => {
+        state.sendingNewsletter = true;
+        state.errorMessage = null;
+      })
+      .addCase(sendNewsletterWithTemplate.fulfilled, (state) => {
+        state.sendingNewsletter = false;
+      })
+      .addCase(sendNewsletterWithTemplate.rejected, (state, action) => {
         state.sendingNewsletter = false;
         state.errorMessage = action.error.message;
       })

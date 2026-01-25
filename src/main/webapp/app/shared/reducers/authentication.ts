@@ -92,21 +92,27 @@ export const clearAuthToken = () => {
 
 export const logout: () => AppThunk = () => async (dispatch) => {
   try {
-    // Clear tokens from storage
-    clearAuthToken();
-    dispatch(logoutSession());
     // Get refresh token before clearing
     const refreshToken =
       Storage.local.get(REFRESH_TOKEN_KEY) ||
       Storage.session.get(REFRESH_TOKEN_KEY);
 
+    // Clear tokens from storage
+    clearAuthToken();
+    dispatch(logoutSession());
+
     // Call backend logout endpoint to invalidate refresh token
     if (refreshToken) {
       await axios.post(AUTH_LOGOUT, { refreshToken });
     }
+
+    // Redirect to login page
+    window.location.href = "/login";
   } catch (error) {
     // Continue with logout even if backend call fails
     console.error("Logout error:", error);
+    // Redirect to login page even if logout API call fails
+    window.location.href = "/login";
   }
 };
 
@@ -114,6 +120,9 @@ export const clearAuthentication = (messageKey) => (dispatch) => {
   clearAuthToken();
   dispatch(authError(messageKey));
   dispatch(clearAuth());
+
+  // Redirect to login page
+  window.location.href = "/login";
 };
 
 export const AuthenticationSlice = createSlice({

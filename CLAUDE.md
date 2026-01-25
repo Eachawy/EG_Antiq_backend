@@ -176,6 +176,7 @@ Page modules follow a consistent structure in `src/main/webapp/app/modules/pages
 - Reducers registered in `src/main/webapp/app/shared/reducers/index.ts`
 
 **Typical reducer pattern**:
+
 - Uses `createAsyncThunk` for async API calls
 - Network requests use helper functions from `app/config/network-server-reducer`:
   - `getVerifiedRequest(url)` for GET
@@ -202,6 +203,7 @@ Page modules follow a consistent structure in `src/main/webapp/app/modules/pages
 The application includes complete Docker support for both production and staging environments:
 
 **Quick Start:**
+
 ```bash
 # Production
 cp .env.production.example .env.production
@@ -213,6 +215,7 @@ docker-compose -f docker-compose.staging.yml up -d
 ```
 
 **Key Files:**
+
 - `Dockerfile` - Multi-stage build (Node.js builder + Nginx server)
 - `docker-compose.yml` - Production configuration (port 9000)
 - `docker-compose.staging.yml` - Staging configuration (port 9001)
@@ -220,12 +223,14 @@ docker-compose -f docker-compose.staging.yml up -d
 - `docker-entrypoint.sh` - Dynamic backend URL configuration
 
 **Build Output:**
+
 - Production build creates static files in `target/classes/static/`
 - Nginx serves static files and proxies `/api/*` requests to backend
 - Runs as non-root user (appuser:1001) for security
 - Health check endpoint: `/health`
 
 **Documentation:**
+
 - See [DEPLOYMENT.md](./DEPLOYMENT.md) for comprehensive deployment guide
 - See [DEPLOYMENT_QUICK_REFERENCE.md](./DEPLOYMENT_QUICK_REFERENCE.md) for quick commands
 

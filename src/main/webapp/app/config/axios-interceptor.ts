@@ -59,6 +59,9 @@ const refreshAccessToken = async (): Promise<string | null> => {
     Storage.local.remove(REFRESH_TOKEN_KEY);
     Storage.session.remove(AUTH_TOKEN_KEY);
     Storage.session.remove(REFRESH_TOKEN_KEY);
+    Storage.session.remove("isAuthenticated");
+    Storage.session.remove("account");
+    Storage.session.remove("isAdmin");
     return null;
   }
 };
@@ -87,6 +90,8 @@ const setupAxiosInterceptors = (onUnauthenticated) => {
         originalRequest.url?.includes("/auth/refresh")
       ) {
         onUnauthenticated();
+        // Redirect to login page
+        window.location.href = "/login";
         return Promise.reject(err);
       }
 
@@ -119,11 +124,15 @@ const setupAxiosInterceptors = (onUnauthenticated) => {
         } else {
           processQueue(new Error("Token refresh failed"), null);
           onUnauthenticated();
+          // Redirect to login page when token refresh fails
+          window.location.href = "/login";
           return Promise.reject(err);
         }
       } catch (refreshError) {
         processQueue(refreshError, null);
         onUnauthenticated();
+        // Redirect to login page when token refresh fails
+        window.location.href = "/login";
         // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
         return Promise.reject(refreshError);
       } finally {

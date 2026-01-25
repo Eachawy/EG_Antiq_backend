@@ -18,14 +18,15 @@ This guide will help you connect your domain `kemetra.org` to your VPS at `153.9
 
 ### DNS Records
 
-| Type | Name | Points To | TTL |
-|------|------|-----------|-----|
-| A | @ | 153.92.209.167 | 3600 |
-| A | www | 153.92.209.167 | 3600 |
-| A | admin | 153.92.209.167 | 3600 |
-| A | api | 153.92.209.167 | 3600 |
+| Type | Name  | Points To      | TTL  |
+| ---- | ----- | -------------- | ---- |
+| A    | @     | 153.92.209.167 | 3600 |
+| A    | www   | 153.92.209.167 | 3600 |
+| A    | admin | 153.92.209.167 | 3600 |
+| A    | api   | 153.92.209.167 | 3600 |
 
 **Explanation:**
+
 - `@` = Root domain (kemetra.org) - redirects to admin for now
 - `www` = www.kemetra.org - redirects to admin for now
 - `admin` = admin.kemetra.org (Admin Frontend)
@@ -64,6 +65,7 @@ chmod +x scripts/setup-domain.sh
 ```
 
 This will:
+
 - Install Nginx (if not already installed)
 - Configure reverse proxy
 - Enable automatic start on boot
@@ -74,6 +76,7 @@ This will:
 Update your API's `.env` file to allow the new domain:
 
 **Option A: Automatic Update (Recommended)**
+
 ```bash
 # On the server
 cd /root/EG_Antiq
@@ -82,6 +85,7 @@ docker compose -f docker-compose.production.yml restart api
 ```
 
 **Option B: Manual Update**
+
 ```bash
 # On the server
 cd /root/EG_Antiq
@@ -89,11 +93,13 @@ nano .env
 ```
 
 Update `CORS_ORIGINS` to:
+
 ```bash
 CORS_ORIGINS=http://admin.kemetra.org,https://admin.kemetra.org,http://api.kemetra.org,https://api.kemetra.org,http://153.92.209.167:3001,http://153.92.209.167:3002
 ```
 
 Restart the API:
+
 ```bash
 docker compose -f docker-compose.production.yml restart api
 ```
@@ -101,6 +107,7 @@ docker compose -f docker-compose.production.yml restart api
 ## Step 4: Test the Setup
 
 ### Test Admin Frontend
+
 ```bash
 # Should show HTML
 curl http://admin.kemetra.org
@@ -110,6 +117,7 @@ open http://admin.kemetra.org
 ```
 
 ### Test API
+
 ```bash
 # Should return health status
 curl http://api.kemetra.org/api/v1/health
@@ -125,18 +133,19 @@ cd /root/EG_Antiq_backend
 ```
 
 After SSL setup:
+
 - **Admin**: https://admin.kemetra.org
 - **API**: https://api.kemetra.org
 - **Main**: https://kemetra.org (redirects to admin)
 
 ## Domain Structure
 
-| URL | Points To | Purpose |
-|-----|-----------|---------|
-| http://kemetra.org | → admin.kemetra.org | Redirects to admin |
-| http://www.kemetra.org | → admin.kemetra.org | Redirects to admin |
-| http://admin.kemetra.org | localhost:3001 | Admin Frontend |
-| http://api.kemetra.org | localhost:3000 | Backend API |
+| URL                      | Points To           | Purpose            |
+| ------------------------ | ------------------- | ------------------ |
+| http://kemetra.org       | → admin.kemetra.org | Redirects to admin |
+| http://www.kemetra.org   | → admin.kemetra.org | Redirects to admin |
+| http://admin.kemetra.org | localhost:3001      | Admin Frontend     |
+| http://api.kemetra.org   | localhost:3000      | Backend API        |
 
 ## Troubleshooting
 
