@@ -46,7 +46,7 @@ const Menu = (props) => {
   // ];
 
   const [navItems, setNavItems] = useState<any>([
-    { label: "Dashboard", icon: LayoutDashboard, page: "app/dashboard" },
+    { label: "Dashboard", icon: LayoutDashboard, page: "dashboard" },
     { label: "Eras", icon: CalendarClock, page: "eras" },
     { label: "Monuments Type", icon: Landmark, page: "monumentsType" },
     { label: "Dynasty", icon: Crown, page: "dynasty" },

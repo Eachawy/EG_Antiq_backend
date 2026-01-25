@@ -104,6 +104,8 @@ const SendNewsletterDialog: React.FC<SendNewsletterDialogProps> = ({
   };
 
   const getDefaultHtmlTemplate = () => {
+    const today = new Date();
+    const currentYear = today.getFullYear();
     return `<!DOCTYPE html>
 <html>
 <head>
@@ -154,7 +156,7 @@ const SendNewsletterDialog: React.FC<SendNewsletterDialogProps> = ({
 </head>
 <body>
   <div class="header">
-    <h1>EG Antiq Newsletter</h1>
+    <h1>Kemetra Newsletter</h1>
     <p>Ancient Egypt Discoveries & Insights</p>
   </div>
   <div class="content">
@@ -165,7 +167,7 @@ const SendNewsletterDialog: React.FC<SendNewsletterDialogProps> = ({
 
   </div>
   <div class="footer">
-    <p>© 2026 EG Antiq. All rights reserved.</p>
+    <p>© ${currentYear} Kemetra. All rights reserved.</p>
   </div>
 </body>
 </html>`;

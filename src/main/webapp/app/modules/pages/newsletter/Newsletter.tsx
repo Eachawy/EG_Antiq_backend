@@ -11,7 +11,6 @@ import PageHeader from "app/shared/components/page-header/page-header";
 import {
   Mail,
   Users,
-  TrendingUp,
   Send,
   FileDown,
   Trash2,
@@ -22,7 +21,6 @@ import SendNewsletterDialog from "./SendNewsletterDialog";
 import { useAppDispatch, useAppSelector } from "app/config/store";
 import {
   getSubscribers,
-  getStatistics,
   deleteSubscriber,
   exportSubscribers,
   getCampaigns,
@@ -38,20 +36,17 @@ const NewsletterPage = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [subscribers, setSubscribers] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
-  const [statistics, setStatistics] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [sendDialogVisible, setSendDialogVisible] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
 
   const $Subscribers = useAppSelector((state) => state.Newsletter.subscribers);
-  const $Statistics = useAppSelector((state) => state.Newsletter.statistics);
   const $Campaigns = useAppSelector((state) => state.Newsletter.campaigns);
   const loading = useAppSelector((state) => state.Newsletter.loading);
 
   useEffect(() => {
     fetchSubscribers();
-    fetchStatistics();
     fetchCampaigns();
   }, []);
 
@@ -60,12 +55,6 @@ const NewsletterPage = () => {
       setSubscribers($Subscribers.data);
     }
   }, [$Subscribers]);
-
-  useEffect(() => {
-    if ($Statistics?.data) {
-      setStatistics($Statistics.data);
-    }
-  }, [$Statistics]);
 
   useEffect(() => {
     if ($Campaigns?.data) {
@@ -84,10 +73,6 @@ const NewsletterPage = () => {
     );
   };
 
-  const fetchStatistics = async () => {
-    await dispatch(getStatistics());
-  };
-
   const fetchCampaigns = async () => {
     await dispatch(getCampaigns({ page: 1, limit: 50 }));
   };
@@ -102,7 +87,6 @@ const NewsletterPage = () => {
           await dispatch(deleteSubscriber(subscriber.id)).unwrap();
           toast.success("Subscriber removed successfully");
           fetchSubscribers();
-          fetchStatistics();
         } catch (error) {
           toast.error("Failed to remove subscriber");
         }
@@ -194,7 +178,7 @@ const NewsletterPage = () => {
         visible={sendDialogVisible}
         onHide={() => setSendDialogVisible(false)}
         onSuccess={handleSendSuccess}
-        subscriberCount={statistics?.subscribed || 0}
+        subscriberCount={subscribers.filter((s: any) => s.isSubscribed).length}
       />
 
       <div className="mt-6">
@@ -202,51 +186,6 @@ const NewsletterPage = () => {
           activeIndex={activeTab}
           onTabChange={(e) => setActiveTab(e.index)}
         >
-          {/* Statistics Tab */}
-          <TabPanel
-            header={
-              <span className="flex items-center gap-2">
-                <TrendingUp size={16} />
-                Statistics
-              </span>
-            }
-          >
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <Card>
-                <div className="text-center">
-                  <div className="text-4xl font-bold text-blue-600">
-                    {statistics?.total || 0}
-                  </div>
-                  <div className="text-gray-600 mt-2">Total Subscriptions</div>
-                </div>
-              </Card>
-              <Card>
-                <div className="text-center">
-                  <div className="text-4xl font-bold text-green-600">
-                    {statistics?.subscribed || 0}
-                  </div>
-                  <div className="text-gray-600 mt-2">Active Subscribers</div>
-                </div>
-              </Card>
-              <Card>
-                <div className="text-center">
-                  <div className="text-4xl font-bold text-orange-600">
-                    {statistics?.newThisMonth || 0}
-                  </div>
-                  <div className="text-gray-600 mt-2">New This Month</div>
-                </div>
-              </Card>
-              <Card>
-                <div className="text-center">
-                  <div className="text-4xl font-bold text-red-600">
-                    {statistics?.unsubscribed || 0}
-                  </div>
-                  <div className="text-gray-600 mt-2">Unsubscribed</div>
-                </div>
-              </Card>
-            </div>
-          </TabPanel>
-
           {/* Subscribers Tab */}
           <TabPanel
             header={
@@ -336,7 +275,7 @@ const NewsletterPage = () => {
                   Send Newsletter to All Subscribers
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  You have <strong>{statistics?.subscribed || 0}</strong> active
+                  You have <strong>{subscribers.filter((s: any) => s.isSubscribed).length}</strong> active
                   subscribers ready to receive your newsletter.
                 </p>
                 <Button
@@ -344,9 +283,9 @@ const NewsletterPage = () => {
                   icon={<Plus size={16} />}
                   className="p-button-lg"
                   onClick={() => setSendDialogVisible(true)}
-                  disabled={!statistics?.subscribed}
+                  disabled={subscribers.filter((s: any) => s.isSubscribed).length === 0}
                 />
-                {!statistics?.subscribed && (
+                {subscribers.filter((s: any) => s.isSubscribed).length === 0 && (
                   <p className="text-sm text-red-500 mt-2">
                     No active subscribers to send newsletter to
                   </p>

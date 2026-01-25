@@ -1,46 +1,113 @@
 import "./dashboard.scss";
 
-import React from "react";
-import { Translate } from "react-jhipster";
-import { Link } from "react-router-dom";
-
-import { useAppSelector } from "app/config/store";
+import React, { useEffect, useState } from "react";
+import { Card } from "primereact/card";
+import { Mail, Users, TrendingUp, UserPlus } from "lucide-react";
+import PageHeader from "app/shared/components/page-header/page-header";
+import { useAppDispatch, useAppSelector } from "app/config/store";
+import { getStatistics } from "../newsletter/newsletter.reducer";
 
 export const Dashboard = () => {
-  const account = useAppSelector((state) => state.authentication.account);
-  const people = [
-    {
-      name: "Calvin Hawkins",
-      email: "calvin.hawkins@example.com",
-      image:
-        "https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    },
-    {
-      name: "Kristen Ramos",
-      email: "kristen.ramos@example.com",
-      image:
-        "https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    },
-    {
-      name: "Ted Fox",
-      email: "ted.fox@example.com",
-      image:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    },
-  ];
+  const dispatch = useAppDispatch();
+  const [statistics, setStatistics] = useState<any>(null);
+
+  const $Statistics = useAppSelector((state) => state.Newsletter.statistics);
+  const loading = useAppSelector((state) => state.Newsletter.loading);
+
+  useEffect(() => {
+    fetchStatistics();
+  }, []);
+
+  useEffect(() => {
+    if ($Statistics?.data) {
+      setStatistics($Statistics.data);
+    }
+  }, [$Statistics]);
+
+  const fetchStatistics = async () => {
+    await dispatch(getStatistics());
+  };
+
   return (
-    <div>
-      <ul className="divide-y divide-gray-200">
-        {people.map((person) => (
-          <li key={person.email} className="flex py-4">
-            <img className="size-10 rounded-full" src={person.image} alt="" />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-900">{person.name}</p>
-              <p className="text-sm text-gray-500">{person.email}</p>
-            </div>
-          </li>
-        ))}
-      </ul>
+    <div className="dashboard-page">
+      <PageHeader
+        title="Dashboard"
+        subtitle="Welcome to the admin dashboard"
+        icon={<TrendingUp className="w-6 h-6" />}
+      />
+
+      <div className="mt-6">
+        {/* Newsletter Statistics Section */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <Mail size={20} />
+            Newsletter Statistics
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card className="shadow-sm">
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-3">
+                  <div className="p-3 rounded-full bg-blue-100">
+                    <Mail className="text-blue-600" size={24} />
+                  </div>
+                </div>
+                <div className="text-4xl font-bold text-blue-600">
+                  {loading ? "..." : statistics?.total || 0}
+                </div>
+                <div className="text-gray-600 mt-2 text-sm">
+                  Total Subscriptions
+                </div>
+              </div>
+            </Card>
+
+            <Card className="shadow-sm">
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-3">
+                  <div className="p-3 rounded-full bg-green-100">
+                    <Users className="text-green-600" size={24} />
+                  </div>
+                </div>
+                <div className="text-4xl font-bold text-green-600">
+                  {loading ? "..." : statistics?.subscribed || 0}
+                </div>
+                <div className="text-gray-600 mt-2 text-sm">
+                  Active Subscribers
+                </div>
+              </div>
+            </Card>
+
+            <Card className="shadow-sm">
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-3">
+                  <div className="p-3 rounded-full bg-orange-100">
+                    <UserPlus className="text-orange-600" size={24} />
+                  </div>
+                </div>
+                <div className="text-4xl font-bold text-orange-600">
+                  {loading ? "..." : statistics?.newThisMonth || 0}
+                </div>
+                <div className="text-gray-600 mt-2 text-sm">New This Month</div>
+              </div>
+            </Card>
+
+            <Card className="shadow-sm">
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-3">
+                  <div className="p-3 rounded-full bg-red-100">
+                    <Users className="text-red-600" size={24} />
+                  </div>
+                </div>
+                <div className="text-4xl font-bold text-red-600">
+                  {loading ? "..." : statistics?.unsubscribed || 0}
+                </div>
+                <div className="text-gray-600 mt-2 text-sm">Unsubscribed</div>
+              </div>
+            </Card>
+          </div>
+        </div>
+
+        {/* You can add more dashboard sections here */}
+      </div>
     </div>
   );
 };
