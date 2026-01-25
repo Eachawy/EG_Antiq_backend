@@ -133,3 +133,15 @@ export const UPDATE_MonumentBook_API = "/v1/monument-books"; // Will append /:id
 export const BULK_LINK_MonumentBooks_API = "/v1/monument-books/bulk";
 export const DELETE_MonumentBook_API = "/v1/monument-books"; // Will append /:id
 export const GET_MonumentBooks_ByMonument_API = "/v1/monument-books/monument"; // Will append /:monumentId
+
+// Newsletter APIs (Admin)
+export const GET_Newsletter_Subscribers_API =
+  "/v1/admin/newsletter/subscribers";
+export const GET_Newsletter_Statistics_API = "/v1/admin/newsletter/statistics";
+export const DELETE_Newsletter_Subscriber_API =
+  "/v1/admin/newsletter/subscribers"; // Will append /:id
+export const EXPORT_Newsletter_Subscribers_API = "/v1/admin/newsletter/export"; // Query param: ?format=csv or excel
+export const SEND_Newsletter_API = "/v1/admin/newsletter/send";
+export const GET_Newsletter_Campaigns_API = "/v1/admin/newsletter/campaigns";
+export const GET_Newsletter_Campaign_Details_API =
+  "/v1/admin/newsletter/campaigns"; // Will append /:id

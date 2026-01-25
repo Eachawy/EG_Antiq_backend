@@ -20,6 +20,7 @@ import Sources from "app/modules/pages/sources/sources.reducer";
 import Books from "app/modules/pages/books/books.reducer";
 import MonumentSources from "app/modules/pages/monument-sources/monument-sources.reducer";
 import MonumentBooks from "app/modules/pages/monument-books/monument-books.reducer";
+import Newsletter from "app/modules/pages/newsletter/newsletter.reducer";
 
 const rootReducer: ReducersMapObject = {
   authentication,
@@ -43,6 +44,7 @@ const rootReducer: ReducersMapObject = {
   Books,
   MonumentSources,
   MonumentBooks,
+  Newsletter,
 };
 
 export default rootReducer;

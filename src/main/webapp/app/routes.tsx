@@ -28,9 +28,8 @@ import SourcesPage from "./modules/pages/sources/sources";
 import BooksPage from "./modules/pages/books/books";
 import MonumentSourcesPage from "./modules/pages/monument-sources/MonumentSources";
 import MonumentBooksPage from "./modules/pages/monument-books/MonumentBooks";
+import NewsletterPage from "./modules/pages/newsletter/Newsletter";
 import UnauthorizedPage from "./shared/reducers/unauthorized/unathorized.page";
-
-const loading = <div>loading ...</div>;
 
 // const Account = Loadable({
 //   loader: () => import(/* webpackChunkName: "account" */ "app/modules/account"),
@@ -240,6 +239,19 @@ const AppRoutes = () => {
                 ]}
               >
                 <UserHistoryPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="newsletter"
+            element={
+              <PrivateRoute
+                hasAnyAuthorities={[
+                  AUTHORITIES.PORTAL_ADMIN,
+                  AUTHORITIES.ADMIN,
+                ]}
+              >
+                <NewsletterPage />
               </PrivateRoute>
             }
           />

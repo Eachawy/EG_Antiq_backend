@@ -15,6 +15,7 @@ import {
   Heart,
   BookmarkCheck,
   History,
+  Mail,
 } from "lucide-react";
 import { Badge } from "primereact/badge";
 import { useNavigate } from "react-router";
@@ -81,6 +82,7 @@ const Menu = (props) => {
             { label: "Favourites", icon: Heart, page: "favourites" },
             { label: "Saved Search", icon: Search, page: "savedSearch" },
             { label: "User History", icon: History, page: "userHistory" },
+            { label: "Newsletter", icon: Mail, page: "newsletter" },
           ],
         },
       ]);

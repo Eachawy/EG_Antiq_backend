@@ -292,6 +292,25 @@ const MonumentFormDialog = (props) => {
               </div>
             </div>
 
+            {/* Artifact Registration Number */}
+            <div>
+              <label className="kemetra-field-label">
+                Artifact Registration Number
+              </label>
+              <InputText
+                value={props.formData.artifactRegistrationNumber || ""}
+                onChange={(e) =>
+                  props.onFormDataChange({
+                    ...props.formData,
+                    artifactRegistrationNumber: e.target.value,
+                  })
+                }
+                placeholder="e.g., SCA-2024-001"
+                className="kemetra-field-input"
+                maxLength={100}
+              />
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="kemetra-field-label">
