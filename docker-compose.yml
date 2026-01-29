@@ -1,40 +1,39 @@
-version: "3.8"
+version: '3.8'
 
 services:
-  antiquities-frontend:
+  admin-frontend-dev:
     build:
       context: .
-      dockerfile: Dockerfile
-      args:
-        - BACKEND_URL=http://153.92.209.167:3000
-    container_name: production-frontend
+      dockerfile: Dockerfile.dev
+    container_name: admin-frontend-dev
     ports:
-      - "3001:8080"
+      - "3001:9060"  # Map host 3001 to container webpack dev server 9060
+    volumes:
+      # Mount source code for hot reload
+      - ./src:/app/src:ro
+      - ./package.json:/app/package.json:ro
+      - ./package-lock.json:/app/package-lock.json:ro
+      - ./tsconfig.json:/app/tsconfig.json:ro
+      - ./webpack:/app/webpack:ro
+      # Anonymous volume for node_modules (don't overwrite with host)
+      - /app/node_modules
     environment:
-      - BACKEND_URL=http://153.92.209.167:3000
-      - NODE_ENV=production
-    deploy:
-      resources:
-        limits:
-          cpus: "1"
-          memory: 512M
-        reservations:
-          memory: 256M
+      - NODE_ENV=development
+      - BACKEND_URL=http://host.docker.internal:3000  # Connect to API on host
+      - CHOKIDAR_USEPOLLING=true  # Enable polling for Docker file watching
+      - WATCHPACK_POLLING=true
+    networks:
+      - dev-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9060/"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-    networks:
-      - production-network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+    stdin_open: true  # Keep STDIN open (for interactive debugging)
+    tty: true         # Allocate pseudo-TTY
 
 networks:
-  production-network:
+  dev-network:
     driver: bridge

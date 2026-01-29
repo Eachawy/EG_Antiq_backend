@@ -198,22 +198,105 @@ Page modules follow a consistent structure in `src/main/webapp/app/modules/pages
 
 ## Docker Deployment
 
+### Local Development with Docker
+
+**Quick Start:**
+```bash
+# Start development environment
+docker-compose -f docker-compose.dev.yml up
+
+# Access at http://localhost:3001
+# Webpack dev server with hot reload enabled
+```
+
+**What You Get:**
+- ✅ Hot module replacement (HMR) - instant code updates
+- ✅ Source maps enabled for debugging
+- ✅ All dev tools (webpack, TypeScript, ESLint, Prettier)
+- ✅ File watching with live reload
+- ✅ API proxy to backend service
+
+**Architecture:**
+```
+Host Browser (http://localhost:3001)
+    ↓
+Docker Container (webpack dev server on port 9060)
+    ↓
+Volume Mount (./src → /app/src)
+    ↓
+Hot Reload on File Changes
+```
+
+**Requirements:**
+- Docker Desktop installed
+- Backend API running on host or in Docker network
+- Source files mounted as volumes for live editing
+
+**Commands:**
+```bash
+# Build and start
+docker-compose -f docker-compose.dev.yml up --build
+
+# Run in background
+docker-compose -f docker-compose.dev.yml up -d
+
+# View logs
+docker-compose -f docker-compose.dev.yml logs -f admin-frontend-dev
+
+# Stop and remove
+docker-compose -f docker-compose.dev.yml down
+
+# Rebuild after package.json changes
+docker-compose -f docker-compose.dev.yml build --no-cache
+docker-compose -f docker-compose.dev.yml up
+```
+
+**Environment Variables:**
+- `BACKEND_URL` - API endpoint (default: `http://host.docker.internal:3000`)
+- `NODE_ENV` - Set to `development` automatically
+- `CHOKIDAR_USEPOLLING` - Enables file watching in Docker
+
+**Troubleshooting:**
+
+*Issue: Changes not reflected*
+```bash
+# Ensure volumes are mounted correctly
+docker-compose -f docker-compose.dev.yml down -v
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+*Issue: Can't connect to API*
+```bash
+# Check backend URL
+# For API on host: BACKEND_URL=http://host.docker.internal:3000
+# For API in Docker network: BACKEND_URL=http://api:3000
+```
+
+*Issue: Module not found after adding dependency*
+```bash
+# Rebuild container to install new dependencies
+docker-compose -f docker-compose.dev.yml build --no-cache
+```
+
+---
+
 ### Container Architecture
 
 The admin frontend runs in a Docker container with the following architecture:
 
 **Dockerfile**: Multi-stage build
 - **Stage 1 (Builder)**: Node.js 24.11.1 Alpine
-  - Accepts `BACKEND_URL` build argument
+  - Accepts `BACKEND_URL` build argument (defaults to `https://api.kemetra.org`)
   - Runs `npm run build` to compile React app
   - Output: `target/classes/static/`
 
 - **Stage 2 (Production)**: Nginx 1.27 Alpine
-  - Installs bash and curl for health checks
+  - Installs bash and wget for health checks
   - Creates non-root user `appuser` (UID/GID 1001)
   - Copies built static files to `/usr/share/nginx/html`
   - **Exposes port 8080** (not 80!)
   - Health check: `http://localhost:8080/health`
+  - Image labels: maintainer, description, version
 
 **Important Port Configuration**:
 - **Internal port**: 8080 (Nginx listens here)
@@ -305,9 +388,13 @@ admin-frontend:
   - **Runtime**: Used by nginx.conf entrypoint script
 - `NODE_ENV`: `production`
 
-**Local Development Docker** (Standalone - For Testing Only):
+**Local Development with Docker:**
+
+For local development with hot reload, use the dedicated `Dockerfile.dev` and `docker-compose.dev.yml` configuration (see "Local Development with Docker" section above).
+
+**Local Production Build** (Testing only - not for deployment):
 ```bash
-# Local test build (not for production)
+# Build production image locally
 docker build --build-arg BACKEND_URL=http://localhost:3000 -t admin-test .
 docker run -p 3001:8080 admin-test
 
@@ -338,6 +425,58 @@ docker restart production-admin
 - ✅ Check CORS configuration in API `.env.production`
 - ✅ Test API directly: `curl https://api.kemetra.org/api/v1/health`
 - ❌ Do NOT check internal nginx proxy (it's been removed)
+
+## Quick Command Reference
+
+### Development (No Docker)
+```bash
+npm install              # Install dependencies
+npm start                # Start webpack dev server (port 9060 + browser-sync 3001)
+npm run build            # Production build
+npm run build-watch      # Watch mode for dev builds
+npm test                 # Run tests
+npm run lint             # Lint and auto-fix
+```
+
+### Development (Docker)
+```bash
+docker-compose -f docker-compose.dev.yml up --build  # Start dev environment
+docker-compose -f docker-compose.dev.yml down        # Stop dev environment
+docker-compose -f docker-compose.dev.yml logs -f     # View logs
+```
+
+### Production (Local)
+```bash
+BACKEND_URL=https://api.kemetra.org npm run build    # Build for production
+docker build --build-arg BACKEND_URL=... -t admin .  # Docker production build
+docker-compose up -d                                  # Start production container
+```
+
+### Production (Unified Deployment)
+```bash
+cd /path/to/EG_Antiq
+docker-compose -f docker-compose.production.yml build admin-frontend
+docker-compose -f docker-compose.production.yml up -d admin-frontend
+docker-compose -f docker-compose.production.yml logs -f admin-frontend
+```
+
+---
+
+## Port Configuration
+
+| Environment | Port | Purpose | Access |
+|-------------|------|---------|--------|
+| Dev (no Docker) | 9060 | Webpack dev server | http://localhost:9060 |
+| Dev (no Docker) | 3001 | Browser Sync proxy | http://localhost:3001 |
+| Dev (Docker) | 9060 | Webpack dev server (internal) | - |
+| Dev (Docker) | 3001 | Host mapping to container | http://localhost:3001 |
+| Production (Docker) | 8080 | Nginx internal | - |
+| Production (Docker) | 3001 | Host mapping to container | http://localhost:3001 |
+| Production (Gateway) | 443 | HTTPS public access | https://admin.kemetra.org |
+
+**Important:** Always use port 8080 for production Nginx container configuration!
+
+---
 
 ## Important Notes
 

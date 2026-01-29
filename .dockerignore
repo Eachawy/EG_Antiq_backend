@@ -40,12 +40,7 @@ src/test
 
 # Documentation
 *.md
-!README.md
-
-# Docker
-Dockerfile
-.dockerignore
-docker-compose*.yml
+!CLAUDE.md
 
 # CI/CD
 .github
