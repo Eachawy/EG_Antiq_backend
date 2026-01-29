@@ -198,41 +198,146 @@ Page modules follow a consistent structure in `src/main/webapp/app/modules/pages
 
 ## Docker Deployment
 
-### Production & Staging Deployment
+### Container Architecture
 
-The application includes complete Docker support for both production and staging environments:
+The admin frontend runs in a Docker container with the following architecture:
 
-**Quick Start:**
+**Dockerfile**: Multi-stage build
+- **Stage 1 (Builder)**: Node.js 24.11.1 Alpine
+  - Accepts `BACKEND_URL` build argument
+  - Runs `npm run build` to compile React app
+  - Output: `target/classes/static/`
 
-```bash
-# Production
-cp .env.production.example .env.production
-docker-compose up -d
+- **Stage 2 (Production)**: Nginx 1.27 Alpine
+  - Installs bash and curl for health checks
+  - Creates non-root user `appuser` (UID/GID 1001)
+  - Copies built static files to `/usr/share/nginx/html`
+  - **Exposes port 8080** (not 80!)
+  - Health check: `http://localhost:8080/health`
 
-# Staging
-cp .env.staging.example .env.staging
-docker-compose -f docker-compose.staging.yml up -d
+**Important Port Configuration**:
+- **Internal port**: 8080 (Nginx listens here)
+- **Production mapping**: `127.0.0.1:3001:8080` (host 3001 → container 8080)
+- **Note**: Container does NOT run on port 80 or 3001 internally!
+
+**nginx.conf Configuration**:
+- Listens on port 8080
+- Serves static files from `/usr/share/nginx/html`
+- SPA routing support (try_files fallback to index.html)
+- Health check endpoint at `/health`
+- Gzip compression enabled
+- **API Proxy**: ~~Previously proxied `/api/*` to backend~~ **REMOVED** (unified gateway handles this)
+
+**docker-entrypoint.sh**:
+- Replaces `BACKEND_URL_PLACEHOLDER` in nginx.conf with actual `BACKEND_URL` from environment
+- Defaults to `http://localhost:3000` if not provided
+
+### Production Deployment (Unified Gateway Architecture)
+
+**⚠️ IMPORTANT**: This frontend is deployed as part of a unified architecture with centralized NGINX gateway.
+
+**Architecture Overview**:
+```
+Internet (Port 80/443)
+         │
+         ▼
+  Unified NGINX Gateway (EG_Antiq repository)
+         │
+         ├─ api.kemetra.org → API Backend (port 3000)
+         ├─ admin.kemetra.org → Admin Frontend (port 8080)
+         └─ kemetra.org → Portal Frontend (port 3000)
 ```
 
-**Key Files:**
+**Production Deployment**:
 
-- `Dockerfile` - Multi-stage build (Node.js builder + Nginx server)
-- `docker-compose.yml` - Production configuration (port 9000)
-- `docker-compose.staging.yml` - Staging configuration (port 9001)
-- `nginx.conf` - Web server configuration with API proxy
-- `docker-entrypoint.sh` - Dynamic backend URL configuration
+The admin frontend is **NOT deployed standalone**. It's deployed via the main API repository (`EG_Antiq`) which contains:
+- `docker-compose.production.yml` - Orchestrates all services
+- `nginx-configs/unified-kemetra.conf` - Main gateway configuration
 
-**Build Output:**
+**From EG_Antiq repository**:
+```bash
+# Deploy all services (API + Admin + Portal + Gateway)
+cd /root/EG_Antiq
+docker compose -f docker-compose.production.yml up -d --build
+```
 
-- Production build creates static files in `target/classes/static/`
-- Nginx serves static files and proxies `/api/*` requests to backend
-- Runs as non-root user (appuser:1001) for security
-- Health check endpoint: `/health`
+**Frontend-specific service configuration** (in EG_Antiq's docker-compose.production.yml):
+```yaml
+admin-frontend:
+  build:
+    context: ../EG_Antiq_backend  # This repository
+    dockerfile: Dockerfile
+    args:
+      BACKEND_URL: https://api.kemetra.org
+  container_name: production-admin
+  environment:
+    NODE_ENV: production
+    BACKEND_URL: https://api.kemetra.org
+  ports:
+    - '127.0.0.1:3001:8080'  # Localhost only, gateway proxies
+  networks:
+    - production-network
+  restart: always
+```
 
-**Documentation:**
+**Key Points**:
+- ✅ Unified gateway handles SSL termination, CORS, rate limiting, routing
+- ✅ Admin frontend only serves static files (no internal API proxy)
+- ✅ All API calls go through unified gateway at `https://api.kemetra.org`
+- ✅ Frontend accessible via `https://admin.kemetra.org`
+- ✅ Container binds to localhost only for security
 
-- See [DEPLOYMENT.md](./DEPLOYMENT.md) for comprehensive deployment guide
-- See [DEPLOYMENT_QUICK_REFERENCE.md](./DEPLOYMENT_QUICK_REFERENCE.md) for quick commands
+**DNS Configuration**:
+| Subdomain | Points To | Purpose |
+|-----------|-----------|---------|
+| admin.kemetra.org | 153.92.209.167 | Admin Frontend |
+| api.kemetra.org | 153.92.209.167 | Backend API |
+| kemetra.org | 153.92.209.167 | Portal Frontend |
+
+**Deprecated Scripts**:
+- ~~`scripts/setup-domain.sh`~~ - **DEPRECATED**: Use unified gateway instead
+- ~~`scripts/setup-ssl.sh`~~ - **DEPRECATED**: SSL handled by unified gateway
+- ~~`deploy-production.sh`~~ - **DEPRECATED**: Deploy via EG_Antiq repository
+
+**Environment Variables**:
+- `BACKEND_URL`: Full API URL (e.g., `https://api.kemetra.org`)
+  - **Build-time**: Baked into React app via webpack
+  - **Runtime**: Used by nginx.conf entrypoint script
+- `NODE_ENV`: `production`
+
+**Local Development Docker** (Standalone - For Testing Only):
+```bash
+# Local test build (not for production)
+docker build --build-arg BACKEND_URL=http://localhost:3000 -t admin-test .
+docker run -p 3001:8080 admin-test
+
+# Access at: http://localhost:3001
+```
+
+### Troubleshooting
+
+**Container won't start**:
+```bash
+# Check logs
+docker logs production-admin
+
+# Check if port 3001 is in use
+lsof -i :3001
+
+# Restart container
+docker restart production-admin
+```
+
+**Frontend shows blank page**:
+- Check if static files were copied correctly in Docker build
+- Verify BACKEND_URL is correct in build args
+- Check browser console for errors
+
+**API calls failing**:
+- ✅ Verify unified gateway is running: `docker ps | grep nginx`
+- ✅ Check CORS configuration in API `.env.production`
+- ✅ Test API directly: `curl https://api.kemetra.org/api/v1/health`
+- ❌ Do NOT check internal nginx proxy (it's been removed)
 
 ## Important Notes
 
