@@ -57,7 +57,9 @@ const AppRoutes = () => {
             <Route
               path="dashboard"
               element={
-                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                <PrivateRoute
+                  hasAnyAuthorities={[AUTHORITIES.USER, AUTHORITIES.ADMIN]}
+                >
                   <Dashboard />
                 </PrivateRoute>
               }
@@ -65,7 +67,9 @@ const AppRoutes = () => {
             <Route
               path="eras"
               element={
-                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                <PrivateRoute
+                  hasAnyAuthorities={[AUTHORITIES.USER, AUTHORITIES.ADMIN]}
+                >
                   <ErasManagement />
                 </PrivateRoute>
               }
@@ -73,7 +77,9 @@ const AppRoutes = () => {
             <Route
               path="descriptionMonuments"
               element={
-                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                <PrivateRoute
+                  hasAnyAuthorities={[AUTHORITIES.USER, AUTHORITIES.ADMIN]}
+                >
                   <DescriptionMonumentsPage />
                 </PrivateRoute>
               }
@@ -81,7 +87,9 @@ const AppRoutes = () => {
             <Route
               path="dynasty"
               element={
-                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                <PrivateRoute
+                  hasAnyAuthorities={[AUTHORITIES.USER, AUTHORITIES.ADMIN]}
+                >
                   <DynastyPage />
                 </PrivateRoute>
               }
@@ -89,7 +97,9 @@ const AppRoutes = () => {
             <Route
               path="gallery"
               element={
-                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                <PrivateRoute
+                  hasAnyAuthorities={[AUTHORITIES.USER, AUTHORITIES.ADMIN]}
+                >
                   <GalleryPage />
                 </PrivateRoute>
               }
@@ -97,7 +107,9 @@ const AppRoutes = () => {
             <Route
               path="monuments"
               element={
-                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                <PrivateRoute
+                  hasAnyAuthorities={[AUTHORITIES.USER, AUTHORITIES.ADMIN]}
+                >
                   <MonumentsPage />
                 </PrivateRoute>
               }
@@ -105,7 +117,9 @@ const AppRoutes = () => {
             <Route
               path="monumentsEra"
               element={
-                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                <PrivateRoute
+                  hasAnyAuthorities={[AUTHORITIES.USER, AUTHORITIES.ADMIN]}
+                >
                   <MonumentsEraPage />
                 </PrivateRoute>
               }
@@ -113,7 +127,9 @@ const AppRoutes = () => {
             <Route
               path="monumentsType"
               element={
-                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                <PrivateRoute
+                  hasAnyAuthorities={[AUTHORITIES.USER, AUTHORITIES.ADMIN]}
+                >
                   <MonumentsTypePage />
                 </PrivateRoute>
               }
@@ -121,7 +137,9 @@ const AppRoutes = () => {
             <Route
               path="sources"
               element={
-                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                <PrivateRoute
+                  hasAnyAuthorities={[AUTHORITIES.USER, AUTHORITIES.ADMIN]}
+                >
                   <SourcesPage />
                 </PrivateRoute>
               }
@@ -129,7 +147,9 @@ const AppRoutes = () => {
             <Route
               path="books"
               element={
-                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                <PrivateRoute
+                  hasAnyAuthorities={[AUTHORITIES.USER, AUTHORITIES.ADMIN]}
+                >
                   <BooksPage />
                 </PrivateRoute>
               }
@@ -137,7 +157,9 @@ const AppRoutes = () => {
             <Route
               path="monumentSources"
               element={
-                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                <PrivateRoute
+                  hasAnyAuthorities={[AUTHORITIES.USER, AUTHORITIES.ADMIN]}
+                >
                   <MonumentSourcesPage />
                 </PrivateRoute>
               }
@@ -145,7 +167,9 @@ const AppRoutes = () => {
             <Route
               path="monumentBooks"
               element={
-                <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+                <PrivateRoute
+                  hasAnyAuthorities={[AUTHORITIES.USER, AUTHORITIES.ADMIN]}
+                >
                   <MonumentBooksPage />
                 </PrivateRoute>
               }
