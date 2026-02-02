@@ -4,7 +4,7 @@ services:
   admin-frontend-dev:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: admin-frontend-dev
     ports:
       - "3001:9060"  # Map host 3001 to container webpack dev server 9060
@@ -19,9 +19,10 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-      - BACKEND_URL=http://host.docker.internal:3000  # Connect to API on host
-      - CHOKIDAR_USEPOLLING=true  # Enable polling for Docker file watching
-      - WATCHPACK_POLLING=true
+      - BACKEND_URL=http://localhost:3000  # Connect to API on host
+      - CHOKIDAR_USEPOLLING=1000  # Polling interval in ms for Docker file watching
+      - WATCHPACK_POLLING=1000
+      - DISABLE_TS_CHECKER=true  # Disable ForkTsCheckerWebpackPlugin in Docker to avoid chokidar issues
     networks:
       - dev-network
     restart: unless-stopped
