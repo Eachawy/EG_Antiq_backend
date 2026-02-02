@@ -111,7 +111,16 @@ module.exports = async (options) => {
         configType: "flat",
         extensions: ["ts", "tsx"],
       }),
-      new ForkTsCheckerWebpackPlugin(),
+      // Conditionally enable ForkTsCheckerWebpackPlugin (disabled in Docker to avoid chokidar issues)
+      ...(process.env.DISABLE_TS_CHECKER !== "true"
+        ? [
+            new ForkTsCheckerWebpackPlugin({
+              typescript: {
+                configFile: path.resolve(__dirname, "../tsconfig.json"),
+              },
+            }),
+          ]
+        : []),
       new CopyWebpackPlugin({
         patterns: [
           { from: "./src/main/webapp/content/", to: "content/" },

@@ -252,7 +252,7 @@ docker-compose -f docker-compose.yml up
 ```
 
 **Environment Variables:**
-- `BACKEND_URL` - API endpoint (default: `http://host.docker.internal:3000`)
+- `BACKEND_URL` - API endpoint (default: `http://localhost:3000`)
 - `NODE_ENV` - Set to `development` automatically
 - `CHOKIDAR_USEPOLLING` - Enables file watching in Docker
 
@@ -268,7 +268,7 @@ docker-compose -f docker-compose.yml up --build
 *Issue: Can't connect to API*
 ```bash
 # Check backend URL
-# For API on host: BACKEND_URL=http://host.docker.internal:3000
+# For API on host: BACKEND_URL=http://localhost:3000
 # For API in Docker network: BACKEND_URL=http://api:3000
 ```
 

@@ -22,6 +22,11 @@ RUN npm ci --legacy-peer-deps
 # Copy application source
 COPY --chown=appuser:appuser . .
 
+# Create directories with correct permissions
+RUN mkdir -p node_modules/.cache target/webpack && \
+    chown -R appuser:appuser node_modules/.cache target && \
+    chmod -R 775 node_modules/.cache target
+
 # Set environment
 ENV NODE_ENV=development \
     PORT=9060 \
