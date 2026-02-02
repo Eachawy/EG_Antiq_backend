@@ -130,7 +130,7 @@ The application uses Redux Toolkit (@reduxjs/toolkit) with a modular reducer str
 ### Webpack Build System
 
 - Common config: `webpack/webpack.common.js` (shared settings, plugins, loaders)
-- Dev config: `webpack/webpack.dev.js` (hot reload, source maps, dev server)
+- Dev config: `webpack/webpack.js` (hot reload, source maps, dev server)
 - Prod config: `webpack/webpack.prod.js` (minification, optimization)
 - Uses thread-loader for parallel TypeScript compilation
 - Filesystem caching enabled for faster rebuilds in `target/webpack`
@@ -203,7 +203,7 @@ Page modules follow a consistent structure in `src/main/webapp/app/modules/pages
 **Quick Start:**
 ```bash
 # Start development environment
-docker-compose -f docker-compose.dev.yml up
+docker-compose -f docker-compose.yml up
 
 # Access at http://localhost:3001
 # Webpack dev server with hot reload enabled
@@ -235,20 +235,20 @@ Hot Reload on File Changes
 **Commands:**
 ```bash
 # Build and start
-docker-compose -f docker-compose.dev.yml up --build
+docker-compose -f docker-compose.yml up --build
 
 # Run in background
-docker-compose -f docker-compose.dev.yml up -d
+docker-compose -f docker-compose.yml up -d
 
 # View logs
-docker-compose -f docker-compose.dev.yml logs -f admin-frontend-dev
+docker-compose -f docker-compose.yml logs -f admin-frontend-dev
 
 # Stop and remove
-docker-compose -f docker-compose.dev.yml down
+docker-compose -f docker-compose.yml down
 
 # Rebuild after package.json changes
-docker-compose -f docker-compose.dev.yml build --no-cache
-docker-compose -f docker-compose.dev.yml up
+docker-compose -f docker-compose.yml build --no-cache
+docker-compose -f docker-compose.yml up
 ```
 
 **Environment Variables:**
@@ -261,8 +261,8 @@ docker-compose -f docker-compose.dev.yml up
 *Issue: Changes not reflected*
 ```bash
 # Ensure volumes are mounted correctly
-docker-compose -f docker-compose.dev.yml down -v
-docker-compose -f docker-compose.dev.yml up --build
+docker-compose -f docker-compose.yml down -v
+docker-compose -f docker-compose.yml up --build
 ```
 
 *Issue: Can't connect to API*
@@ -275,157 +275,10 @@ docker-compose -f docker-compose.dev.yml up --build
 *Issue: Module not found after adding dependency*
 ```bash
 # Rebuild container to install new dependencies
-docker-compose -f docker-compose.dev.yml build --no-cache
+docker-compose -f docker-compose.yml build --no-cache
 ```
 
 ---
-
-### Container Architecture
-
-The admin frontend runs in a Docker container with the following architecture:
-
-**Dockerfile**: Multi-stage build
-- **Stage 1 (Builder)**: Node.js 24.11.1 Alpine
-  - Accepts `BACKEND_URL` build argument (defaults to `https://api.kemetra.org`)
-  - Runs `npm run build` to compile React app
-  - Output: `target/classes/static/`
-
-- **Stage 2 (Production)**: Nginx 1.27 Alpine
-  - Installs bash and wget for health checks
-  - Creates non-root user `appuser` (UID/GID 1001)
-  - Copies built static files to `/usr/share/nginx/html`
-  - **Exposes port 8080** (not 80!)
-  - Health check: `http://localhost:8080/health`
-  - Image labels: maintainer, description, version
-
-**Important Port Configuration**:
-- **Internal port**: 8080 (Nginx listens here)
-- **Production mapping**: `127.0.0.1:3001:8080` (host 3001 → container 8080)
-- **Note**: Container does NOT run on port 80 or 3001 internally!
-
-**nginx.conf Configuration**:
-- Listens on port 8080
-- Serves static files from `/usr/share/nginx/html`
-- SPA routing support (try_files fallback to index.html)
-- Health check endpoint at `/health`
-- Gzip compression enabled
-- **API Proxy**: ~~Previously proxied `/api/*` to backend~~ **REMOVED** (unified gateway handles this)
-
-**docker-entrypoint.sh**:
-- Replaces `BACKEND_URL_PLACEHOLDER` in nginx.conf with actual `BACKEND_URL` from environment
-- Defaults to `http://localhost:3000` if not provided
-
-### Production Deployment (Unified Gateway Architecture)
-
-**⚠️ IMPORTANT**: This frontend is deployed as part of a unified architecture with centralized NGINX gateway.
-
-**Architecture Overview**:
-```
-Internet (Port 80/443)
-         │
-         ▼
-  Unified NGINX Gateway (EG_Antiq repository)
-         │
-         ├─ api.kemetra.org → API Backend (port 3000)
-         ├─ admin.kemetra.org → Admin Frontend (port 8080)
-         └─ kemetra.org → Portal Frontend (port 3000)
-```
-
-**Production Deployment**:
-
-The admin frontend is **NOT deployed standalone**. It's deployed via the main API repository (`EG_Antiq`) which contains:
-- `docker-compose.production.yml` - Orchestrates all services
-- `nginx-configs/unified-kemetra.conf` - Main gateway configuration
-
-**From EG_Antiq repository**:
-```bash
-# Deploy all services (API + Admin + Portal + Gateway)
-cd /root/EG_Antiq
-docker compose -f docker-compose.production.yml up -d --build
-```
-
-**Frontend-specific service configuration** (in EG_Antiq's docker-compose.production.yml):
-```yaml
-admin-frontend:
-  build:
-    context: ../EG_Antiq_backend  # This repository
-    dockerfile: Dockerfile
-    args:
-      BACKEND_URL: https://api.kemetra.org
-  container_name: production-admin
-  environment:
-    NODE_ENV: production
-    BACKEND_URL: https://api.kemetra.org
-  ports:
-    - '127.0.0.1:3001:8080'  # Localhost only, gateway proxies
-  networks:
-    - production-network
-  restart: always
-```
-
-**Key Points**:
-- ✅ Unified gateway handles SSL termination, CORS, rate limiting, routing
-- ✅ Admin frontend only serves static files (no internal API proxy)
-- ✅ All API calls go through unified gateway at `https://api.kemetra.org`
-- ✅ Frontend accessible via `https://admin.kemetra.org`
-- ✅ Container binds to localhost only for security
-
-**DNS Configuration**:
-| Subdomain | Points To | Purpose |
-|-----------|-----------|---------|
-| admin.kemetra.org | 153.92.209.167 | Admin Frontend |
-| api.kemetra.org | 153.92.209.167 | Backend API |
-| kemetra.org | 153.92.209.167 | Portal Frontend |
-
-**Deprecated Scripts**:
-- ~~`scripts/setup-domain.sh`~~ - **DEPRECATED**: Use unified gateway instead
-- ~~`scripts/setup-ssl.sh`~~ - **DEPRECATED**: SSL handled by unified gateway
-- ~~`deploy-production.sh`~~ - **DEPRECATED**: Deploy via EG_Antiq repository
-
-**Environment Variables**:
-- `BACKEND_URL`: Full API URL (e.g., `https://api.kemetra.org`)
-  - **Build-time**: Baked into React app via webpack
-  - **Runtime**: Used by nginx.conf entrypoint script
-- `NODE_ENV`: `production`
-
-**Local Development with Docker:**
-
-For local development with hot reload, use the dedicated `Dockerfile.dev` and `docker-compose.dev.yml` configuration (see "Local Development with Docker" section above).
-
-**Local Production Build** (Testing only - not for deployment):
-```bash
-# Build production image locally
-docker build --build-arg BACKEND_URL=http://localhost:3000 -t admin-test .
-docker run -p 3001:8080 admin-test
-
-# Access at: http://localhost:3001
-```
-
-### Troubleshooting
-
-**Container won't start**:
-```bash
-# Check logs
-docker logs production-admin
-
-# Check if port 3001 is in use
-lsof -i :3001
-
-# Restart container
-docker restart production-admin
-```
-
-**Frontend shows blank page**:
-- Check if static files were copied correctly in Docker build
-- Verify BACKEND_URL is correct in build args
-- Check browser console for errors
-
-**API calls failing**:
-- ✅ Verify unified gateway is running: `docker ps | grep nginx`
-- ✅ Check CORS configuration in API `.env.production`
-- ✅ Test API directly: `curl https://api.kemetra.org/api/v1/health`
-- ❌ Do NOT check internal nginx proxy (it's been removed)
-
 ## Quick Command Reference
 
 ### Development (No Docker)
@@ -440,26 +293,10 @@ npm run lint             # Lint and auto-fix
 
 ### Development (Docker)
 ```bash
-docker-compose -f docker-compose.dev.yml up --build  # Start dev environment
-docker-compose -f docker-compose.dev.yml down        # Stop dev environment
-docker-compose -f docker-compose.dev.yml logs -f     # View logs
+docker-compose -f docker-compose.yml up --build  # Start dev environment
+docker-compose -f docker-compose.yml down        # Stop dev environment
+docker-compose -f docker-compose.yml logs -f     # View logs
 ```
-
-### Production (Local)
-```bash
-BACKEND_URL=https://api.kemetra.org npm run build    # Build for production
-docker build --build-arg BACKEND_URL=... -t admin .  # Docker production build
-docker-compose up -d                                  # Start production container
-```
-
-### Production (Unified Deployment)
-```bash
-cd /path/to/EG_Antiq
-docker-compose -f docker-compose.production.yml build admin-frontend
-docker-compose -f docker-compose.production.yml up -d admin-frontend
-docker-compose -f docker-compose.production.yml logs -f admin-frontend
-```
-
 ---
 
 ## Port Configuration
@@ -470,12 +307,6 @@ docker-compose -f docker-compose.production.yml logs -f admin-frontend
 | Dev (no Docker) | 3001 | Browser Sync proxy | http://localhost:3001 |
 | Dev (Docker) | 9060 | Webpack dev server (internal) | - |
 | Dev (Docker) | 3001 | Host mapping to container | http://localhost:3001 |
-| Production (Docker) | 8080 | Nginx internal | - |
-| Production (Docker) | 3001 | Host mapping to container | http://localhost:3001 |
-| Production (Gateway) | 443 | HTTPS public access | https://admin.kemetra.org |
-
-**Important:** Always use port 8080 for production Nginx container configuration!
-
 ---
 
 ## Important Notes
