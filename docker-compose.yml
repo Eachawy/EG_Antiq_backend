@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     container_name: admin-frontend-dev
     ports:
-      - "3001:9060"  # Map host 3001 to container webpack dev server 9060
+      - "3002:9060"  # Map host 3001 to container webpack dev server 9060
     volumes:
       # Mount source code for hot reload
       - ./src:/app/src:ro
